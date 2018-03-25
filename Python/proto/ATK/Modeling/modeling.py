@@ -25,6 +25,14 @@ class Voltage(object):
     def update_model(self, model, index):
         model.static_pins[index] = True
 
+class Input(Voltage):
+    """
+    Class that sets a pin to a specific voltage based on input condition
+    Just another name for Voltage node
+    """
+    pass
+
+
 class Resistor(object):
     """
     Class that implements a resistor between two pins
@@ -59,7 +67,6 @@ class Modeler(object):
         self.initialized = False
         
     def add_component(self, component, pins):
-        self.initialized = False
         self.components.append(component)
         component.pins = pins
         for (i, pin) in enumerate(pins):
@@ -78,7 +85,7 @@ class Modeler(object):
                 return component[0].V
         raise RuntimeError("Pin %i is declared static but can't retrieve a voltage state for it" % index)
         
-    def setup(self):
+    def setup(self, recompute_state = True):
         """
         Initializes the internal state
         """
@@ -89,7 +96,8 @@ class Modeler(object):
             else:
                 self.state[i] = self.get_state(i, pin)
         
-        self.solve()
+        if recompute_state:
+            self.solve()
         
         self.initialized = True
         
@@ -143,6 +151,9 @@ class Modeler(object):
         """
         if not self.initialized:
             self.setup()
+        
+        for (key, value) in input.items():
+            self.state[key] = value
         
         self.solve()
         
