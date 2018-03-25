@@ -32,7 +32,6 @@ class Input(Voltage):
     """
     pass
 
-
 class Resistor(object):
     """
     Class that implements a resistor between two pins
@@ -49,6 +48,9 @@ class Resistor(object):
     def update_model(self, model, index):
         pass
     
+    def update_state(self, state, dt):
+        pass
+
     def get_current(self, pin_index, state):
         return (state[self.pins[1]] - state[self.pins[0]]) / self.R * (1 if 0 == pin_index else -1)
 
@@ -143,6 +145,7 @@ class Modeler(object):
             return True
 
         self.state[self.mapping.keys()] -= delta[self.mapping.values()]
+                
         return False
         
     def __call__(self, input):
@@ -167,7 +170,9 @@ if __name__ == "__main__":
     model.add_component(Resistor(100), [0, 2])
     model.add_component(Resistor(200), [2, 1])
   
+    model.dt = 1.e-3
+  
     print(model)
 
-    print(model([]))
-    print(model([]))
+    print(model({}))
+    print(model({}))
