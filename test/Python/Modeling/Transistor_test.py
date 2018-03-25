@@ -18,8 +18,7 @@ def TransistorNPN_test():
     model.add_component(Resistor(100), [0, 4])
     model.add_component(TransistorNPN(), [2, 3, 4])
 
+    model.dt = 1.e-3
     model.setup()
     
-    model.dt = 1.e-3
-
     assert_almost_equal(model.state, [0, 5, .4051047, 4.9942842, .0005773])

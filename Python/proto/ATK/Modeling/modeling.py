@@ -26,7 +26,10 @@ class Voltage(object):
     def update_model(self, model, index):
         model.static_pins[index] = True
         
-    def update_state(self, state, dt):
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
         pass
 
 class Input(Voltage):
@@ -52,7 +55,10 @@ class Resistor(object):
     def update_model(self, model, index):
         pass
     
-    def update_state(self, state, dt):
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
         pass
 
     def get_current(self, pin_index, state):
@@ -60,6 +66,41 @@ class Resistor(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state):
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) / self.R
+
+
+class Capacitor(object):
+    """
+    Class that implements a capacitor between two pins
+    """
+    nb_pins = 2
+    
+    def __init__(self, C):
+        self.C = C
+        self.pins = []
+
+    def __repr__(self):
+        return "%.0fohms between pins (%i,%i)" % (self.R, self.pins[0], self.pins[1])
+
+    def update_model(self, model, index):
+        pass
+    
+    def update_steady_state(self, state, dt):
+        self.dt = dt
+        self.c2t = (2 * self.C) / dt
+        print("c2t = %f" % self.c2t)
+        
+        self.iceq = self.c2t * (state[self.pins[1]] - state[self.pins[0]])
+
+    def update_state(self, state):
+        self.iceq = 2 * self.c2t * (state[self.pins[1]] - state[self.pins[0]]) - self.iceq
+        print("  %f %f" % (state[self.pins[1]], state[self.pins[0]]))
+        print("  %f" % self.iceq)
+
+    def get_current(self, pin_index, state):
+        return ((state[self.pins[1]] - state[self.pins[0]]) * self.c2t - self.iceq) * (1 if 0 == pin_index else -1)
+
+    def get_gradient(self, pin_index_ref, pin_index, state):
+        return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.c2t
 
 class TransistorNPN(object):
     """
@@ -80,7 +121,10 @@ class TransistorNPN(object):
     def update_model(self, model, index):
         pass
     
-    def update_state(self, state, dt):
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
         pass
 
     def ib(self, state):
@@ -179,7 +223,10 @@ class Modeler(object):
         
         if recompute_state:
             self.solve()
-        
+
+        for component in self.components:
+            component.update_steady_state(self.state, self.dt)
+
         self.initialized = True
         
     def compute_current(self, pin):
@@ -240,7 +287,7 @@ class Modeler(object):
         self.solve()
         
         for component in self.components:
-            component.update_state(self.state, self.dt)
+            component.update_state(self.state)
 
         return self.state
 
