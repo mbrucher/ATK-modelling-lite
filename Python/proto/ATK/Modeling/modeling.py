@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
+import math
 
 EPS = 1.e-8
 MAX_ITER = 8
@@ -56,6 +57,82 @@ class Resistor(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state):
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) / self.R
+
+class TransistorNPN(object):
+    """
+    Class that implements a NPN transistor between 3 pins, BCE
+    """
+    nb_pins = 3
+    
+    def __init__(self, Is=1e-12, Vt=26e-3, Br=1, Bf=100):
+        self.Is = Is
+        self.Vt = Vt
+        self.Br = Br
+        self.Bf = Bf
+        self.pins = []
+
+    def __repr__(self):
+        return "%.0fohms between pins (%i,%i)" % (self.R, self.pins[0], self.pins[1])
+
+    def update_model(self, model, index):
+        pass
+    
+    def update_state(self, state, dt):
+        pass
+
+    def ib(self, state):
+        Vbe = state[self.pins[2]] - state[self.pins[0]]
+        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        print("%f %f" % (Vbe, Vbc))
+        return self.Is * ((math.exp(Vbe / self.Vt) - 1) / self.Bf + (math.exp(Vbc / self.Vt) - 1) / self.Br)
+
+    def ib_vbe(self, state):
+        Vbe = state[self.pins[2]] - state[self.pins[0]]
+        return self.Is * math.exp(Vbe / self.Vt) / self.Vt / self.Bf
+
+    def ib_vbc(self, state):
+        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        return self.Is * math.exp(Vbc / self.Vt) / self.Vt / self.Br
+
+    def ic(self, state):
+        Vbe = state[self.pins[2]] - state[self.pins[0]]
+        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        return self.Is * ((math.exp(Vbe / self.Vt) - math.exp(Vbc / self.Vt)) - (math.exp(Vbc / self.Vt) - 1) / self.Br)
+
+    def ic_vbe(self, state):
+        Vbe = state[self.pins[2]] - state[self.pins[0]]
+        return self.Is * math.exp(Vbe / self.Vt) / self.Vt
+
+    def ic_vbc(self, state):
+        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        return self.Is * (-math.exp(Vbc / self.Vt) - math.exp(Vbc / self.Vt) / self.Br) / self.Vt
+
+    def get_current(self, pin_index, state):
+        if pin_index == 0:
+            return -self.ib(state)
+        elif pin_index == 1:
+            return -self.ic(state)
+        return self.ib(state) + self.ic(state)
+
+    def get_gradient(self, pin_index_ref, pin_index, state):
+        if pin_index_ref == 0 and pin_index == 0:
+            return self.ib_vbc(state) + self.ib_vbe(state)
+        elif pin_index_ref == 0 and pin_index == 1:
+            return -self.ib_vbc(state)
+        elif pin_index_ref == 0 and pin_index == 2:
+            return -self.ib_vbe(state)
+        elif pin_index_ref == 1 and pin_index == 0:
+            return self.ic_vbc(state) + self.ic_vbe(state)
+        elif pin_index_ref == 1 and pin_index == 1:
+            return -self.ic_vbc(state)
+        elif pin_index_ref == 1 and pin_index == 2:
+            return -self.ic_vbe(state)
+        elif pin_index_ref == 2 and pin_index == 0:
+            return -(self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
+        elif pin_index_ref == 2 and pin_index == 1:
+            return self.ib_vbc(state) + self.ic_vbc(state)
+        elif pin_index_ref == 2 and pin_index == 2:
+            return self.ib_vbe(state) + self.ic_vbe(state)
 
 class Modeler(object):
     """
