@@ -81,30 +81,29 @@ class TransistorNPN(object):
         pass
 
     def ib(self, state):
-        Vbe = state[self.pins[2]] - state[self.pins[0]]
-        Vbc = state[self.pins[1]] - state[self.pins[0]]
-        print("%f %f" % (Vbe, Vbc))
+        Vbe = state[self.pins[0]] - state[self.pins[2]]
+        Vbc = state[self.pins[0]] - state[self.pins[1]]
         return self.Is * ((math.exp(Vbe / self.Vt) - 1) / self.Bf + (math.exp(Vbc / self.Vt) - 1) / self.Br)
 
     def ib_vbe(self, state):
-        Vbe = state[self.pins[2]] - state[self.pins[0]]
+        Vbe = state[self.pins[0]] - state[self.pins[2]]
         return self.Is * math.exp(Vbe / self.Vt) / self.Vt / self.Bf
 
     def ib_vbc(self, state):
-        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        Vbc = state[self.pins[0]] - state[self.pins[1]]
         return self.Is * math.exp(Vbc / self.Vt) / self.Vt / self.Br
 
     def ic(self, state):
-        Vbe = state[self.pins[2]] - state[self.pins[0]]
-        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        Vbe = state[self.pins[0]] - state[self.pins[2]]
+        Vbc = state[self.pins[0]] - state[self.pins[1]]
         return self.Is * ((math.exp(Vbe / self.Vt) - math.exp(Vbc / self.Vt)) - (math.exp(Vbc / self.Vt) - 1) / self.Br)
 
     def ic_vbe(self, state):
-        Vbe = state[self.pins[2]] - state[self.pins[0]]
+        Vbe = state[self.pins[0]] - state[self.pins[2]]
         return self.Is * math.exp(Vbe / self.Vt) / self.Vt
 
     def ic_vbc(self, state):
-        Vbc = state[self.pins[1]] - state[self.pins[0]]
+        Vbc = state[self.pins[0]] - state[self.pins[1]]
         return self.Is * (-math.exp(Vbc / self.Vt) - math.exp(Vbc / self.Vt) / self.Br) / self.Vt
 
     def get_current(self, pin_index, state):
