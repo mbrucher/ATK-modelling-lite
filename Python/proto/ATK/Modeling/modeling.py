@@ -25,6 +25,9 @@ class Voltage(object):
     
     def update_model(self, model, index):
         model.static_pins[index] = True
+        
+    def update_state(self, state, dt):
+        pass
 
 class Input(Voltage):
     """
@@ -236,6 +239,9 @@ class Modeler(object):
         
         self.solve()
         
+        for component in self.components:
+            component.update_state(self.state, self.dt)
+
         return self.state
 
 if __name__ == "__main__":
@@ -245,7 +251,7 @@ if __name__ == "__main__":
     model.add_component(Voltage(5), [1])
     model.add_component(Resistor(100), [0, 2])
     model.add_component(Resistor(200), [2, 1])
-  
+    
     model.dt = 1.e-3
   
     print(model)
