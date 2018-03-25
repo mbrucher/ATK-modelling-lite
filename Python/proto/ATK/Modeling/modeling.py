@@ -88,7 +88,9 @@ class Modeler(object):
                 self.mapping[i] = len(self.mapping)
             else:
                 self.state[i] = self.get_state(i, pin)
-                
+        
+        self.solve()
+        
         self.initialized = True
         
     def compute_current(self, pin):
@@ -104,7 +106,15 @@ class Modeler(object):
                     jac[self.mapping[component_pin]] += component.get_gradient(j, i, self.state)
         return eq, jac
     
-    def iterate(self, input):
+    def solve(self):
+        """
+        Actually solve the equaltion system
+        """
+        iteration = 0
+        while iteration < MAX_ITER and not self.iterate():
+          iteration = iteration + 1        
+
+    def iterate(self):
         """
         Do one iteration
         """        
@@ -134,9 +144,7 @@ class Modeler(object):
         if not self.initialized:
             self.setup()
         
-        iteration = 0
-        while iteration < MAX_ITER and not self.iterate(input):
-          iteration = iteration + 1        
+        self.solve()
         
         return self.state
 
