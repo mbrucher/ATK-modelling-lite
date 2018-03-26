@@ -11,27 +11,24 @@ def RC_test():
     C = 1e-3
     dt = 1e-3
     
-    model = Modeler(3)
+    model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [0])
-    Vcc = Voltage(0)
-    model.add_component(Vcc, [1])
-    model.add_component(Resistor(R), [1, 2])
+    model.add_component(Voltage(0), [('S', 0)])
+    model.add_component(Voltage(1), [('S', 1)])
+    model.add_component(Resistor(R), [('S', 1), ('D', 0)])
+    model.add_component(Capacitor(C), [('D', 0), ('S', 0)])
 
     model.dt = dt
     model.setup()
     
-    assert_almost_equal(model.state, [0, 0, 0])
+    assert_almost_equal(model.dynamic_state, [0])
 
-    model.add_component(Capacitor(C), [2, 0])
-    Vcc.V = 1
-
-    model.setup(False)
+    model.setup()
 
     for i in range(1000):
         print(i)
         model({})
-        assert_almost_equal(model.state[2], 1 - math.exp(-i * dt / (R * C)), 1e-4)
+        assert_almost_equal(model.dynamic_state[0], 1 - math.exp(-i * dt / (R * C)), 1e-4)
 
 
 def RC2_test():
@@ -39,24 +36,21 @@ def RC2_test():
     C = 1e-3
     dt = 1e-3
     
-    model = Modeler(3)
+    model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [0])
-    Vcc = Voltage(0)
-    model.add_component(Vcc, [1])
-    model.add_component(Resistor(R), [0, 2])
+    model.add_component(Voltage(0), [('S', 0)])
+    model.add_component(Voltage(1), [('S', 1)])
+    model.add_component(Resistor(R), [('S', 0), ('D', 0)])
+    model.add_component(Capacitor(C), [('D', 0), ('S', 1)])
 
     model.dt = dt
     model.setup()
     
-    assert_almost_equal(model.state, [0, 0, 0])
+    assert_almost_equal(model.dynamic_state, [0])
 
-    model.add_component(Capacitor(C), [2, 1])
-    Vcc.V = 1
-
-    model.setup(False)
+    model.setup()
 
     for i in range(1000):
         print(i)
         model({})
-        assert_almost_equal(model.state[2], math.exp(-i * dt / (R * C)), 1e-4)
+        assert_almost_equal(model.dynamic_state[0], math.exp(-i * dt / (R * C)), 1e-4)
