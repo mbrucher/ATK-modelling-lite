@@ -49,10 +49,10 @@ class Resistor(object):
     def update_state(self, state):
         pass
 
-    def get_current(self, pin_index, state):
+    def get_current(self, pin_index, state, steady_state):
         return (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) / self.R * (1 if 0 == pin_index else -1)
 
-    def get_gradient(self, pin_index_ref, pin_index, state):
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) / self.R
 
 
@@ -77,10 +77,14 @@ class Capacitor(object):
     def update_state(self, state):
         self.iceq = 2 * self.c2t * (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) - self.iceq
 
-    def get_current(self, pin_index, state):
+    def get_current(self, pin_index, state, steady_state):
+        if steady_state:
+            return 0
         return ((retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) * self.c2t - self.iceq) * (1 if 0 == pin_index else -1)
 
-    def get_gradient(self, pin_index_ref, pin_index, state):
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        if steady_state:
+            return 0
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.c2t
 
 class TransistorNPN(object):
@@ -130,14 +134,14 @@ class TransistorNPN(object):
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
         return self.Is * (-math.exp(Vbc / self.Vt) - math.exp(Vbc / self.Vt) / self.Br) / self.Vt
 
-    def get_current(self, pin_index, state):
+    def get_current(self, pin_index, state, steady_state):
         if pin_index == 0:
             return -self.ib(state)
         elif pin_index == 1:
             return -self.ic(state)
         return self.ib(state) + self.ic(state)
 
-    def get_gradient(self, pin_index_ref, pin_index, state):
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         if pin_index_ref == 0 and pin_index == 0:
             return self.ib_vbc(state) + self.ib_vbe(state)
         elif pin_index_ref == 0 and pin_index == 1:
@@ -208,42 +212,42 @@ class Modeler(object):
         for component in self.components:
             component.update_steady_state(self.state, self.dt)
 
-        self.solve()
+        self.solve(True)
 
         for component in self.components:
             component.update_steady_state(self.state, self.dt)
 
         self.initialized = True
         
-    def compute_current(self, pin):
+    def compute_current(self, pin, steady_state):
         """
         Compute Kirschhoff law for the non static pin
         Compute also the jacobian for all the connected pins
         """
-        eq = sum([component.get_current(i, self.state) for (component, i) in pin])
+        eq = sum([component.get_current(i, self.state, steady_state) for (component, i) in pin])
         jac = [0] * len(self.dynamic_state)
         for (component, j) in pin:
             for (i, component_pin) in enumerate(component.pins):
                 if component_pin[0] == "D":
-                    jac[component_pin[1]] += component.get_gradient(j, i, self.state)
+                    jac[component_pin[1]] += component.get_gradient(j, i, self.state, steady_state)
         return eq, jac
     
-    def solve(self):
+    def solve(self, steady_state):
         """
         Actually solve the equaltion system
         """
         iteration = 0
-        while iteration < MAX_ITER and not self.iterate():
+        while iteration < MAX_ITER and not self.iterate(steady_state):
             iteration = iteration + 1        
 
-    def iterate(self):
+    def iterate(self, steady_state):
         """
         Do one iteration
         """        
         eqs = []
         jacobian = []
         for pin in self.dynamic_pins:
-            eq, jac = self.compute_current(pin)
+            eq, jac = self.compute_current(pin, steady_state)
             eqs.append(eq)
             jacobian.append(jac)
         
@@ -269,7 +273,8 @@ class Modeler(object):
         
         self.input_state[:] = input
 
-        self.solve()
+        self.solve(False)
+        print(self.state)
         
         for component in self.components:
             component.update_state(self.state)
