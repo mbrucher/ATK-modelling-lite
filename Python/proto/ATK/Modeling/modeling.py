@@ -8,7 +8,7 @@ import numpy as np
 import math
 
 EPS = 1.e-8
-MAX_ITER = 200
+MAX_ITER = 200 # should probabl have one for steady state and one for non steady state
 
 def retrieve_voltage(state, pin):
     return state[pin[0]][pin[1]]
@@ -108,10 +108,10 @@ class Diode(object):
         pass
 
     def get_current(self, pin_index, state, steady_state):
-        return self.Is * (math.exp((retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) / (self.n * self.Vt)) - 1) * (1 if 0 == pin_index else -1)
+        return self.Is * (math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt)) - 1) * (1 if 1 == pin_index else -1)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
-        return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) / (self.n * self.Vt)) * (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1)
+        return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt)) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
 
 class TransistorNPN(object):
     """
