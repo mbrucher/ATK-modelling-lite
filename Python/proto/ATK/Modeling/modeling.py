@@ -8,7 +8,7 @@ import numpy as np
 import math
 
 EPS = 1.e-8
-MAX_ITER = 8
+MAX_ITER = 200
 
 def retrieve_voltage(state, pin):
     return state[pin[0]][pin[1]]
@@ -108,10 +108,10 @@ class Diode(object):
         pass
 
     def get_current(self, pin_index, state, steady_state):
-        return self.Is * (math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt)) - 1) * (1 if 0 == pin_index else -1)
+        return self.Is * (math.exp((retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) / (self.n * self.Vt)) - 1) * (1 if 0 == pin_index else -1)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
-        return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) / (self.n * self.Vt)) * (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1)
 
 class TransistorNPN(object):
     """
@@ -256,8 +256,6 @@ class Modeler(object):
             for (i, component_pin) in enumerate(component.pins):
                 if component_pin[0] == "D":
                     jac[component_pin[1]] += component.get_gradient(j, i, self.state, steady_state)
-        print(eq)
-        print(jac)
         return eq, jac
     
     def solve(self, steady_state):
@@ -285,7 +283,7 @@ class Modeler(object):
             return True
         
         delta = np.linalg.solve(jacobian, eqs)
-        if np.all(np.abs(delta)) < EPS:
+        if np.all(np.abs(delta) < EPS):
             return True
 
         self.dynamic_state -= delta
