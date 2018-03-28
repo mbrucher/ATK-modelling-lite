@@ -87,6 +87,32 @@ class Capacitor(object):
             return 0
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.c2t
 
+class Diode(object):
+    """
+    Class that implements a diode between two pins
+    """
+    nb_pins = 2
+    
+    def __init__(self, Is=1e-14, n=1.24, Vt = 26e-3):
+        self.Is = Is
+        self.n = n
+        self.Vt = Vt
+
+    def __repr__(self):
+        return "Diode between pins (%s,%s)" % (self.pins[0], self.pins[1])
+    
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
+        pass
+
+    def get_current(self, pin_index, state, steady_state):
+        return self.Is * (math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt)) - 1) * (1 if 0 == pin_index else -1)
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+
 class TransistorNPN(object):
     """
     Class that implements a NPN transistor between 3 pins, BCE
@@ -230,6 +256,8 @@ class Modeler(object):
             for (i, component_pin) in enumerate(component.pins):
                 if component_pin[0] == "D":
                     jac[component_pin[1]] += component.get_gradient(j, i, self.state, steady_state)
+        print(eq)
+        print(jac)
         return eq, jac
     
     def solve(self, steady_state):
