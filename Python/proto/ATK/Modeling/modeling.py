@@ -25,6 +25,9 @@ class Voltage(object):
     def __repr__(self):
         return "%.0fV at pin %s" % (self.V, self.pins[0])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         state[self.pins[0][0]][self.pins[0][1]] = self.V
 
@@ -47,6 +50,9 @@ class Resistor(object):
 
     def __repr__(self):
         return "%.0fohms between pins (%s,%s)" % (self.R, self.pins[0], self.pins[1])
+
+    def update_model(self, model):
+        pass
 
     def update_steady_state(self, state, dt):
         pass
@@ -74,8 +80,51 @@ class Capacitor(object):
         self.C = C
 
     def __repr__(self):
-        return "%.0fohms between pins (%s,%s)" % (self.R, self.pins[0], self.pins[1])
+        return "%.0fF between pins (%s,%s)" % (self.C, self.pins[0], self.pins[1])
     
+    def update_model(self, model):
+        pass
+
+    def update_steady_state(self, state, dt):
+        self.dt = dt
+        self.c2t = (2 * self.C) / dt
+        
+        self.iceq = self.c2t * (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]))
+
+    def update_state(self, state):
+        self.iceq = 2 * self.c2t * (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) - self.iceq
+
+    def get_current(self, pin_index, state, steady_state):
+        if steady_state:
+            return 0
+        return ((retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) * self.c2t - self.iceq) * (1 if 0 == pin_index else -1)
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        if steady_state:
+            return 0
+        return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.c2t
+
+    def precompute(self, state):
+        pass
+
+
+class Coil(object):
+    """
+    Class that implements a coilbetween two pins
+    """
+    nb_pins = 2
+    
+    def __init__(self, L):
+        self.L = L
+
+    def __repr__(self):
+        return "%.0fH between pins (%s,%s)" % (self.L, self.pins[0], self.pins[1])
+    
+    def update_model(self, model):
+        assert(len(self.pins) == 2)
+        self.pins.append(('P', len(model.pins['P'])))
+        model.pins['P'].append(self, 3)
+
     def update_steady_state(self, state, dt):
         self.dt = dt
         self.c2t = (2 * self.C) / dt
@@ -112,7 +161,10 @@ class Diode(object):
 
     def __repr__(self):
         return "Diode between pins (%s,%s)" % (self.pins[0], self.pins[1])
-    
+
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
@@ -143,6 +195,9 @@ class AntiParallelDiode(object):
     def __repr__(self):
         return "Antiparallel diodes between pins (%s,%s)" % (self.pins[0], self.pins[1])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
@@ -173,6 +228,9 @@ class TransistorNPN(object):
     def __repr__(self):
         return "Transistor NPN (%f,%f,%f,%f) between pins (%s,%s,%s)" % (self.Is, self.Vt, self.Br, self.Bf, self.pins[0], self.pins[1], self.pins[2])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
@@ -242,6 +300,9 @@ class TransistorPNP(object):
         self.Vt = Vt
         self.Br = Br
         self.Bf = Bf
+
+    def update_model(self, model):
+        pass
 
     def __repr__(self):
         return "Transistor PNP (%f,%f,%f,%f) between pins (%s,%s,%s)" % (self.Is, self.Vt, self.Br, self.Bf, self.pins[0], self.pins[1], self.pins[2])
@@ -313,25 +374,30 @@ class Modeler(object):
         self.dynamic_pins = [[] for i in range(nb_dynamic_pins)]
         self.static_pins = [[] for i in range(nb_static_pins)]
         self.input_pins = [[] for i in range(nb_inputs)]
+        self.phantom_pins = []
         self.pins = {
                 'D': self.dynamic_pins,
                 'S': self.static_pins,
                 'I': self.input_pins,
+                'P': self.phantom_pins,
                 }
         
         self.dynamic_state = np.zeros(nb_dynamic_pins, dtype=np.float64)
         self.static_state = np.zeros(nb_static_pins, dtype=np.float64)
         self.input_state = np.zeros(nb_inputs, dtype=np.float64)
+        self.phantom_state = []
         self.state = {
                 'D': self.dynamic_state,
                 'S': self.static_state,
                 'I': self.input_state,
+                'P': self.phantom_state,
                 }
         self.initialized = False
         
     def add_component(self, component, pins):
         self.components.append(component)
         component.pins = pins
+        component.update_model(self)
         for (i, pin) in enumerate(pins):
             t, pos = pin
             self.pins[t][pos].append((component, i))
