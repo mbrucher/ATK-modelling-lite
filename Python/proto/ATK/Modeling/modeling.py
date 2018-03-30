@@ -253,29 +253,29 @@ class TransistorPNP(object):
         pass
 
     def ib(self, state):
-        return -self.Is * ((self.expVbe - 1) / self.Bf + (self.expVbc - 1) / self.Br)
+        return self.Is * ((self.expVbe - 1) / self.Bf + (self.expVbc - 1) / self.Br)
 
     def ib_vbe(self, state):
-        return -self.Is * self.expVbe / self.Vt / self.Bf
+        return self.Is * self.expVbe / self.Vt / self.Bf
 
     def ib_vbc(self, state):
-        return -self.Is * self.expVbc / self.Vt / self.Br
+        return self.Is * self.expVbc / self.Vt / self.Br
 
     def ic(self, state):
-        return -self.Is * ((self.expVbe - self.expVbc) - (self.expVbc - 1) / self.Br)
+        return self.Is * ((self.expVbe - self.expVbc) - (self.expVbc - 1) / self.Br)
 
     def ic_vbe(self, state):
-        return -self.Is * self.expVbe / self.Vt
+        return self.Is * self.expVbe / self.Vt
 
     def ic_vbc(self, state):
-        return -self.Is * (-self.expVbc - self.expVbc / self.Br) / self.Vt
+        return self.Is * (-self.expVbc - self.expVbc / self.Br) / self.Vt
 
     def get_current(self, pin_index, state, steady_state):
         if pin_index == 0:
-            return -self.ib(state)
+            return self.ib(state)
         elif pin_index == 1:
-            return -self.ic(state)
-        return self.ib(state) + self.ic(state)
+            return self.ic(state)
+        return -self.ib(state) - self.ic(state)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         if pin_index_ref == 0 and pin_index == 0:
@@ -300,7 +300,7 @@ class TransistorPNP(object):
     def precompute(self, state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(Vbe / self.Vt)
+        self.expVbe = math.exp(-Vbe / self.Vt)
         self.expVbc = math.exp(-Vbc / self.Vt)
 
 
