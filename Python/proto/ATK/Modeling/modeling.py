@@ -301,7 +301,7 @@ class TransistorPNP(object):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
         self.expVbe = math.exp(Vbe / self.Vt)
-        self.expVbc = math.exp(Vbc / self.Vt)
+        self.expVbc = math.exp(-Vbc / self.Vt)
 
 
 class Modeler(object):
