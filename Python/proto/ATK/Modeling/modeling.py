@@ -141,7 +141,7 @@ class AntiParallelDiode(object):
         self.Vt = Vt
 
     def __repr__(self):
-        return "Diode between pins (%s,%s)" % (self.pins[0], self.pins[1])
+        return "Antiparallel diodes between pins (%s,%s)" % (self.pins[0], self.pins[1])
     
     def update_steady_state(self, state, dt):
         pass
