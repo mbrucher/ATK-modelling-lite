@@ -75,7 +75,7 @@ class TransistorNPN(object):
         elif pin_index_ref == 2 and pin_index == 2:
             return self.ib_vbe(state) + self.ic_vbe(state)
 
-    def precompute(self, state):
+    def precompute(self, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
         self.expVbe = math.exp(Vbe / self.Vt)
@@ -148,7 +148,7 @@ class TransistorPNP(object):
         elif pin_index_ref == 2 and pin_index == 2:
             return self.ib_vbe(state) + self.ic_vbe(state)
 
-    def precompute(self, state):
+    def precompute(self, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
         self.expVbe = math.exp(-Vbe / self.Vt)

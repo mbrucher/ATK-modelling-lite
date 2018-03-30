@@ -117,7 +117,7 @@ class Modeler(object):
         Do one iteration
         """
         for component in self.components:
-            component.precompute(self.state)
+            component.precompute(self.state, steady_state)
         eqs = []
         jacobian = []
         for pin in self.dynamic_pins:
