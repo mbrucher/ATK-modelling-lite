@@ -31,6 +31,10 @@ class Voltage(object):
     def update_state(self, state):
         pass
 
+    def precompute(self, state):
+        pass
+
+
 class Resistor(object):
     """
     Class that implements a resistor between two pins
@@ -54,6 +58,9 @@ class Resistor(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) / self.R
+
+    def precompute(self, state):
+        pass
 
 
 class Capacitor(object):
@@ -87,6 +94,10 @@ class Capacitor(object):
             return 0
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.c2t
 
+    def precompute(self, state):
+        pass
+
+
 class Diode(object):
     """
     Class that implements a diode between two pins
@@ -112,6 +123,10 @@ class Diode(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt)) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
+
+    def precompute(self, state):
+        pass
+
 
 class AntiParallelDiode(object):
     """
@@ -140,6 +155,9 @@ class AntiParallelDiode(object):
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
         return self.Is / (self.n * self.Vt) * (one_diode + 1/ one_diode ) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
+
+    def precompute(self, state):
+        pass
 
 class TransistorNPN(object):
     """
@@ -214,6 +232,10 @@ class TransistorNPN(object):
             return self.ib_vbc(state) + self.ic_vbc(state)
         elif pin_index_ref == 2 and pin_index == 2:
             return self.ib_vbe(state) + self.ic_vbe(state)
+
+    def precompute(self, state):
+        pass
+
 
 class Modeler(object):
     """
@@ -297,7 +319,9 @@ class Modeler(object):
     def iterate(self, steady_state):
         """
         Do one iteration
-        """        
+        """
+        for component in self.components:
+            component.precompute(self.state)
         eqs = []
         jacobian = []
         for pin in self.dynamic_pins:
