@@ -29,7 +29,7 @@ def RH_test():
 
     for i in range(1000):
         model(None)
-        assert_almost_equal(model.dynamic_state[0], math.exp(-i * dt / (R * C)), 1e-4)
+        assert_almost_equal(model.dynamic_state[0], math.exp(-i * dt / (R * L)), 1e-4)
 
 
 def RH2_test():
@@ -49,4 +49,4 @@ def RH2_test():
 
     for i in range(1000):
         model(None)
-        assert_almost_equal(model.dynamic_state[0], 1 - math.exp(-i * dt / (R * C)), 1e-4)
+        assert_almost_equal(model.dynamic_state[0], 1 - math.exp(-i * dt / (R * L)), 1e-4)
