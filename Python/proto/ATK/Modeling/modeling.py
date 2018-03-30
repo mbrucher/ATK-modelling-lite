@@ -123,7 +123,7 @@ class Coil(object):
     def update_model(self, model):
         assert(len(self.pins) == 2)
         self.pins.append(('P', len(model.pins['P'])))
-        model.pins['P'].append(self, 3)
+        model.pins['P'].append([])
 
     def update_steady_state(self, state, dt):
         self.dt = dt
