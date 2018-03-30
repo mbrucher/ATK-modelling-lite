@@ -6,11 +6,11 @@ import math
 
 from ATK.Modeling import *
 
+R = 1e3
+C = 1e-3
+dt = 1e-3
+
 def RC_test():
-    R = 1e3
-    C = 1e-3
-    dt = 1e-3
-    
     model = Modeler(1, 2, 0)
 
     model.add_component(Voltage(0), [('S', 0)])
@@ -33,10 +33,6 @@ def RC_test():
 
 
 def RC2_test():
-    R = 1e3
-    C = 1e-3
-    dt = 1e-3
-    
     model = Modeler(1, 2, 0)
 
     model.add_component(Voltage(0), [('S', 0)])
