@@ -30,7 +30,7 @@ class Voltage(object):
     def update_state(self, state):
         pass
 
-    def precompute(self, state):
+    def precompute(self, state, steady_state):
         pass
 
 class Modeler(object):
