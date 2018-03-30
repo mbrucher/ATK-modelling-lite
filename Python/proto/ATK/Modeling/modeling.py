@@ -113,6 +113,34 @@ class Diode(object):
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         return self.Is / (self.n * self.Vt) * math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt)) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
 
+class AntiParallelDiode(object):
+    """
+    Class that implements a diode between two pins
+    """
+    nb_pins = 2
+    
+    def __init__(self, Is=1e-14, n=1.24, Vt = 26e-3):
+        self.Is = Is
+        self.n = n
+        self.Vt = Vt
+
+    def __repr__(self):
+        return "Diode between pins (%s,%s)" % (self.pins[0], self.pins[1])
+    
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
+        pass
+
+    def get_current(self, pin_index, state, steady_state):
+        one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is * (one_diode - 1 / one_diode) * (1 if 1 == pin_index else -1)
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is / (self.n * self.Vt) * (one_diode + 1/ one_diode ) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
+
 class TransistorNPN(object):
     """
     Class that implements a NPN transistor between 3 pins, BCE
