@@ -99,17 +99,16 @@ class Coil(object):
         self.veq = 2 * self.l2t * self.i - self.veq
 
     def get_current(self, pin_index, state, steady_state):
-        if steady_state:
-            return 0 # false!!!!
         return self.i
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
-        if steady_state:
-            return 0 # false!!!!
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.invl2t
 
     def precompute(self, state, steady_state):
-        self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]) + self.veq) * self.invl2t
+        if steady_state:
+            """"self.veq = self.l2t * self.i"""
+        else:
+            self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]) + self.veq) * self.invl2t
 
 
 class Diode(object):

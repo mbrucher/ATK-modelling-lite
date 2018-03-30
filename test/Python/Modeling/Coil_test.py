@@ -10,6 +10,22 @@ R = 1e3
 L = 1e-3
 dt = 1e-3
 
+def RHR_test():    
+    model = Modeler(2, 2, 0)
+
+    model.add_component(Voltage(0), [('S', 0)])
+    model.add_component(Voltage(5), [('S', 1)])
+    
+    model.add_component(Resistor(R), [('S', 1), ('D', 0)])
+    model.add_component(Coil(L), [('D', 0), ('D', 1)])
+    model.add_component(Resistor(R), [('S', 0), ('D', 1)])
+
+    model.dt = dt
+    model.setup()
+
+    assert_almost_equal(model.dynamic_state, [2.5, 2.5])
+
+
 def RH_test():    
     model = Modeler(1, 2, 0)
 
