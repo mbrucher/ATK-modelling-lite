@@ -21,3 +21,20 @@ def TransistorNPN_test():
     model.setup()
     
     assert_almost_equal(model.dynamic_state, [.4051047, 4.9942842, .0005773])
+
+def TransistorPNP_test():
+    model = Modeler(2, 3, 0)
+
+    model.add_component(Voltage(0), [('S', 0)])
+    model.add_component(Voltage(2), [('S', 1)])
+    model.add_component(Voltage(1.5), [('S', 2)])
+    
+    model.add_component(Resistor(200e3), [('S', 2), ('D', 0)])
+    model.add_component(Resistor(5e3), [('D', 1), ('S', 1)])
+
+    model.add_component(TransistorPNP(), [('D', 0), ('D', 1), ('S', 1)])
+
+    model.dt = 1.e-3
+    model.setup()
+    
+    assert_almost_equal(model.dynamic_state, [1.4999998, 2])
