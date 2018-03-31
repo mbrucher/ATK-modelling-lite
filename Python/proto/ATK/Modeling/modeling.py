@@ -134,10 +134,9 @@ class Modeler(object):
             eqs.append(eq)
             jacobian.append(jac)
                 
-        
         eqs = np.array(eqs)
         jacobian = np.array(jacobian)
-        if np.all(np.abs(jacobian)) < EPS:
+        if np.all(np.abs(jacobian) < EPS):
             return True
         
         delta = np.linalg.solve(jacobian, eqs)
