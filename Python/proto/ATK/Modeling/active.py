@@ -161,9 +161,9 @@ class TransistorPNP(object):
         self.expVbe = math.exp(-Vbe / self.Vt)
         self.expVbc = math.exp(-Vbc / self.Vt)
 
-class AOP(object):
+class OpAmp(object):
     """
-    Class that implements a AOP between 3 pins, V-, V+, Vo
+    Class that implements a OpAmp between 3 pins, V-, V+, Vo
     """
     nb_pins = 3
     
@@ -171,7 +171,7 @@ class AOP(object):
         pass
 
     def __repr__(self):
-        return "AOP between pins (%s,%s,%s)" % (self.pins[0], self.pins[1], self.pins[2])
+        return "OpAmp between pins (%s,%s,%s) overriding equation at pin %s" % (self.pins[0], self.pins[1], self.pins[2], self.pins[2])
     
     def update_model(self, model):
         assert self.pins[2][0] == "D"
