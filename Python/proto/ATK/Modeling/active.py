@@ -24,6 +24,9 @@ class TransistorNPN(object):
     def __repr__(self):
         return "Transistor NPN (%f,%f,%f,%f) between pins (%s,%s,%s)" % (self.Is, self.Vt, self.Br, self.Bf, self.pins[0], self.pins[1], self.pins[2])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
@@ -97,6 +100,9 @@ class TransistorPNP(object):
     def __repr__(self):
         return "Transistor PNP (%f,%f,%f,%f) between pins (%s,%s,%s)" % (self.Is, self.Vt, self.Br, self.Bf, self.pins[0], self.pins[1], self.pins[2])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 

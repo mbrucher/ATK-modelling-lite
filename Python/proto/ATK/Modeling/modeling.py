@@ -24,6 +24,9 @@ class Voltage(object):
     def __repr__(self):
         return "%.0fV at pin %s" % (self.V, self.pins[0])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         state[self.pins[0][0]][self.pins[0][1]] = self.V
 
@@ -61,6 +64,7 @@ class Modeler(object):
     def add_component(self, component, pins):
         self.components.append(component)
         component.pins = pins
+        component.update_model(self)
         for (i, pin) in enumerate(pins):
             t, pos = pin
             self.pins[t][pos].append((component, i))

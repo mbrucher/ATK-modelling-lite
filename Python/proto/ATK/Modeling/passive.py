@@ -22,6 +22,9 @@ class Resistor(object):
     def __repr__(self):
         return "%.0fohms between pins (%s,%s)" % (self.R, self.pins[0], self.pins[1])
 
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
@@ -51,6 +54,9 @@ class Capacitor(object):
     def __repr__(self):
         return "%.0fF between pins (%s,%s)" % (self.C, self.pins[0], self.pins[1])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         self.dt = dt
         self.c2t = (2 * self.C) / dt
@@ -87,6 +93,9 @@ class Coil(object):
 
     def __repr__(self):
         return "%.0fH between pins (%s,%s)" % (self.L, self.pins[0], self.pins[1])
+
+    def update_model(self, model):
+        pass
 
     def update_steady_state(self, state, dt):
         self.dt = dt
@@ -127,6 +136,9 @@ class Diode(object):
     def __repr__(self):
         return "Diode between pins (%s,%s)" % (self.pins[0], self.pins[1])
 
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
@@ -157,6 +169,9 @@ class AntiParallelDiode(object):
     def __repr__(self):
         return "Antiparallel diodes between pins (%s,%s)" % (self.pins[0], self.pins[1])
     
+    def update_model(self, model):
+        pass
+
     def update_steady_state(self, state, dt):
         pass
 
