@@ -13,11 +13,9 @@ dt = 1e-3
 def RC_test():
     model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    Vcc = Voltage(0)
-    model.add_component(Vcc, [('S', 1)])
     model.add_component(Resistor(R), [('S', 1), ('D', 0)])
     model.add_component(Capacitor(C), [('D', 0), ('S', 0)])
+    model.static_state[:] = (0, 0)
 
     model.dt = dt
     model.setup()
@@ -25,7 +23,7 @@ def RC_test():
     assert_almost_equal(model.dynamic_state, [0])
 
     model.setup()
-    Vcc.V = 1
+    model.static_state[:] = (0, 1)
 
     for i in range(1000):
         model(None)
@@ -35,10 +33,9 @@ def RC_test():
 def RC2_test():
     model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(1), [('S', 1)])
     model.add_component(Resistor(R), [('S', 0), ('D', 0)])
     model.add_component(Capacitor(C), [('D', 0), ('S', 1)])
+    model.static_state[:] = (0, 1)
 
     model.dt = dt
     model.setup()

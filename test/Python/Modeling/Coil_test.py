@@ -13,12 +13,10 @@ dt = 1e-3
 def RHR_test():    
     model = Modeler(2, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(5), [('S', 1)])
-    
     model.add_component(Resistor(R), [('S', 1), ('D', 0)])
     model.add_component(Coil(L), [('D', 0), ('D', 1)])
     model.add_component(Resistor(R), [('S', 0), ('D', 1)])
+    model.static_state[:] = (0, 5)
 
     model.dt = dt
     model.setup()
@@ -29,10 +27,9 @@ def RHR_test():
 def RH_test():    
     model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(1), [('S', 1)])
     model.add_component(Resistor(R), [('S', 1), ('D', 0)])
     model.add_component(Coil(L), [('D', 0), ('S', 0)])
+    model.static_state[:] = (0, 1)
 
     model.dt = dt
     model.setup()
@@ -49,11 +46,9 @@ def RH_test():
 def RH2_test():
     model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    Vcc = Voltage(0)
-    model.add_component(Vcc, [('S', 1)])
     model.add_component(Resistor(R), [('S', 0), ('D', 0)])
     model.add_component(Coil(L), [('D', 0), ('S', 1)])
+    model.static_state[:] = (0, 0)
 
     model.dt = dt
     model.setup()
@@ -61,7 +56,7 @@ def RH2_test():
     assert_almost_equal(model.dynamic_state, [0])
 
     model.setup()
-    Vcc.V = 1
+    model.static_state[:] = (0, 1)
 
     for i in range(1000):
         model(None)

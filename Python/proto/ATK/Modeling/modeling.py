@@ -12,30 +12,6 @@ MAX_ITER = 200 # should probabl have one for steady state and one for non steady
 def retrieve_voltage(state, pin):
     return state[pin[0]][pin[1]]
 
-class Voltage(object):
-    """
-    Class that sets a pin to a specific voltage
-    """
-    nb_pins = 1
-    
-    def __init__(self, V):
-        self.V = V
-        
-    def __repr__(self):
-        return "%.0fV at pin %s" % (self.V, self.pins[0])
-    
-    def update_model(self, model):
-        pass
-
-    def update_steady_state(self, state, dt):
-        state[self.pins[0][0]][self.pins[0][1]] = self.V
-
-    def update_state(self, state):
-        pass
-
-    def precompute(self, state, steady_state):
-        pass
-
 class Modeler(object):
     """
     Modeling class
@@ -71,16 +47,9 @@ class Modeler(object):
             self.pins[t][pos].append((component, i))
             
     def __repr__(self):
-        return "Model with %i pins:\n  " % len(self.pins) + "\n  ".join((repr(component) for component in self.components))
-
-    def get_state(self, index, pin):
-        """
-        Retrieve the static state for a pin
-        """
-        for component in pin:
-            if hasattr(component[0], "V"):
-                return component[0].V
-        raise RuntimeError("Pin %i is declared static but can't retrieve a voltage state for it" % index)
+        return "Model with %i pins:\n  " % len(self.pins) + \
+                "\n  ".join(["%fV at static pin %i" % (voltage, i) for voltage, i in enumerate(self.static_state)]) + \
+                "\n  ".join((repr(component) for component in self.components))
         
     def setup(self):
         """
@@ -157,7 +126,6 @@ class Modeler(object):
         self.input_state[:] = input
 
         self.solve(False)
-        print(self.state)
         
         for component in self.components:
             component.update_state(self.state)

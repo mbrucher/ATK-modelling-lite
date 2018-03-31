@@ -7,8 +7,7 @@ from __future__ import print_function
 import numpy as np
 import math
 
-def retrieve_voltage(state, pin):
-    return state[pin[0]][pin[1]]
+from .modeling import retrieve_voltage
 
 class TransistorNPN(object):
     """

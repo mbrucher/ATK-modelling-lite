@@ -6,8 +6,7 @@ from __future__ import print_function
 
 import math
 
-def retrieve_voltage(state, pin):
-    return state[pin[0]][pin[1]]
+from .modeling import retrieve_voltage
 
 class Resistor(object):
     """

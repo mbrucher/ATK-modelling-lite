@@ -8,10 +8,9 @@ from ATK.Modeling import *
 def SimpleBridgeResistor_test():
     model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(5), [('S', 1)])
     model.add_component(Resistor(100), [('S', 0), ('D', 0)])
     model.add_component(Resistor(200), [('D', 0), ('S', 1)])
+    model.static_state[:] = (0, 5)
 
     model.dt = 1.e-3
     model.setup()
@@ -22,11 +21,10 @@ def SimpleBridgeResistor_test():
 def ParallelBridgeResistor_test():
     model = Modeler(1, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(5), [('S', 1)])
     model.add_component(Resistor(100), [('S', 0), ('D', 0)])
     model.add_component(Resistor(400), [('S', 1), ('D', 0)])
     model.add_component(Resistor(400), [('D', 0), ('S', 1)])
+    model.static_state[:] = (0, 5)
 
     model.dt = 1.e-3
     model.setup()
@@ -36,11 +34,10 @@ def ParallelBridgeResistor_test():
 def SerialBridgeResistor_test():
     model = Modeler(2, 2, 0)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(5), [('S', 1)])
     model.add_component(Resistor(100), [('S', 0), ('D', 0)])
     model.add_component(Resistor(100), [('S', 1), ('D', 1)])
     model.add_component(Resistor(100), [('D', 1), ('D', 0)])
+    model.static_state[:] = (0, 5)
 
     model.dt = 1.e-3
     model.setup()
@@ -50,11 +47,10 @@ def SerialBridgeResistor_test():
 def ImportBridgeResistor_test():
     model = Modeler(1, 2, 1)
 
-    model.add_component(Voltage(0), [('S', 0)])
-    model.add_component(Voltage(5), [('S', 1)])
     model.add_component(Resistor(100), [('S', 0), ('D', 0)])
     model.add_component(Resistor(100), [('S', 1), ('D', 0)])
     model.add_component(Resistor(100), [('I', 0), ('D', 0)])
+    model.static_state[:] = (0, 5)
     
     model.dt = 1.e-3
     model.setup()
