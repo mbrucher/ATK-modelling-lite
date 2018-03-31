@@ -130,7 +130,7 @@ class Modeler(object):
                 eq, jac = self.compute_current(pin, steady_state)
             else:
                 component, eq_number = self.dynamic_pins_equation[i]
-                eq, jac = component.add_equation(eq_number)
+                eq, jac = component.add_equation(self.state, steady_state, eq_number)
             eqs.append(eq)
             jacobian.append(jac)
                 

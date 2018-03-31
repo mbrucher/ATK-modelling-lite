@@ -4,6 +4,7 @@
 from __future__ import division
 from __future__ import print_function
 
+import numpy as np
 import math
 
 def retrieve_voltage(state, pin):
@@ -159,3 +160,43 @@ class TransistorPNP(object):
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
         self.expVbe = math.exp(-Vbe / self.Vt)
         self.expVbc = math.exp(-Vbc / self.Vt)
+
+class AOP(object):
+    """
+    Class that implements a AOP between 3 pins, V-, V+, Vo
+    """
+    nb_pins = 3
+    
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return "AOP between pins (%s,%s,%s)" % (self.pins[0], self.pins[1], self.pins[2])
+    
+    def update_model(self, model):
+        assert self.pins[2][0] == "D"
+        model.dynamic_pins_equation[self.pins[2][1]] = (self, 0)
+
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
+        pass
+
+    def get_current(self, pin_index, state, steady_state):
+        return 0
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        return 0
+
+    def add_equation(self, state, steady_state, eq_number):
+        eq = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
+        jac = np.zeros(len(state["D"]))
+        if self.pins[0][0] == "D":
+            jac[self.pins[0][1]] = 1
+        if self.pins[1][0] == "D":
+            jac[self.pins[1][1]] = -1
+        return eq, jac
+
+    def precompute(self, state, steady_state):
+        pass
