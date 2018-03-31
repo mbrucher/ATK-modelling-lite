@@ -43,6 +43,7 @@ class Modeler(object):
     def __init__(self, nb_dynamic_pins, nb_static_pins, nb_inputs = 0):
         self.components = []
         self.dynamic_pins = [[] for i in range(nb_dynamic_pins)]
+        self.dynamic_pins_equation = [None] * nb_dynamic_pins
         self.static_pins = [[] for i in range(nb_static_pins)]
         self.input_pins = [[] for i in range(nb_inputs)]
         self.pins = {
@@ -124,10 +125,15 @@ class Modeler(object):
             component.precompute(self.state, steady_state)
         eqs = []
         jacobian = []
-        for pin in self.dynamic_pins:
-            eq, jac = self.compute_current(pin, steady_state)
+        for i, pin in enumerate(self.dynamic_pins):
+            if self.dynamic_pins_equation[i] is None:
+                eq, jac = self.compute_current(pin, steady_state)
+            else:
+                component, eq_number = self.dynamic_pins_equation[i]
+                eq, jac = component.add_equation(eq_number)
             eqs.append(eq)
             jacobian.append(jac)
+                
         
         eqs = np.array(eqs)
         jacobian = np.array(jacobian)
