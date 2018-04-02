@@ -39,15 +39,37 @@ class SpiceModel(object):
         self.nb_dynamic_pins = 0
         self.nb_input_pins = 0
     
-    def parse(self, netlist):
+    def populate_models(self, netlist):
+        """
+        Create the internal list of all component custom models that will be used after
+        """
         pass
     
+    def populate_components(self, netlist):
+        """
+        Creates all the components, setting up the pins (static, dynamic and input)
+        """
+        pass
+    
+    def parse(self, netlist):
+        """
+        Parse the netlist
+        """
+        self.populate_models(netlist)
+        self.populate_components(netlist)
+    
     def create(self):
+        """
+        Create the Model for the previous netlist
+        """
         model = Modeler(self.nb_dynamic_pins, self.nb_static_pins, self.nb_input_pins)
         
         return model
 
 def create(filename):
+    """
+    Create a model based on a SPICE cir file
+    """
     f = open(filename)
     
     netlist = []
