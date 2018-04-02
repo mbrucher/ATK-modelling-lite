@@ -4,8 +4,48 @@
 from __future__ import division
 from __future__ import print_function
 
+from modeling import Modeler
+
 def scale(suffix):
-    return 1
+    if suffix[:3].tolower() == "meg":
+        return 1e3
+    if suffix[:3].tolower() == "mil":
+        return 2.54e-6
+    
+    d = {
+            'f': 1e-15,
+            'n': 1e-12,
+            'p': 1e-9,
+            'u': 1e-6,
+            'm': 1e-3,
+            'k': 1e-3,
+            'g': 1e-9,
+            't': 1e-12,
+            }
+    
+    return d[suffix[0].tolower()]
+
+class SpiceModel(object):
+    def __init__(self):
+        self.components = []
+        self.static = {0: 0} # Always start with pin 0 = GND
+        self.dynamic = {}
+        self.input = {}
+        # pins, we will use this list to map names to actual SPICE pins that
+        # should be in one the other three dictionaries
+        self.pins = {'GND': 0}
+        
+        self.nb_static_pins = 1
+        self.nb_dynamic_pins = 0
+        self.nb_input_pins = 0
+    
+    def parse(self, netlist):
+        pass
+    
+    def create(self):
+        model = Modeler(self.nb_dynamic_pins, self.nb_static_pins, self.nb_input_pins)
+        
+        return model
 
 def create(filename):
     f = open(filename)
@@ -23,7 +63,9 @@ def create(filename):
         else:
             netlist.append(line.split())
 
-    print(netlist)
+    model = SpiceModel()
+    model.parse(netlist)
+    return model.create()
 
 if __name__ == "__main__":
     import sys
