@@ -51,17 +51,19 @@ class Modeler(object):
                 "\n  ".join(["%fV at static pin %i" % (voltage, i) for voltage, i in enumerate(self.static_state)]) + \
                 "\n  ".join((repr(component) for component in self.components))
         
-    def setup(self):
+    def setup(self, steady_state = True):
         """
         Initializes the internal state
+        :param steady_state: if set to True (default), computes a steady state
         """
         for component in self.components:
             component.update_steady_state(self.state, self.dt)
 
-        self.solve(True)
-
-        for component in self.components:
-            component.update_steady_state(self.state, self.dt)
+        if steady_state:
+            self.solve(True)
+    
+            for component in self.components:
+                component.update_steady_state(self.state, self.dt)
 
         self.initialized = True
         

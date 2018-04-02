@@ -15,15 +15,12 @@ def RC_test():
 
     model.add_component(Resistor(R), [('S', 1), ('D', 0)])
     model.add_component(Capacitor(C), [('D', 0), ('S', 0)])
-    model.static_state[:] = (0, 0)
+    model.static_state[:] = (0, 1)
 
     model.dt = dt
-    model.setup()
+    model.setup(False)
 
     assert_almost_equal(model.dynamic_state, [0])
-
-    model.setup()
-    model.static_state[:] = (0, 1)
 
     for i in range(1000):
         model(None)

@@ -48,15 +48,12 @@ def RH2_test():
 
     model.add_component(Resistor(R), [('S', 0), ('D', 0)])
     model.add_component(Coil(L), [('D', 0), ('S', 1)])
-    model.static_state[:] = (0, 0)
+    model.static_state[:] = (0, 1)
 
     model.dt = dt
-    model.setup()
+    model.setup(False)
     
     assert_almost_equal(model.dynamic_state, [0])
-
-    model.setup()
-    model.static_state[:] = (0, 1)
 
     for i in range(1000):
         model(None)
