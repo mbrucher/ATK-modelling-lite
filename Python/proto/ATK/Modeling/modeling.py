@@ -10,6 +10,9 @@ EPS = 1.e-8
 MAX_ITER = 200 # should probabl have one for steady state and one for non steady state
 
 def retrieve_voltage(state, pin):
+    """
+    Helper function to get the voltage for a given pin
+    """
     return state[pin[0]][pin[1]]
 
 class Modeler(object):
@@ -39,6 +42,11 @@ class Modeler(object):
         self.initialized = False
         
     def add_component(self, component, pins):
+        """
+        add a new component
+        :param component: component to add
+        :param pins: list of tuples indicating how the compoennt is connected
+        """
         self.components.append(component)
         component.pins = pins
         component.update_model(self)
@@ -71,6 +79,8 @@ class Modeler(object):
         """
         Compute Kirschhoff law for the non static pin
         Compute also the jacobian for all the connected pins
+        :param pin: tuple indicating which pin we compute the current for
+        :param steady_state: if set to True (default), computes for a steady state
         """
         eq = sum([component.get_current(i, self.state, steady_state) for (component, i) in pin])
         jac = [0] * len(self.dynamic_state)
@@ -83,6 +93,7 @@ class Modeler(object):
     def solve(self, steady_state):
         """
         Actually solve the equaltion system
+        :param steady_state: if set to True (default), computes for a steady state
         """
         iteration = 0
         while iteration < MAX_ITER and not self.iterate(steady_state):
@@ -91,6 +102,7 @@ class Modeler(object):
     def iterate(self, steady_state):
         """
         Do one iteration
+        :param steady_state: if set to True (default), computes for a steady state
         """
         for component in self.components:
             component.precompute(self.state, steady_state)
@@ -121,6 +133,7 @@ class Modeler(object):
     def __call__(self, input):
         """
         Works out the value for the new input vector
+        :param input: vector of input values
         """
         if not self.initialized:
             self.setup()
