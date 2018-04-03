@@ -75,6 +75,7 @@ class SpiceModel(object):
         if pin not in self.pins:
             self.pins[pin] = 'D', len(self.dynamic)
             self.dynamic.add(pin)
+            self.nb_dynamic_pins += 1
         return self.pins[pin]
 
     def create_nothing(self, line):
@@ -142,9 +143,9 @@ class SpiceModel(object):
     
     def __repr__(self):
         return "SPICE model with (%i,%i,%i) pins:\n  " % (self.nb_static_pins, self.nb_dynamic_pins, self.nb_input_pins) + \
-                "\n  ".join((repr(component) for component in self.components)) + \
-                "\n  " + \
-                "\n  ".join(("%s mapped to %s" % pin for pin in self.pins.items()))
+                "\n  ".join(("%s mapped to %s" % pin for pin in self.pins.items())) + \
+                "\nComponents:\n  " + \
+                "\n  ".join((repr(component) for component in self.components))
 
 
 def create(filename):
