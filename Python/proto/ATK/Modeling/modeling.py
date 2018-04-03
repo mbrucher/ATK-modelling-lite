@@ -57,6 +57,7 @@ class Modeler(object):
     def __repr__(self):
         return "Model with %i pins:\n  " % len(self.pins) + \
                 "\n  ".join(["%fV at static pin %i" % (voltage, i) for voltage, i in enumerate(self.static_state)]) + \
+                "\n  " + \
                 "\n  ".join((repr(component) for component in self.components))
         
     def setup(self, steady_state = True):
