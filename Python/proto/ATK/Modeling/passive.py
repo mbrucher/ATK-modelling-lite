@@ -19,7 +19,7 @@ class Resistor(object):
         self.G = 1 / R
 
     def __repr__(self):
-        return "%.0fohms between pins (%s,%s)" % (self.R, self.pins[0], self.pins[1])
+        return "%.2eohms between pins (%s,%s)" % (self.R, self.pins[0], self.pins[1])
 
     def update_model(self, model):
         pass
@@ -51,7 +51,7 @@ class Capacitor(object):
         self.C = C
 
     def __repr__(self):
-        return "%.0fF between pins (%s,%s)" % (self.C, self.pins[0], self.pins[1])
+        return "%.2eF between pins (%s,%s)" % (self.C, self.pins[0], self.pins[1])
     
     def update_model(self, model):
         pass
