@@ -33,23 +33,62 @@ class SpiceModel(object):
         self.input = {}
         # pins, we will use this list to map names to actual SPICE pins that
         # should be in one the other three dictionaries
-        self.pins = {'GND': 0}
+        self.pins = {'gnd': 0}
         
         self.nb_static_pins = 1
         self.nb_dynamic_pins = 0
         self.nb_input_pins = 0
     
+    def create_model(self, netlist):
+        """
+        """
+        pass
+    
     def populate_models(self, netlist):
         """
         Create the internal list of all component custom models that will be used after
         """
+        for line in netlist:
+            if line[0][0] == '.':
+                self.create_model(line)
+
+    def create_nothing(self, line):
+        """
+        Create nothing
+        """
         pass
     
+    def create_capacitor(self, line):
+        """
+        Create a capacitor
+        """
+        pass
+
+    def create_resistor(self, line):
+        """
+        Create a resistor
+        """
+        pass
+
+    def create_voltage(self, line):
+        """
+        Create either a fix voltage pin or an input pin
+        """
+        pass
+    
+    dispatch_component = {
+            '.': create_nothing,
+            'c': create_capacitor,
+            'r': create_resistor,
+            'v': create_voltage,
+            }
+
     def populate_components(self, netlist):
         """
         Creates all the components, setting up the pins (static, dynamic and input)
         """
-        pass
+        for line in netlist:
+            self.dispatch_component[line[0][0].lower()](self, line)
     
     def parse(self, netlist):
         """
