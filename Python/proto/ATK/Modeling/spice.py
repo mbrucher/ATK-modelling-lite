@@ -131,21 +131,22 @@ class SpiceModel(object):
         """
         Create either a fix voltage pin or an input pin
         """
-        if len(line) > 5 or line[3] != "DC":
-            # probably AC or sin, so tag this as Input
-            pin0 = self.handle_input_pin(line[1])
-            pin1 = self.handle_input_pin(line[2])
-            assert(pin0 == ('S', 0) or pin1 == ('S', 0))
-        else:
+        print(len(line))
+        if len(line) == 4 or (line[3] == "DC" and len(line) == 5):
             pin0 = self.handle_static_pin(line[1])
             pin1 = self.handle_static_pin(line[2])
             V = parse_number(line[4] if len(line) > 4 else line[3])
             if pin0 == ('S', 0):
-                self.static_state.append[V]
+                self.static_state.append(-V)
             elif pin1 == ('S', 0):
-                self.static_state.append[-V]
+                self.static_state.append(V)
             else:
                 assert(False)
+        else:
+            # probably AC or sin, so tag this as Input
+            pin0 = self.handle_input_pin(line[1])
+            pin1 = self.handle_input_pin(line[2])
+            assert(pin0 == ('S', 0) or pin1 == ('S', 0))
     
     dispatch_component = {
             '.': create_nothing,
@@ -199,9 +200,9 @@ def create(filename):
         if len(line) == 0 or line[0] == '*':
             continue
         if line[0] == '+':
-            netlist[-1].extend(line.split())
+            netlist[-1].extend(line.strip().split())
         else:
-            netlist.append(line.split())
+            netlist.append(line.strip().split())
 
     model = SpiceModel()
     model.parse(netlist)
