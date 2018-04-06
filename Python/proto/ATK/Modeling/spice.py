@@ -43,6 +43,7 @@ class SpiceModel(object):
         self.static = set((0,)) # Always start with pin 0 = GND
         self.dynamic = set()
         self.input = set()
+        self.static_state = [0]
         # pins, we will use this list to map names to actual SPICE pins that
         # should be in one the other three dictionaries
         self.pins = {
@@ -70,12 +71,32 @@ class SpiceModel(object):
 
     def handle_pin(self, pin):
         """
-        Return a pin value or create one
+        Return a pin value or create a dynamic one
         """
         if pin not in self.pins:
             self.pins[pin] = 'D', len(self.dynamic)
             self.dynamic.add(pin)
             self.nb_dynamic_pins += 1
+        return self.pins[pin]
+
+    def handle_static_pin(self, pin):
+        """
+        Return a pin value or create a static one
+        """
+        if pin not in self.pins:
+            self.pins[pin] = 'S', len(self.static)
+            self.static.add(pin)
+            self.nb_static_pins += 1
+        return self.pins[pin]
+
+    def handle_input_pin(self, pin):
+        """
+        Return a pin value or create an input one
+        """
+        if pin not in self.pins:
+            self.pins[pin] = 'I', len(self.input)
+            self.input.add(pin)
+            self.nb_input_pins += 1
         return self.pins[pin]
 
     def create_nothing(self, line):
@@ -110,7 +131,21 @@ class SpiceModel(object):
         """
         Create either a fix voltage pin or an input pin
         """
-        pass
+        if len(line) > 5 or line[3] != "DC":
+            # probably AC or sin, so tag this as Input
+            pin0 = self.handle_input_pin(line[1])
+            pin1 = self.handle_input_pin(line[2])
+            assert(pin0 == ('S', 0) or pin1 == ('S', 0))
+        else:
+            pin0 = self.handle_static_pin(line[1])
+            pin1 = self.handle_static_pin(line[2])
+            V = parse_number(line[4] if len(line) > 4 else line[3])
+            if pin0 == ('S', 0):
+                self.static_state.append[V]
+            elif pin1 == ('S', 0):
+                self.static_state.append[-V]
+            else:
+                assert(False)
     
     dispatch_component = {
             '.': create_nothing,
@@ -138,6 +173,7 @@ class SpiceModel(object):
         Create the Model for the previous netlist
         """
         model = Modeler(self.nb_dynamic_pins, self.nb_static_pins, self.nb_input_pins)
+        model.static_state[:] = self.static_state
         
         return model
     
