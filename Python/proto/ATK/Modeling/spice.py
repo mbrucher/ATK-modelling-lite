@@ -62,8 +62,16 @@ class SpiceModel(object):
         """
         Create a new model (indicated by a starting '.model')
         """
-        print(model)
-        self.models[model[2]][1] = ()
+        def parse_variable(variable):
+            split = variable.split('=')
+            split[1] = parse_number(split[1])
+            return (split[0], split[1])
+        
+        variables = model[3:]
+        variables[0] = variables[0][1:]
+        variables[-1] = variables[-1][:-1]
+        variables = dict([parse_variable(variable) for variable in variables])
+        self.models[model[2]][model[1]] = (variables)
     
     def populate_models(self, netlist):
         """
