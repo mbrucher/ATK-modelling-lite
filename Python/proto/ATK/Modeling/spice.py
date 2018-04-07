@@ -7,7 +7,7 @@ from __future__ import print_function
 import re
 
 from modeling import Modeler
-from passive import Capacitor, Resistor
+from passive import Capacitor, Coil, Resistor
 
 digits = re.compile("([\d\.e-]+)(.*)")
 
@@ -116,6 +116,17 @@ class SpiceModel(object):
         comp.pins = (pin0, pin1)
         self.components.append(comp)
 
+    def create_coil(self, line):
+        """
+        Create a coil
+        """
+        pin0 = self.handle_pin(line[1])
+        pin1 = self.handle_pin(line[2])
+        L = parse_number(line[3])
+        comp = Coil(L)
+        comp.pins = (pin0, pin1)
+        self.components.append(comp)
+
     def create_resistor(self, line):
         """
         Create a resistor
@@ -151,6 +162,7 @@ class SpiceModel(object):
     dispatch_component = {
             '.': create_nothing,
             'c': create_capacitor,
+            'l': create_coil,
             'r': create_resistor,
             'v': create_voltage,
             }
