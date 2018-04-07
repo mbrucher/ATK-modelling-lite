@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import re
+from collections import defaultdict
 
 from modeling import Modeler
 from passive import Capacitor, Coil, Resistor
@@ -39,6 +40,7 @@ def parse_number(number):
 
 class SpiceModel(object):
     def __init__(self):
+        self.models = defaultdict(dict)
         self.components = []
         self.static = set((0,)) # Always start with pin 0 = GND
         self.dynamic = set()
@@ -50,7 +52,8 @@ class SpiceModel(object):
                 'gnd': ('S', 0),
                 '0'  : ('S', 0)
             }
-        
+        self.temp_pins = set()
+
         self.nb_static_pins = 1
         self.nb_dynamic_pins = 0
         self.nb_input_pins = 0
@@ -71,12 +74,11 @@ class SpiceModel(object):
 
     def handle_pin(self, pin):
         """
-        Return a pin value or create a dynamic one
+        Return a dummy pin value
         """
         if pin not in self.pins:
-            self.pins[pin] = 'D', len(self.dynamic)
-            self.dynamic.add(pin)
-            self.nb_dynamic_pins += 1
+            self.temp_pins.add(pin)
+            return pin
         return self.pins[pin]
 
     def handle_static_pin(self, pin):
@@ -142,7 +144,6 @@ class SpiceModel(object):
         """
         Create either a fix voltage pin or an input pin
         """
-        print(len(line))
         if len(line) == 4 or (line[3] == "DC" and len(line) == 5):
             pin0 = self.handle_static_pin(line[1])
             pin1 = self.handle_static_pin(line[2])
@@ -162,6 +163,7 @@ class SpiceModel(object):
     dispatch_component = {
             '.': create_nothing,
             'c': create_capacitor,
+            'd': create_nothing,
             'l': create_coil,
             'r': create_resistor,
             'v': create_voltage,
@@ -173,6 +175,17 @@ class SpiceModel(object):
         """
         for line in netlist:
             self.dispatch_component[line[0][0].lower()](self, line)
+
+    def populate_dynamic_pins(self):
+        """
+        Assignes the dynamic pins
+        """
+        for pin in self.temp_pins:
+            if pin not in self.pins:
+                self.pins[pin] = 'D', len(self.dynamic)
+                self.dynamic.add(pin)
+                self.nb_dynamic_pins += 1
+
     
     def parse(self, netlist):
         """
@@ -180,6 +193,7 @@ class SpiceModel(object):
         """
         self.populate_models(netlist)
         self.populate_components(netlist)
+        self.populate_dynamic_pins()
     
     def create(self):
         """
@@ -194,7 +208,9 @@ class SpiceModel(object):
         return "SPICE model with (%i,%i,%i) pins:\n  " % (self.nb_static_pins, self.nb_dynamic_pins, self.nb_input_pins) + \
                 "\n  ".join(("%s mapped to %s" % pin for pin in self.pins.items())) + \
                 "\nComponents:\n  " + \
-                "\n  ".join((repr(component) for component in self.components))
+                "\n  ".join((repr(component) for component in self.components)) + \
+                "\nModels:\n  " + \
+                "\n  ".join((repr(model) for model in self.models.items()))
 
 
 def create(filename):
