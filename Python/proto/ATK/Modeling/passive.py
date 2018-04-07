@@ -91,7 +91,7 @@ class Coil(object):
         self.i = 0
 
     def __repr__(self):
-        return "%.0fH between pins (%s,%s)" % (self.L, self.pins[0], self.pins[1])
+        return "%2.2eH between pins (%s,%s)" % (self.L, self.pins[0], self.pins[1])
 
     def update_model(self, model):
         pass
