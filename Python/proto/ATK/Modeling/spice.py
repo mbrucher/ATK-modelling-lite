@@ -58,18 +58,19 @@ class SpiceModel(object):
         self.nb_dynamic_pins = 0
         self.nb_input_pins = 0
     
-    def create_model(self, netlist):
+    def create_model(self, model):
         """
-        Create a new model (indicated by a starting '.')
+        Create a new model (indicated by a starting '.model')
         """
-        pass
+        print(model)
+        self.models[model[2]][1] = ()
     
     def populate_models(self, netlist):
         """
         Create the internal list of all component custom models that will be used after
         """
         for line in netlist:
-            if line[0][0] == '.':
+            if line[0] == '.model':
                 self.create_model(line)
 
     def handle_pin(self, pin):
