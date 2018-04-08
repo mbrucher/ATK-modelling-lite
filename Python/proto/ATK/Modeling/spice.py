@@ -124,7 +124,7 @@ class SpiceModel(object):
         pin1 = self.handle_pin(line[2])
         C = parse_number(line[3])
         comp = Capacitor(C)
-        comp.pins = (pin0, pin1)
+        comp.pins = [pin0, pin1]
         self.components.append(comp)
 
     def create_coil(self, line):
@@ -135,7 +135,7 @@ class SpiceModel(object):
         pin1 = self.handle_pin(line[2])
         L = parse_number(line[3])
         comp = Coil(L)
-        comp.pins = (pin0, pin1)
+        comp.pins = [pin0, pin1]
         self.components.append(comp)
 
     def create_diode(self, line):
@@ -146,7 +146,7 @@ class SpiceModel(object):
         pin1 = self.handle_pin(line[2])
         params = self.models['d'][line[3]]
         comp = Diode(**params)
-        comp.pins = (pin0, pin1)
+        comp.pins = [pin0, pin1]
         self.components.append(comp)
 
     def create_resistor(self, line):
@@ -157,7 +157,7 @@ class SpiceModel(object):
         pin1 = self.handle_pin(line[2])
         R = parse_number(line[3])
         comp = Resistor(R)
-        comp.pins = (pin0, pin1)
+        comp.pins = [pin0, pin1]
         self.components.append(comp)
 
     def create_voltage(self, line):
@@ -206,6 +206,10 @@ class SpiceModel(object):
                 self.dynamic.add(pin)
                 self.nb_dynamic_pins += 1
 
+        for component in self.components:
+            for (i, pin) in enumerate(component.pins):
+                if pin in self.temp_pins:
+                    component.pins[i] = self.pins[pin]
     
     def parse(self, netlist):
         """
