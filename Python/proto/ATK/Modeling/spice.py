@@ -9,6 +9,7 @@ from collections import defaultdict
 
 from modeling import Modeler
 from passive import Capacitor, Diode, Coil, Resistor
+from active import TransistorNPN, TransistorPNP
 
 digits = re.compile("([\d\.e-]+)(.*)")
 
@@ -71,7 +72,7 @@ class SpiceModel(object):
         variables[0] = variables[0][1:]
         variables[-1] = variables[-1][:-1]
         variables = dict([parse_variable(variable) for variable in variables])
-        self.models[model[2]][model[1]] = (variables)
+        self.models[model[1]] = (model[2], variables)
     
     def populate_models(self, netlist):
         """
@@ -144,9 +145,22 @@ class SpiceModel(object):
         """
         pin0 = self.handle_pin(line[1])
         pin1 = self.handle_pin(line[2])
-        params = self.models['d'][line[3]]
-        comp = Diode(**params)
+        params = self.models[line[3]]
+        assert params[0] == 'd'
+        comp = Diode(**(params[1]))
         comp.pins = [pin0, pin1]
+        self.components.append(comp)
+
+    def create_transistor(self, line):
+        """
+        Create a transistor
+        """
+        pin0 = self.handle_pin(line[1])
+        pin1 = self.handle_pin(line[2])
+        pin1 = self.handle_pin(line[3])
+        params = self.models[line[4]]
+        comp = dispatch_transistor[params[0]](**(params[1]))
+        comp.pins = [pin1, pin0, pin2]
         self.components.append(comp)
 
     def create_resistor(self, line):
@@ -173,20 +187,26 @@ class SpiceModel(object):
             elif pin1 == ('S', 0):
                 self.static_state.append(V)
             else:
-                assert(False)
+                assert False
         else:
             # probably AC or sin, so tag this as Input
             pin0 = self.handle_input_pin(line[1])
             pin1 = self.handle_input_pin(line[2])
-            assert(pin0 == ('S', 0) or pin1 == ('S', 0))
+            assert pin0 == ('S', 0) or pin1 == ('S', 0)
     
     dispatch_component = {
             '.': create_nothing,
             'c': create_capacitor,
             'd': create_diode,
             'l': create_coil,
+            'q': create_transistor,
             'r': create_resistor,
             'v': create_voltage,
+            }
+    
+    dispatch_transistor = {
+            'npn': TransistorNPN,
+            'pnp': TransistorPNP,
             }
 
     def populate_components(self, netlist):
