@@ -127,9 +127,9 @@ class Diode(object):
     """
     nb_pins = 2
     
-    def __init__(self, Is=1e-14, n=1.24, Vt = 26e-3):
+    def __init__(self, Is=1e-14, N=1.24, Vt = 26e-3):
         self.Is = Is
-        self.n = n
+        self.n = N
         self.Vt = Vt
 
     def __repr__(self):
