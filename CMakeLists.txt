@@ -12,8 +12,8 @@ find_package(Boost REQUIRED)
 
 include(Utilities)
 
-add_subdirectory(ATK/Modeling)
-add_subdirectory(Python/ATK/Modeling)
+add_subdirectory(ATK/Modelling)
+add_subdirectory(Python/ATK/Modelling)
 add_subdirectory(test)
 
 FILE(GLOB_RECURSE CMAKE_OTHER_SRC Python/proto/*.py)
