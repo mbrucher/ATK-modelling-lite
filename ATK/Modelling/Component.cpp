@@ -6,7 +6,7 @@
 
 namespace ATK
 {
-  Compnent::~Component()
+  Component::~Component()
   {
   }
 }
