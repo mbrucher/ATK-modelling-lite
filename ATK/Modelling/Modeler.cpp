@@ -15,4 +15,28 @@ namespace ATK
   Modeler::~Modeler()
   {
   }
+  
+  std::vector<std::vector<std::tuple<Component*, gsl::index>>>& Modeler::get_pins(PinType type)
+  {
+    switch(type)
+    {
+      case PinType::Static:
+        return static_pins;
+      case PinType::Dynamic:
+        return dynamic_pins;
+      case PinType::Input:
+        return input_pins;
+    }
+  }
+
+  void Modeler::add_component(std::unique_ptr<Component> component, std::vector<std::tuple<PinType, gsl::index>> pins)
+  {
+    for(gsl::index i = 0; i < pins.size(); ++i)
+    {
+      get_pins(std::get<0>(pins[i]))[std::get<1>(pins[i])].push_back(std::make_tuple(component.get(), i));
+    }
+    component->set_pins(std::move(pins));
+    component->update_model(this);
+    components.insert(std::move(component));
+  }
 }
