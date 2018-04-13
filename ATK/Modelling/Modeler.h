@@ -11,6 +11,8 @@
 
 #include <gsl/gsl>
 
+#include <Eigen/Eigen>
+
 #include "config.h"
 #include "Types.h"
 
@@ -38,9 +40,9 @@ namespace ATK
     /// vector of input pins, each pin has a list of components connected with it, and the index of the pin for the component
     std::vector<std::vector<std::tuple<Component*, gsl::index>>> input_pins;
 
-    std::vector<DataType> dynamic_state;
-    std::vector<DataType> static_state;
-    std::vector<DataType> input_state;
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> dynamic_state;
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state;
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state;
 
     std::unordered_set<std::unique_ptr<Component>> components;
     
@@ -75,7 +77,7 @@ namespace ATK
     /**
      * Sets the current static state
      */
-    void set_static_state(std::vector<DataType> static_state);
+    void set_static_state(Eigen::Matrix<DataType, 0, 1> static_state);
 
     /**
      * Sets up the internal state of the modeler
@@ -86,7 +88,7 @@ namespace ATK
     /**
      * Computes a new state based on a new set of inputs
      */
-    const std::vector<DataType>& operator()(std::vector<DataType> input_state);
+    const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state);
     
   private:
     /**

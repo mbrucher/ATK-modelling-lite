@@ -6,6 +6,7 @@
 #include "Modeler.h"
 
 static constexpr gsl::index MAX_ITERATION = 200;
+static constexpr double EPS = 1e-8;
 
 namespace ATK
 {
@@ -45,7 +46,7 @@ namespace ATK
     this->dt = dt;
   }
   
-  void Modeler::set_static_state(std::vector<DataType> static_state)
+  void Modeler::set_static_state(Eigen::Matrix<DataType, 0, 1> static_state)
   {
     this->static_state = std::move(static_state);
   }
@@ -80,7 +81,7 @@ namespace ATK
     initialized = true;
   }
   
-  const std::vector<typename Modeler::DataType>& Modeler::operator()(std::vector<DataType> input_state)
+  const Eigen::Matrix<typename Modeler::DataType, Eigen::Dynamic, 1>& Modeler::operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state)
   {
     if(!initialized)
     {
@@ -111,6 +112,41 @@ namespace ATK
 
   bool Modeler::iterate(bool steady_state)
   {
+    for(auto& component : components)
+    {
+      component->precompute(steady_state);
+    }
+    
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> eqs;
+    Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian;
+    
+    for(gsl::index i = 0; i < nb_dynamic_pins; ++i)
+    {
+      if(std::get<0>(dynamic_pins_equation[i]) == nullptr)
+      {
+        
+      }
+      else
+      {
+        
+      }
+      // update eqs and jacobian
+    }
+    
+    if((eqs.array().abs() < EPS).all())
+    {
+      return true;
+    }
+
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> delta = jacobian.colPivHouseholderQr().solve(eqs);
+
+    if((delta.array().abs() < EPS).all())
+    {
+      return true;
+    }
+    
+    dynamic_state -= delta;
+
     return false;
   }
 }
