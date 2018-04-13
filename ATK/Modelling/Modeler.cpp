@@ -29,6 +29,11 @@ namespace ATK
     }
   }
 
+  void Modeler::set_dt(DataType dt)
+  {
+    this->dt = dt;
+  }
+
   void Modeler::add_component(std::unique_ptr<Component> component, std::vector<std::tuple<PinType, gsl::index>> pins)
   {
     for(gsl::index i = 0; i < pins.size(); ++i)
@@ -38,5 +43,24 @@ namespace ATK
     component->set_pins(std::move(pins));
     component->update_model(this);
     components.insert(std::move(component));
+  }
+  
+  void Modeler::setup(bool steady_state)
+  {
+    for(auto& component : components)
+    {
+      component->update_steady_state(dt);
+    }
+    
+    if(steady_state)
+    {
+      //solve(steady_state);
+      
+      for(auto& component : components)
+      {
+        component->update_steady_state(dt);
+      }
+    }
+    initialized = true;
   }
 }

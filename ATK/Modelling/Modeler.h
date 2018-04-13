@@ -42,6 +42,7 @@ namespace ATK
 
     std::unordered_set<std::unique_ptr<Component>> components;
     
+    DataType dt = 0;
     bool initialized = false;
     
     std::vector<std::vector<std::tuple<Component*, gsl::index>>>& get_pins(PinType type);
@@ -63,6 +64,17 @@ namespace ATK
      * @param pins is a vector with the pins that will be used by the component
      */
     void add_component(std::unique_ptr<Component> component, std::vector<std::tuple<PinType, gsl::index>> pins);
+    
+    /**
+     * Sets the time increment
+     */
+    void set_dt(DataType dt);
+    
+    /**
+     * Sets up the internal state of the modeler
+     * @param steady_state indicates if a steady state must be computed
+     */
+    void setup(bool steady_state = true);
   };
 }
 
