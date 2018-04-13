@@ -69,12 +69,35 @@ namespace ATK
      * Sets the time increment
      */
     void set_dt(DataType dt);
-    
+
+    /**
+     * Sets the current static state
+     */
+    void set_static_state(std::vector<DataType> static_state);
+
     /**
      * Sets up the internal state of the modeler
      * @param steady_state indicates if a steady state must be computed
      */
     void setup(bool steady_state = true);
+    
+    /**
+     * Computes a new state based on a new set of inputs
+     */
+    const std::vector<DataType>& operator()(std::vector<DataType> input_state);
+    
+  private:
+    /**
+     * Solve the state of the modeler
+     * @param steady_state indicates if a steady state is requested
+     */
+    void solve(bool steady_state);
+
+    /**
+     * One iteration for the solver
+     * @param steady_state indicates if a steady state is requested
+     */
+    bool iterate(bool steady_state);
   };
 }
 

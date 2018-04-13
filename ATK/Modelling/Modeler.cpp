@@ -5,6 +5,8 @@
 #include "Component.h"
 #include "Modeler.h"
 
+static constexpr gsl::index MAX_ITERATION = 200;
+
 namespace ATK
 {
   Modeler::Modeler(gsl::index nb_dynamic_pins, gsl::index nb_static_pins, gsl::index nb_input_pins)
@@ -33,6 +35,11 @@ namespace ATK
   {
     this->dt = dt;
   }
+  
+  void Modeler::set_static_state(std::vector<DataType> static_state)
+  {
+    this->static_state = std::move(static_state);
+  }
 
   void Modeler::add_component(std::unique_ptr<Component> component, std::vector<std::tuple<PinType, gsl::index>> pins)
   {
@@ -54,7 +61,7 @@ namespace ATK
     
     if(steady_state)
     {
-      //solve(steady_state);
+      solve(steady_state);
       
       for(auto& component : components)
       {
@@ -62,5 +69,39 @@ namespace ATK
       }
     }
     initialized = true;
+  }
+  
+  const std::vector<typename Modeler::DataType>& Modeler::operator()(std::vector<DataType> input_state)
+  {
+    if(!initialized)
+    {
+      setup();
+    }
+    this->input_state = std::move(input_state);
+    
+    solve(true);
+      
+    for(auto& component : components)
+    {
+      component->update_state();
+    }
+
+    return dynamic_state;
+  }
+
+
+  void Modeler::solve(bool steady_state)
+  {
+    gsl::index iteration = 0;
+    
+    while(iteration < MAX_ITERATION && !iterate(steady_state))
+    {
+      ++iteration;
+    }
+  }
+
+  bool Modeler::iterate(bool steady_state)
+  {
+    return false;
   }
 }
