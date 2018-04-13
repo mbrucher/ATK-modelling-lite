@@ -31,6 +31,8 @@ namespace ATK
     
     /// vector of dynamic pins, each pin has a list of components connected with it, and the index of the pin for the component
     std::vector<std::vector<std::tuple<Component*, gsl::index>>> dynamic_pins;
+    /// Vector of potential component with equation number in case a component replaces an equation with its own
+    std::vector<std::tuple<Component*, gsl::index>> dynamic_pins_equation;
     /// vector of static pins, each pin has a list of components connected with it, and the index of the pin for the component
     std::vector<std::vector<std::tuple<Component*, gsl::index>>> static_pins;
     /// vector of input pins, each pin has a list of components connected with it, and the index of the pin for the component
