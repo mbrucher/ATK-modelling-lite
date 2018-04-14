@@ -41,12 +41,30 @@ namespace ATK
     }
   }
 
+  const Eigen::Matrix<Modeler::DataType, Eigen::Dynamic, 1>& Modeler::get_states(PinType type) const
+  {
+    switch(type)
+    {
+      case PinType::Static:
+        return static_state;
+      case PinType::Dynamic:
+        return dynamic_state;
+      case PinType::Input:
+        return input_state;
+    }
+  }
+
   void Modeler::set_dt(DataType dt)
   {
     this->dt = dt;
   }
   
-  void Modeler::set_static_state(Eigen::Matrix<DataType, 0, 1> static_state)
+  Modeler::DataType Modeler::retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const
+  {
+    return get_states(std::get<0>(pin))[std::get<1>(pin)];
+  }
+
+  void Modeler::set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state)
   {
     this->static_state = std::move(static_state);
   }
@@ -120,6 +138,7 @@ namespace ATK
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> eqs(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_dynamic_pins));
     Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian(Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>::Zero(nb_dynamic_pins, nb_dynamic_pins));
     
+    // Populate the equations + jacobian for computing next update
     for(gsl::index i = 0; i < nb_dynamic_pins; ++i)
     {
       if(std::get<0>(dynamic_pins_equation[i]) == nullptr)
@@ -128,11 +147,12 @@ namespace ATK
       }
       else
       {
-        
+        //component, eq_number = self.dynamic_pins_equation[i]
+        //eq, jac = component.add_equation(self.state, steady_state, eq_number)
       }
-      // update eqs and jacobian
     }
-    
+
+    // Check if the equations have converged
     if((eqs.array().abs() < EPS).all())
     {
       return true;
@@ -140,6 +160,7 @@ namespace ATK
 
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> delta = jacobian.colPivHouseholderQr().solve(eqs);
 
+    // Check if the update is big enough
     if((delta.array().abs() < EPS).all())
     {
       return true;

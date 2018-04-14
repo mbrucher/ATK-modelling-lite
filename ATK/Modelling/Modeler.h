@@ -50,6 +50,7 @@ namespace ATK
     bool initialized = false;
     
     std::vector<std::vector<std::tuple<Component*, gsl::index>>>& get_pins(PinType type);
+    const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_states(PinType type) const;
   public:
     /**
      * The main modeler constructor
@@ -74,10 +75,27 @@ namespace ATK
      */
     void set_dt(DataType dt);
 
+    DataType retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const;
+    
     /**
      * Sets the current static state
      */
-    void set_static_state(Eigen::Matrix<DataType, 0, 1> static_state);
+    void set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state);
+    
+    const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_static_state() const
+    {
+      return static_state;
+    }
+    
+    const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_dynamic_state() const
+    {
+      return dynamic_state;
+    }
+    
+    const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_input_state() const
+    {
+      return input_state;
+    }
 
     /**
      * Sets up the internal state of the modeler

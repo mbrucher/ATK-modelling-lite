@@ -17,7 +17,7 @@ namespace ATK
 {
   class Modeler;
   
-  /// BAse class for all components
+  /// Base class for all components
   class Component
   {
   public:
