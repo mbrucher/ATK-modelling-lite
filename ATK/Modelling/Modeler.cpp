@@ -84,11 +84,11 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void Modeler<DataType_>::setup(bool steady_state)
+  void Modeler<DataType_>::init(bool steady_state)
   {
     for(auto& component : components)
     {
-      component->update_steady_state(dt);
+      component->update_steady_state(1. / input_sampling_rate);
     }
     
     if(steady_state)
@@ -97,12 +97,23 @@ namespace ATK
       
       for(auto& component : components)
       {
-        component->update_steady_state(dt);
+        component->update_steady_state(1. / input_sampling_rate);
       }
     }
     initialized = true;
   }
   
+  template<typename DataType_>
+  void Modeler<DataType_>::setup()
+  {
+    assert(input_sampling_rate == output_sampling_rate);
+    
+    if(!initialized)
+    {
+      init(true);
+    }
+  }
+
   template<typename DataType_>
   const Eigen::Matrix<typename Modeler<DataType_>::DataType, Eigen::Dynamic, 1>& Modeler<DataType_>::operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state)
   {

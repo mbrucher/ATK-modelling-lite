@@ -28,6 +28,7 @@ namespace ATK
   class ATK_MODELLING_EXPORT Modeler: public TypedBaseFilter<DataType_>
   {
   public:
+    typedef TypedBaseFilter<DataType_> Parent;
     typedef DataType_ DataType;
     
   private:
@@ -50,7 +51,6 @@ namespace ATK
 
     std::unordered_set<std::unique_ptr<Component<DataType>>> components;
     
-    DataType dt = 0;
     bool initialized = false;
     
     std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>>& get_pins(PinType type);
@@ -100,8 +100,13 @@ namespace ATK
      * Sets up the internal state of the modeler
      * @param steady_state indicates if a steady state must be computed
      */
-    void setup(bool steady_state = true);
-    
+    void init(bool steady_state = true);
+
+    /**
+     * Setups internals
+     */
+    void setup() override;
+
     /**
      * Computes a new state based on a new set of inputs
      */
@@ -128,6 +133,10 @@ namespace ATK
      * @param steady_state indicates if a steady state is requested
      */
     void compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state);
+    
+  protected:
+    using Parent::input_sampling_rate;
+    using Parent::output_sampling_rate;
   };
 }
 
