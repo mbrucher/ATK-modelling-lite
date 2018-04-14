@@ -117,14 +117,14 @@ namespace ATK
       component->precompute(steady_state);
     }
     
-    Eigen::Matrix<DataType, Eigen::Dynamic, 1> eqs;
-    Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian;
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> eqs(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_dynamic_pins));
+    Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian(Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>::Zero(nb_dynamic_pins, nb_dynamic_pins));
     
     for(gsl::index i = 0; i < nb_dynamic_pins; ++i)
     {
       if(std::get<0>(dynamic_pins_equation[i]) == nullptr)
       {
-        
+        compute_current(i, eqs, jacobian, steady_state);
       }
       else
       {
@@ -148,5 +148,24 @@ namespace ATK
     dynamic_state -= delta;
 
     return false;
+  }
+
+  void Modeler::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state)
+  {
+    DataType& current = eqs(i);
+    for(const auto& component: dynamic_pins[i])
+    {
+      current += std::get<0>(component)->get_current(std::get<1>(component), steady_state);
+      
+      const auto& pins = std::get<0>(component)->get_pins();
+      
+      for(gsl::index j = 0; j < pins.size(); ++j)
+      {
+        if(std::get<0>(pins[j]) == PinType::Dynamic)
+        {
+          jacobian(i, std::get<1>(pins[j])) += std::get<0>(component)->get_gradient(std::get<1>(component), j, steady_state);
+        }
+      }
+    }
   }
 }

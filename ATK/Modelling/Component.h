@@ -40,6 +40,12 @@ namespace ATK
      */
     void set_pins(std::vector<std::tuple<PinType, gsl::index>> pins);
     
+    /// Returns the pins of this component
+    const std::vector<std::tuple<PinType, gsl::index>>& get_pins() const
+    {
+      return pins;
+    }
+    
     /**
      * Used to indicate if the modeler needs to update its set of equations with those provided by this component
      * @param modeler the modeler to update

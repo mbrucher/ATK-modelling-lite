@@ -102,6 +102,15 @@ namespace ATK
      * @param steady_state indicates if a steady state is requested
      */
     bool iterate(bool steady_state);
+    
+    /**
+     * Retrieve all currents for a given pin and the corresponding jacobian
+     * @param i is the pin to update
+     * @param eqs is the full equation state, only one element will be updated
+     * @params jacobian is the full jacobian, but only one line will be updated
+     * @param steady_state indicates if a steady state is requested
+     */
+    void compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state);
   };
 }
 
