@@ -10,11 +10,12 @@
 namespace ATK
 {
   /// Resistor component
-  class ATK_MODELLING_EXPORT Resistor final: public Component
+  template<typename DataType_>
+  class ATK_MODELLING_EXPORT Resistor final: public Component<DataType_>
   {
   public:
-    typedef Component Parent;
-    using Parent::DataType;
+    typedef Component<DataType_> Parent;
+    typedef DataType_ DataType;
 
     Resistor(DataType R);
     
@@ -35,6 +36,10 @@ namespace ATK
     
   private:
     DataType G;
+    
+  protected:
+    using Parent::modeler;
+    using Parent::pins;
   };
 }
 

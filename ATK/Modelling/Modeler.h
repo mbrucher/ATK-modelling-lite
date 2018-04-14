@@ -9,6 +9,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include <ATK/Core/TypedBaseFilter.h>
+
 #include <gsl/gsl>
 
 #include <Eigen/Eigen>
@@ -18,13 +20,15 @@
 
 namespace ATK
 {
+  template<typename DataType_>
   class Component;
   
   /// The main dynamic dymanic Modeler
-  class ATK_MODELLING_EXPORT Modeler
+  template<typename DataType_>
+  class ATK_MODELLING_EXPORT Modeler: public TypedBaseFilter<DataType_>
   {
   public:
-    typedef double DataType;
+    typedef DataType_ DataType;
     
   private:
     gsl::index nb_dynamic_pins;
@@ -32,24 +36,24 @@ namespace ATK
     gsl::index nb_input_pins;
     
     /// vector of dynamic pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component*, gsl::index>>> dynamic_pins;
+    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> dynamic_pins;
     /// Vector of potential component with equation number in case a component replaces an equation with its own
-    std::vector<std::tuple<Component*, gsl::index>> dynamic_pins_equation;
+    std::vector<std::tuple<Component<DataType>*, gsl::index>> dynamic_pins_equation;
     /// vector of static pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component*, gsl::index>>> static_pins;
+    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> static_pins;
     /// vector of input pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component*, gsl::index>>> input_pins;
+    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> input_pins;
 
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> dynamic_state;
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state;
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state;
 
-    std::unordered_set<std::unique_ptr<Component>> components;
+    std::unordered_set<std::unique_ptr<Component<DataType>>> components;
     
     DataType dt = 0;
     bool initialized = false;
     
-    std::vector<std::vector<std::tuple<Component*, gsl::index>>>& get_pins(PinType type);
+    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>>& get_pins(PinType type);
     const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_states(PinType type) const;
   public:
     /**
@@ -68,13 +72,8 @@ namespace ATK
      * @param component is the new component to add
      * @param pins is a vector with the pins that will be used by the component
      */
-    void add_component(std::unique_ptr<Component> component, std::vector<std::tuple<PinType, gsl::index>> pins);
+    void add_component(std::unique_ptr<Component<DataType>> component, std::vector<std::tuple<PinType, gsl::index>> pins);
     
-    /**
-     * Sets the time increment
-     */
-    void set_dt(DataType dt);
-
     DataType retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const;
     
     /**

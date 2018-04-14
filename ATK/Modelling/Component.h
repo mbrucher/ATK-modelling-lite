@@ -15,20 +15,22 @@
 
 namespace ATK
 {
+  template<typename DataType_>
   class Modeler;
   
   /// Base class for all components
+  template<typename DataType_>
   class ATK_MODELLING_EXPORT Component
   {
   public:
-    typedef double DataType;
+    typedef DataType_ DataType;
 
   protected:
     /// Local pins to which this component is connected to
     std::vector<std::tuple<PinType, gsl::index>> pins;
     
     /// The current modeler where the component is located
-    Modeler* modeler;
+    Modeler<DataType>* modeler;
     
   public:
     /// Virtual destructor
@@ -50,7 +52,7 @@ namespace ATK
      * Used to indicate if the modeler needs to update its set of equations with those provided by this component
      * @param modeler the modeler to update
      */
-    virtual void update_model(Modeler* modeler);
+    virtual void update_model(Modeler<DataType>* modeler);
     
     /**
      * Update the component for its steady state condition

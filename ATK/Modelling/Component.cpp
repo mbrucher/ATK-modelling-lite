@@ -6,32 +6,41 @@
 
 namespace ATK
 {
-  Component::~Component()
+  template<typename DataType_>
+  Component<DataType_>::~Component()
   {
   }
   
-  void Component::set_pins(std::vector<std::tuple<PinType, gsl::index>> pins)
+  template<typename DataType_>
+  void Component<DataType_>::set_pins(std::vector<std::tuple<PinType, gsl::index>> pins)
   {
     this->pins = std::move(pins);
   }
 
-  void Component::update_model(Modeler* modeler)
+  template<typename DataType_>
+  void Component<DataType_>::update_model(Modeler<DataType>* modeler)
   {
   }
   
-  void Component::update_steady_state(DataType dt)
+  template<typename DataType_>
+  void Component<DataType_>::update_steady_state(DataType dt)
   {
   }
   
-  void Component::update_state()
+  template<typename DataType_>
+  void Component<DataType_>::update_state()
   {
   }
   
-  void Component::precompute(bool steady_state)
+  template<typename DataType_>
+  void Component<DataType_>::precompute(bool steady_state)
   {
   }
   
-  void Component::add_equation(gsl::index eq_number, bool steady_state)
+  template<typename DataType_>
+  void Component<DataType_>::add_equation(gsl::index eq_number, bool steady_state)
   {
   }
+  
+  template class Component<double>;
 }

@@ -10,8 +10,10 @@ static constexpr double EPS = 1e-8;
 
 namespace ATK
 {
-  Modeler::Modeler(gsl::index nb_dynamic_pins, gsl::index nb_static_pins, gsl::index nb_input_pins)
-  :nb_dynamic_pins(nb_dynamic_pins)
+  template<typename DataType_>
+  Modeler<DataType_>::Modeler(gsl::index nb_dynamic_pins, gsl::index nb_static_pins, gsl::index nb_input_pins)
+  : TypedBaseFilter<DataType_>(nb_input_pins, nb_dynamic_pins)
+  , nb_dynamic_pins(nb_dynamic_pins)
   , nb_static_pins(nb_static_pins)
   , nb_input_pins(nb_input_pins)
   , dynamic_pins(nb_dynamic_pins)
@@ -24,11 +26,13 @@ namespace ATK
   {
   }
   
-  Modeler::~Modeler()
+  template<typename DataType_>
+  Modeler<DataType_>::~Modeler()
   {
   }
   
-  std::vector<std::vector<std::tuple<Component*, gsl::index>>>& Modeler::get_pins(PinType type)
+  template<typename DataType_>
+  std::vector<std::vector<std::tuple<Component<DataType_>*, gsl::index>>>& Modeler<DataType_>::get_pins(PinType type)
   {
     switch(type)
     {
@@ -41,7 +45,8 @@ namespace ATK
     }
   }
 
-  const Eigen::Matrix<Modeler::DataType, Eigen::Dynamic, 1>& Modeler::get_states(PinType type) const
+  template<typename DataType_>
+  const Eigen::Matrix<typename Modeler<DataType_>::DataType, Eigen::Dynamic, 1>& Modeler<DataType_>::get_states(PinType type) const
   {
     switch(type)
     {
@@ -53,23 +58,21 @@ namespace ATK
         return input_state;
     }
   }
-
-  void Modeler::set_dt(DataType dt)
-  {
-    this->dt = dt;
-  }
   
-  Modeler::DataType Modeler::retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const
+  template<typename DataType_>
+  typename Modeler<DataType_>::DataType Modeler<DataType_>::retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const
   {
     return get_states(std::get<0>(pin))[std::get<1>(pin)];
   }
 
-  void Modeler::set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state)
+  template<typename DataType_>
+  void Modeler<DataType_>::set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state)
   {
     this->static_state = std::move(static_state);
   }
 
-  void Modeler::add_component(std::unique_ptr<Component> component, std::vector<std::tuple<PinType, gsl::index>> pins)
+  template<typename DataType_>
+  void Modeler<DataType_>::add_component(std::unique_ptr<Component<DataType_>> component, std::vector<std::tuple<PinType, gsl::index>> pins)
   {
     for(gsl::index i = 0; i < pins.size(); ++i)
     {
@@ -80,7 +83,8 @@ namespace ATK
     components.insert(std::move(component));
   }
   
-  void Modeler::setup(bool steady_state)
+  template<typename DataType_>
+  void Modeler<DataType_>::setup(bool steady_state)
   {
     for(auto& component : components)
     {
@@ -99,7 +103,8 @@ namespace ATK
     initialized = true;
   }
   
-  const Eigen::Matrix<typename Modeler::DataType, Eigen::Dynamic, 1>& Modeler::operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state)
+  template<typename DataType_>
+  const Eigen::Matrix<typename Modeler<DataType_>::DataType, Eigen::Dynamic, 1>& Modeler<DataType_>::operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state)
   {
     if(!initialized)
     {
@@ -118,7 +123,8 @@ namespace ATK
   }
 
 
-  void Modeler::solve(bool steady_state)
+  template<typename DataType_>
+  void Modeler<DataType_>::solve(bool steady_state)
   {
     gsl::index iteration = 0;
     
@@ -128,7 +134,8 @@ namespace ATK
     }
   }
 
-  bool Modeler::iterate(bool steady_state)
+  template<typename DataType_>
+  bool Modeler<DataType_>::iterate(bool steady_state)
   {
     for(auto& component : components)
     {
@@ -171,7 +178,8 @@ namespace ATK
     return false;
   }
 
-  void Modeler::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state)
+  template<typename DataType_>
+  void Modeler<DataType_>::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state)
   {
     DataType& current = eqs(i);
     for(const auto& component: dynamic_pins[i])
@@ -189,4 +197,6 @@ namespace ATK
       }
     }
   }
+  
+  template class Modeler<double>;
 }
