@@ -18,7 +18,7 @@ namespace ATK
   class Modeler;
   
   /// Base class for all components
-  class Component
+  class ATK_MODELLING_EXPORT Component
   {
   public:
     typedef double DataType;

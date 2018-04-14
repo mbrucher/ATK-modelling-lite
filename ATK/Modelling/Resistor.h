@@ -10,7 +10,7 @@
 namespace ATK
 {
   /// Resistor component
-  class Resistor final: public Component
+  class ATK_MODELLING_EXPORT Resistor final: public Component
   {
   public:
     typedef Component Parent;
@@ -34,7 +34,6 @@ namespace ATK
     DataType get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) override;
     
   private:
-    DataType R;
     DataType G;
   };
 }
