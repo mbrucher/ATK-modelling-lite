@@ -45,9 +45,9 @@ namespace ATK
     /// vector of input pins, each pin has a list of components connected with it, and the index of the pin for the component
     std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> input_pins;
 
-    Eigen::Matrix<DataType, Eigen::Dynamic, 1> dynamic_state;
+    mutable Eigen::Matrix<DataType, Eigen::Dynamic, 1> dynamic_state;
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state;
-    Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state;
+    mutable Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state;
 
     std::unordered_set<std::unique_ptr<Component<DataType>>> components;
     
@@ -110,20 +110,20 @@ namespace ATK
     /**
      * Computes a new state based on a new set of inputs
      */
-    const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state);
+    void process_impl(size_t size) const override;
     
   private:
     /**
      * Solve the state of the modeler
      * @param steady_state indicates if a steady state is requested
      */
-    void solve(bool steady_state);
+    void solve(bool steady_state) const;
 
     /**
      * One iteration for the solver
      * @param steady_state indicates if a steady state is requested
      */
-    bool iterate(bool steady_state);
+    bool iterate(bool steady_state) const;
     
     /**
      * Retrieve all currents for a given pin and the corresponding jacobian
@@ -132,11 +132,15 @@ namespace ATK
      * @params jacobian is the full jacobian, but only one line will be updated
      * @param steady_state indicates if a steady state is requested
      */
-    void compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state);
+    void compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const;
     
   protected:
     using Parent::input_sampling_rate;
     using Parent::output_sampling_rate;
+    using Parent::nb_input_ports;
+    using Parent::converted_inputs;
+    using Parent::nb_output_ports;
+    using Parent::outputs;
   };
 }
 

@@ -115,13 +115,15 @@ namespace ATK
   }
 
   template<typename DataType_>
-  const Eigen::Matrix<typename Modeler<DataType_>::DataType, Eigen::Dynamic, 1>& Modeler<DataType_>::operator()(Eigen::Matrix<DataType, Eigen::Dynamic, 1> input_state)
+  void Modeler<DataType_>::process_impl(size_t size) const
   {
-    if(!initialized)
+    for(gsl::index i = 0; i < size; ++i)
     {
-      setup();
+      for(gsl::index j = 0; j < nb_input_ports; ++j)
+      {
+        input_state[j] = converted_inputs[i][j];
+      }
     }
-    this->input_state = std::move(input_state);
     
     solve(true);
       
@@ -130,12 +132,18 @@ namespace ATK
       component->update_state();
     }
 
-    return dynamic_state;
+    for(gsl::index i = 0; i < size; ++i)
+    {
+      for(gsl::index j = 0; j < nb_output_ports; ++j)
+      {
+        outputs[i][j] = dynamic_state[j];
+      }
+    }
   }
 
 
   template<typename DataType_>
-  void Modeler<DataType_>::solve(bool steady_state)
+  void Modeler<DataType_>::solve(bool steady_state) const
   {
     gsl::index iteration = 0;
     
@@ -146,7 +154,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  bool Modeler<DataType_>::iterate(bool steady_state)
+  bool Modeler<DataType_>::iterate(bool steady_state) const
   {
     for(auto& component : components)
     {
@@ -190,7 +198,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void Modeler<DataType_>::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state)
+  void Modeler<DataType_>::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const
   {
     DataType& current = eqs(i);
     for(const auto& component: dynamic_pins[i])
