@@ -29,4 +29,10 @@ BOOST_AUTO_TEST_CASE( Resistor_Simple_Bridge_sin1k )
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(48000);
   
+  ATK::Modeler<double> model(1, 1, 1);
+  model.set_input_sampling_rate(48000);
+  model.set_output_sampling_rate(48000);
+  
+  model.add_component(std::make_unique<ATK::Resistor<double>>(1000), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
+  model.add_component(std::make_unique<ATK::Resistor<double>>(1000), {{std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
 }

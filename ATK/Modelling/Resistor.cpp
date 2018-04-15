@@ -24,4 +24,6 @@ namespace ATK
   {
     return G * (0 == pin_index_ref ? 1 : -1) * (1 == pin_index ? 1 : -1);
   }
+  
+  template class Resistor<double>;
 }
