@@ -30,7 +30,14 @@ namespace ATK
   public:
     typedef TypedBaseFilter<DataType_> Parent;
     typedef DataType_ DataType;
-    
+
+    using Parent::input_sampling_rate;
+    using Parent::output_sampling_rate;
+    using Parent::nb_input_ports;
+    using Parent::converted_inputs;
+    using Parent::nb_output_ports;
+    using Parent::outputs;
+
   private:
     gsl::index nb_dynamic_pins;
     gsl::index nb_static_pins;
@@ -133,14 +140,6 @@ namespace ATK
      * @param steady_state indicates if a steady state is requested
      */
     void compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const;
-    
-  protected:
-    using Parent::input_sampling_rate;
-    using Parent::output_sampling_rate;
-    using Parent::nb_input_ports;
-    using Parent::converted_inputs;
-    using Parent::nb_output_ports;
-    using Parent::outputs;
   };
 }
 
