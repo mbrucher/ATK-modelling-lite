@@ -9,7 +9,7 @@
 #include <ATK/Core/InPointerFilter.h>
 #include <ATK/Core/OutPointerFilter.h>
 
-#include <ATK/Modelling/Modeler.h>
+#include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 
 #define BOOST_TEST_DYN_LINK
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( Resistor_Simple_Bridge_sin1k )
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(48000);
   
-  ATK::Modeler<double> model(1, 1, 1);
+  ATK::ModellerFilter<double> model(1, 1, 1);
   model.set_input_sampling_rate(48000);
   model.set_output_sampling_rate(48000);
   

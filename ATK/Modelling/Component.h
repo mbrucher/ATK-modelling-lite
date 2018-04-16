@@ -16,7 +16,7 @@
 namespace ATK
 {
   template<typename DataType_>
-  class Modeler;
+  class ModellerFilter;
   
   /// Base class for all components
   template<typename DataType_>
@@ -29,8 +29,8 @@ namespace ATK
     /// Local pins to which this component is connected to
     std::vector<std::tuple<PinType, gsl::index>> pins;
     
-    /// The current modeler where the component is located
-    Modeler<DataType>* modeler;
+    /// The current modeller where the component is located
+    ModellerFilter<DataType>* modeller;
     
   public:
     /// Virtual destructor
@@ -49,21 +49,19 @@ namespace ATK
     }
     
     /**
-     * Used to indicate if the modeler needs to update its set of equations with those provided by this component
-     * @param modeler the modeler to update
+     * Used to indicate if the modeller needs to update its set of equations with those provided by this component
+     * @param modeller the modeller to update
      */
-    virtual void update_model(Modeler<DataType>* modeler);
+    virtual void update_model(ModellerFilter<DataType>* modeller);
     
     /**
      * Update the component for its steady state condition
-     * @param is the modeler from which to retrieve the state
      * @param dt is the delat that will be used in following updates
      */
     virtual void update_steady_state(DataType dt);
     
     /**
      * Update the component for its current state condition
-     * @param is the modeler from which to retrieve the state
      */
     virtual void update_state();
 
@@ -89,7 +87,7 @@ namespace ATK
     virtual DataType get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) = 0;
     
     /**
-     * Add a new equation to the modeler
+     * Add a new equation to the modeller
      * @param eq_number is the equation number to add
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */

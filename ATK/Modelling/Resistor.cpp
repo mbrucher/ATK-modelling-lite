@@ -2,7 +2,7 @@
  * \file Resistor.cpp
  */
 
-#include "Modeler.h"
+#include "ModellerFilter.h"
 #include "Resistor.h"
 
 namespace ATK
@@ -16,7 +16,7 @@ namespace ATK
   template<typename DataType_>
   typename Resistor<DataType_>::DataType Resistor<DataType_>::get_current(gsl::index pin_index, bool steady_state)
   {
-    return (modeler->retrieve_voltage(pins[1]) - modeler->retrieve_voltage(pins[0])) * G * (0 == pin_index ? 1 : -1);
+    return (modeller->retrieve_voltage(pins[1]) - modeller->retrieve_voltage(pins[0])) * G * (0 == pin_index ? 1 : -1);
   }
   
   template<typename DataType_>

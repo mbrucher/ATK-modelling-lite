@@ -38,7 +38,7 @@ namespace ATK
     DataType G;
     
   protected:
-    using Parent::modeler;
+    using Parent::modeller;
     using Parent::pins;
   };
 }

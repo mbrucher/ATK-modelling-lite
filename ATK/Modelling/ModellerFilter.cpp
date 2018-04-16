@@ -1,9 +1,9 @@
 /**
- * \file Modeler.cpp
+ * \file ModellerFilter.cpp
  */
 
 #include "Component.h"
-#include "Modeler.h"
+#include "ModellerFilter.h"
 
 static constexpr gsl::index MAX_ITERATION = 200;
 static constexpr double EPS = 1e-8;
@@ -11,7 +11,7 @@ static constexpr double EPS = 1e-8;
 namespace ATK
 {
   template<typename DataType_>
-  Modeler<DataType_>::Modeler(gsl::index nb_dynamic_pins, gsl::index nb_static_pins, gsl::index nb_input_pins)
+  ModellerFilter<DataType_>::ModellerFilter(gsl::index nb_dynamic_pins, gsl::index nb_static_pins, gsl::index nb_input_pins)
   : TypedBaseFilter<DataType_>(nb_input_pins, nb_dynamic_pins)
   , nb_dynamic_pins(nb_dynamic_pins)
   , nb_static_pins(nb_static_pins)
@@ -27,12 +27,12 @@ namespace ATK
   }
   
   template<typename DataType_>
-  Modeler<DataType_>::~Modeler()
+  ModellerFilter<DataType_>::~ModellerFilter()
   {
   }
   
   template<typename DataType_>
-  std::vector<std::vector<std::tuple<Component<DataType_>*, gsl::index>>>& Modeler<DataType_>::get_pins(PinType type)
+  std::vector<std::vector<std::tuple<Component<DataType_>*, gsl::index>>>& ModellerFilter<DataType_>::get_pins(PinType type)
   {
     switch(type)
     {
@@ -46,7 +46,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  const Eigen::Matrix<typename Modeler<DataType_>::DataType, Eigen::Dynamic, 1>& Modeler<DataType_>::get_states(PinType type) const
+  const Eigen::Matrix<typename ModellerFilter<DataType_>::DataType, Eigen::Dynamic, 1>& ModellerFilter<DataType_>::get_states(PinType type) const
   {
     switch(type)
     {
@@ -60,19 +60,19 @@ namespace ATK
   }
   
   template<typename DataType_>
-  typename Modeler<DataType_>::DataType Modeler<DataType_>::retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const
+  typename ModellerFilter<DataType_>::DataType ModellerFilter<DataType_>::retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const
   {
     return get_states(std::get<0>(pin))[std::get<1>(pin)];
   }
 
   template<typename DataType_>
-  void Modeler<DataType_>::set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state)
+  void ModellerFilter<DataType_>::set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state)
   {
     this->static_state = std::move(static_state);
   }
 
   template<typename DataType_>
-  void Modeler<DataType_>::add_component(std::unique_ptr<Component<DataType_>> component, std::vector<std::tuple<PinType, gsl::index>> pins)
+  void ModellerFilter<DataType_>::add_component(std::unique_ptr<Component<DataType_>> component, std::vector<std::tuple<PinType, gsl::index>> pins)
   {
     for(gsl::index i = 0; i < pins.size(); ++i)
     {
@@ -84,7 +84,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void Modeler<DataType_>::init(bool steady_state)
+  void ModellerFilter<DataType_>::init(bool steady_state)
   {
     for(auto& component : components)
     {
@@ -104,7 +104,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void Modeler<DataType_>::setup()
+  void ModellerFilter<DataType_>::setup()
   {
     assert(input_sampling_rate == output_sampling_rate);
     
@@ -115,7 +115,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void Modeler<DataType_>::process_impl(size_t size) const
+  void ModellerFilter<DataType_>::process_impl(size_t size) const
   {
     for(gsl::index i = 0; i < size; ++i)
     {
@@ -143,7 +143,7 @@ namespace ATK
 
 
   template<typename DataType_>
-  void Modeler<DataType_>::solve(bool steady_state) const
+  void ModellerFilter<DataType_>::solve(bool steady_state) const
   {
     gsl::index iteration = 0;
     
@@ -154,7 +154,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  bool Modeler<DataType_>::iterate(bool steady_state) const
+  bool ModellerFilter<DataType_>::iterate(bool steady_state) const
   {
     for(auto& component : components)
     {
@@ -198,7 +198,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void Modeler<DataType_>::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const
+  void ModellerFilter<DataType_>::compute_current(gsl::index i, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const
   {
     DataType& current = eqs(i);
     for(const auto& component: dynamic_pins[i])
@@ -217,5 +217,5 @@ namespace ATK
     }
   }
   
-  template class Modeler<double>;
+  template class ModellerFilter<double>;
 }
