@@ -5,11 +5,11 @@ This is still a work in progress, just at the stage of a Python prototype. The f
 
 ## Python prototype
 
-The Python prototype is not meant to have as many features as the C++ module. Its goal is to help figure out the design and the issue that a C++ module will face, both as dynamic and static modelers.
+The Python prototype is not meant to have as many features as the C++ module. Its goal is to help figure out the design and the issue that a C++ module will face, both as dynamic and static modellers.
 
-### Python Modeler
+### Python Modeller
 
-The Python modeler is capable of describing circuits that have the following elements:
+The Python modeller is capable of describing circuits that have the following elements:
 * Resistors,
 * Capacitors,
 * Coils,
@@ -21,7 +21,7 @@ The Python modeler is capable of describing circuits that have the following ele
 Pins (voltage) can be:
 * static ('S'), meaning that it is fixed voltage for the simulation,
 * input ('I'), meaning that it is going to be a future input for the simulation,
-* dynamic ('D'), meaning that the state of this pin will be computed by the modeler.
+* dynamic ('D'), meaning that the state of this pin will be computed by the modeller.
 
 The circuit is first analyzed in steady state before inputs can be driven inside the model.
 
@@ -31,8 +31,22 @@ The issues are the following:
 
 ### SPICE parser
 
-The SPICE parser is very dull and stupid. As it's not a real parser, there are a few things the SPICE modeler has to do for the moment:
+The SPICE parser is very dull and stupid. As it's not a real parser, there are a few things the SPICE modeller has to do for the moment:
 * a first pass on all the lines creates the models,
 * dynamic pins are not known until all voltages are parsed. If it were a parser, one could just get all the voltages and set the static states,
 * not all the SPICE variables for a given model are known, which would lead to errors when encountered.
+
+## C++ implementation
+
+The C++ implementation uses Audio ToolKit framework to allow easy integration in a plugin.
+
+### Dynamic modeller
+
+### Static modeller
+
+### SPICE parser for the dynamic modeller
+
+### SPICE JIT for the static modeller
+
+### Fuzzer
 
