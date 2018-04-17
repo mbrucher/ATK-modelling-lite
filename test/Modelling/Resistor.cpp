@@ -35,4 +35,13 @@ BOOST_AUTO_TEST_CASE( Resistor_Simple_Bridge_sin1k )
   
   model.add_component(std::make_unique<ATK::Resistor<double>>(1000), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   model.add_component(std::make_unique<ATK::Resistor<double>>(1000), {{std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
+  
+  model.set_input_port(0, &model, 0);
+  
+  model.process(PROCESSSIZE);
+  
+  for(gsl::index i = 0; i < PROCESSSIZE; ++i)
+  {
+    BOOST_CHECK_CLOSE(data[i] / 2, model.get_output_array(0)[i], 0.0001);
+  }
 }
