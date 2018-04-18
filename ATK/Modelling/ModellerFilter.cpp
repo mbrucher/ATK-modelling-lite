@@ -121,7 +121,7 @@ namespace ATK
     {
       for(gsl::index j = 0; j < nb_input_ports; ++j)
       {
-        input_state[j] = converted_inputs[i][j];
+        input_state[j] = converted_inputs[j][i];
       }
     }
     
@@ -136,7 +136,7 @@ namespace ATK
     {
       for(gsl::index j = 0; j < nb_output_ports; ++j)
       {
-        outputs[i][j] = dynamic_state[j];
+        outputs[j][i] = dynamic_state[j];
       }
     }
   }

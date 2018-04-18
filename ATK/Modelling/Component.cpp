@@ -20,6 +20,7 @@ namespace ATK
   template<typename DataType_>
   void Component<DataType_>::update_model(ModellerFilter<DataType>* modeller)
   {
+    this->modeller = modeller;
   }
   
   template<typename DataType_>
