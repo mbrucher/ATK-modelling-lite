@@ -123,17 +123,14 @@ namespace ATK
       {
         input_state[j] = converted_inputs[j][i];
       }
-    }
-    
-    solve(true);
-      
-    for(auto& component : components)
-    {
-      component->update_state();
-    }
 
-    for(gsl::index i = 0; i < size; ++i)
-    {
+      solve(true);
+
+      for (auto& component : components)
+      {
+        component->update_state();
+      }
+
       for(gsl::index j = 0; j < nb_output_ports; ++j)
       {
         outputs[j][i] = dynamic_state[j];
