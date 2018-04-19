@@ -4,7 +4,7 @@
 from numpy.testing import assert_almost_equal
 import math
 
-from ATK.Modeling import *
+from ATK.Modelling import *
 
 R = 1e3
 C = 1e-3

@@ -3,7 +3,7 @@
 
 from numpy.testing import assert_almost_equal
 
-from ATK.Modeling import *
+from ATK.Modelling import *
 
 dt = 1e-3
 R = 1e3

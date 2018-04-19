@@ -3,7 +3,7 @@
 
 from numpy.testing import assert_almost_equal
 
-from ATK.Modeling import *
+from ATK.Modelling import *
 
 def TransistorNPN_test():
     model = Modeler(3, 2, 0)
