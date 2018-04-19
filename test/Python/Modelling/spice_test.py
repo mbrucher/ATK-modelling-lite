@@ -11,7 +11,7 @@ R = 1e3
 C = 1e-3
 
 def spice_1_test():
-    f = """VS	1	0	1V
+    f = """VS	1	0	AC 0
 R1	1	2	1K
 C1	2	0	1mF"""
     netlist = [line.strip().split() for line in f.splitlines()]
@@ -21,9 +21,10 @@ C1	2	0	1mF"""
     model = spice_model.create()
 
     model.dt = dt
-    model.setup(False)
+    model.setup()
 
     assert_almost_equal(model.dynamic_state, [0])
+    model.input_state[:] = (1,)
 
     for i in range(1000):
         model(None)

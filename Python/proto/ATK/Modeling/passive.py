@@ -119,6 +119,7 @@ class Coil(object):
             self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) * 1000000
         else:
             self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]) + self.veq) * self.invl2t
+        print(state)
 
 
 class Diode(object):

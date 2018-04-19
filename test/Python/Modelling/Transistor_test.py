@@ -18,7 +18,7 @@ def TransistorNPN_test():
     model.dt = 1.e-3
     model.setup()
     
-    assert_almost_equal(model.dynamic_state, [.4051047, 4.9942842, .0005773])
+    assert_almost_equal(model.dynamic_state, [.4051047, 4.9942834, .00057737777])
 
 def TransistorPNP_test():
     model = Modeler(3, 2, 0)
@@ -33,7 +33,7 @@ def TransistorPNP_test():
     model.dt = 1.e-3
     model.setup()
     
-    assert_almost_equal(model.dynamic_state, [-.4051047, -4.9942842, -.0005773])
+    assert_almost_equal(model.dynamic_state, [-.4051047, -4.9942834, -.00057737777])
 
 def MatchedTransistor_test():
     model = Modeler(1, 3, 0)
