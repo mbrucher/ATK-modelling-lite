@@ -26,6 +26,7 @@ namespace ATK
   template<typename DataType_>
   void Component<DataType_>::update_steady_state(DataType dt)
   {
+    this->dt = dt;
   }
   
   template<typename DataType_>
