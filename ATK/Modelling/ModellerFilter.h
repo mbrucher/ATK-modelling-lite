@@ -105,9 +105,8 @@ namespace ATK
 
     /**
      * Sets up the internal state of the ModellerFilter
-     * @param steady_state indicates if a steady state must be computed
      */
-    void init(bool steady_state = true);
+    void init();
 
     /**
      * Setups internals

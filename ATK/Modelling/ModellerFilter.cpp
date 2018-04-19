@@ -84,22 +84,20 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void ModellerFilter<DataType_>::init(bool steady_state)
+  void ModellerFilter<DataType_>::init()
   {
     for(auto& component : components)
     {
       component->update_steady_state(1. / input_sampling_rate);
     }
     
-    if(steady_state)
-    {
-      solve(steady_state);
+    solve(true);
       
-      for(auto& component : components)
-      {
-        component->update_steady_state(1. / input_sampling_rate);
-      }
+    for(auto& component : components)
+    {
+      component->update_steady_state(1. / input_sampling_rate);
     }
+
     initialized = true;
   }
   
@@ -110,7 +108,7 @@ namespace ATK
     
     if(!initialized)
     {
-      init(true);
+      init();
     }
   }
 
