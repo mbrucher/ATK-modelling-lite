@@ -9,7 +9,7 @@ namespace ATK
 {
   template<typename DataType_>
   Capacitor<DataType_>::Capacitor(DataType_ C)
-  :C(C)
+  :C(C), c2t(0), iceq(0)
   {
   }
 

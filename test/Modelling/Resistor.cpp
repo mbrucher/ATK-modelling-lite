@@ -18,7 +18,7 @@
 
 static constexpr size_t PROCESSSIZE = 1000;
 
-BOOST_AUTO_TEST_CASE( Resistor_Simple_Bridge_sin1k )
+BOOST_AUTO_TEST_CASE( Resistor_Simple_Bridge )
 {
   std::array<double, PROCESSSIZE> data;
   for(gsl::index i = 0; i < PROCESSSIZE; ++i)
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( Resistor_Simple_Bridge_sin1k )
   }
 }
 
-BOOST_AUTO_TEST_CASE( Resistor_Parallel_Bridge_sin1k )
+BOOST_AUTO_TEST_CASE( Resistor_Parallel_Bridge )
 {
   std::array<double, PROCESSSIZE> data;
   for(gsl::index i = 0; i < PROCESSSIZE; ++i)
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( Resistor_Parallel_Bridge_sin1k )
   }
 }
 
-BOOST_AUTO_TEST_CASE( Resistor_Serial_Bridge_sin1k )
+BOOST_AUTO_TEST_CASE( Resistor_Serial_Bridge )
 {
   std::array<double, PROCESSSIZE> data;
   for(gsl::index i = 0; i < PROCESSSIZE; ++i)
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( Resistor_Serial_Bridge_sin1k )
   }
 }
 
-BOOST_AUTO_TEST_CASE( Resistor_Import_Bridge_sin1k )
+BOOST_AUTO_TEST_CASE( Resistor_Import_Bridge)
 {
   std::array<double, PROCESSSIZE> data;
   for(gsl::index i = 0; i < PROCESSSIZE; ++i)

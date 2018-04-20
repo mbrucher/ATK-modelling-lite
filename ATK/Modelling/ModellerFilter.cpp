@@ -23,6 +23,7 @@ namespace ATK
   , dynamic_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_dynamic_pins))
   , static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_static_pins))
   , input_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_input_pins))
+  , initialized(false)
   {
   }
   
@@ -122,7 +123,7 @@ namespace ATK
         input_state[j] = converted_inputs[j][i];
       }
 
-      solve(true);
+      solve(false);
 
       for (auto& component : components)
       {
