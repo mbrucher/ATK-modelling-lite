@@ -81,7 +81,7 @@ class Capacitor(object):
 
 class Coil(object):
     """
-    Class that implements a coilbetween two pins
+    Class that implements a coil between two pins
     Inspired by http://qucs.sourceforge.net/tech/node26.html
     """
     nb_pins = 2
@@ -119,7 +119,6 @@ class Coil(object):
             self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) * 1000000
         else:
             self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]) + self.veq) * self.invl2t
-        print(state)
 
 
 class Diode(object):

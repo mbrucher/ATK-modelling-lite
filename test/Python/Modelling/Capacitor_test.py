@@ -8,7 +8,7 @@ from ATK.Modelling import *
 
 R = 1e3
 C = 1e-3
-dt = 1e-3
+dt = 1. / 48000
 
 def RC_test():
     model = Modeler(1, 1, 1)
