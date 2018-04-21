@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE( Capacitor_RC )
   
   model.process(PROCESSSIZE);
   
-  for(gsl::index i = 50; i < PROCESSSIZE; ++i)
+  for(gsl::index i = 0; i < PROCESSSIZE; ++i)
   {
-    BOOST_CHECK_CLOSE(1 - std::exp(-(i+1) * dt / (R * C)), model.get_output_array(0)[i], 1);
+    BOOST_CHECK_CLOSE(1 - std::exp(-(i+.5) * dt / (R * C)), model.get_output_array(0)[i], 1);
   }
 }

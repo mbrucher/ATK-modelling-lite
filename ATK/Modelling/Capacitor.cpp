@@ -18,7 +18,7 @@ namespace ATK
   {
     Parent::update_steady_state(dt);
     c2t = (2 * C) / dt;
-    
+
     iceq = c2t * (modeller->retrieve_voltage(pins[1]) - modeller->retrieve_voltage(pins[0]));
   }
   
