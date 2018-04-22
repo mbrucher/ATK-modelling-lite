@@ -18,7 +18,7 @@ namespace ATK
   template<typename DataType_>
   typename Diode<DataType_>::DataType Diode<DataType_>::get_current(gsl::index pin_index, bool steady_state) const
   {
-    return Is * precomp * (0 == pin_index ? 1 : -1);
+    return Is * (precomp - 1) * (0 == pin_index ? 1 : -1);
   }
   
   template<typename DataType_>
