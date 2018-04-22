@@ -1,35 +1,24 @@
 /**
- * \file Coil.h
+ * \file Diode.h
  */
 
-#ifndef ATK_MODELLING_COIL_H
-#define ATK_MODELLING_COIL_H
+#ifndef ATK_MODELLING_DIODE_H
+#define ATK_MODELLING_DIODE_H
 
 #include "Component.h"
 
 namespace ATK
 {
-  /// Coil component
+  /// Diode component
   template<typename DataType_>
-  class ATK_MODELLING_EXPORT Coil final: public Component<DataType_>
+  class ATK_MODELLING_EXPORT Diode final: public Component<DataType_>
   {
   public:
     typedef Component<DataType_> Parent;
     typedef DataType_ DataType;
 
-    Coil(DataType L);
+    Diode(DataType Is=1e-14, DataType N=1.24, DataType Vt = 26e-3);
     
-    /**
-     * Update the component for its steady state condition
-     * @param dt is the delat that will be used in following updates
-     */
-    void update_steady_state(DataType dt) override;
-    
-    /**
-     * Update the component for its current state condition
-     */
-    void update_state() override;
-
     /**
      * Get current for the given pin based on the state
      * @param pin_index is the pin from which to compute the current
@@ -44,7 +33,7 @@ namespace ATK
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
     DataType get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const override;
-
+    
     /**
      * Precompute internal value before asking current and gradients
      * @param steady_state is a flag to indcate steady state computation (used for some components)
@@ -52,11 +41,10 @@ namespace ATK
     void precompute(bool steady_state) override;
 
   private:
-    DataType L;
-    DataType l2t;
-    DataType invl2t;
-    DataType veq;
-    DataType i;
+    DataType Is;
+    DataType N;
+    DataType Vt;
+    DataType precomp;
 
   protected:
     using Parent::modeller;
