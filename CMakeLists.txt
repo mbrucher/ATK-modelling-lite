@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(Audio-modeling)
+project(Audio-modelling)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(ENABLE_SHARED_LIBRARIES "Enable shared libraries generation" ON)
