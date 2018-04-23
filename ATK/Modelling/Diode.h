@@ -10,7 +10,7 @@
 namespace ATK
 {
   /// Diode component
-  template<typename DataType_>
+  template<typename DataType_, unsigned int direct = 1, unsigned int indirect = 0>
   class ATK_MODELLING_EXPORT Diode final: public Component<DataType_>
   {
   public:
