@@ -25,7 +25,7 @@
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-static constexpr size_t PROCESSSIZE = 1000;
+static constexpr size_t PROCESSSIZE = 2;
 static constexpr size_t SAMPLING_RATE = 48000;
 
 BOOST_AUTO_TEST_CASE( Diode_Clipper )
