@@ -16,7 +16,7 @@
 #include <ATK/Modelling/Diode.h>
 #include <ATK/Modelling/Resistor.h>
 
-#include <ATK/Distortion/DiodeClipperFilter.h>
+#include <ATK/Distortion/SimpleOverdriveFilter.h>
 
 #include <ATK/Mock/TriangleCheckerFilter.h>
 
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( Diode_Clipper )
   
   ATK::ModellerFilter<double> model(2, 1, 1);
   
-  model.add_component(std::make_unique<ATK::Diode<double, 1, 1>>(1e-12), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
+  model.add_component(std::make_unique<ATK::Diode<double, 1, 1>>(1e-12, 1), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   model.add_component(std::make_unique<ATK::Capacitor<double>>(22e-9), {{std::make_tuple(ATK::PinType::Dynamic, 0), std::make_tuple(ATK::PinType::Dynamic, 1)}});
   model.add_component(std::make_unique<ATK::Resistor<double>>(10000), {{std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 1)}});
 
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( Diode_Clipper )
   volume.set_volume(-1);
   volume.set_input_port(0, &model, 0);
   
-  ATK::DiodeClipperFilter<double> filter;
+  ATK::SimpleOverdriveFilter<double> filter;
   filter.set_input_sampling_rate(SAMPLING_RATE);
   filter.set_input_port(0, &generator, 0);
   
