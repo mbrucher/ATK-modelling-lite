@@ -27,7 +27,7 @@
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-static constexpr size_t PROCESSSIZE = 10;
+static constexpr size_t PROCESSSIZE = 1000;
 static constexpr size_t SAMPLING_RATE = 48000;
 
 BOOST_AUTO_TEST_CASE( Diode_Clipper )
@@ -67,11 +67,16 @@ BOOST_AUTO_TEST_CASE( Diode_Clipper )
   sum.set_input_port(0, &filter, 0);
   sum.set_input_port(1, &volume, 0);
   
+  ATK::VolumeFilter<double> scale;
+  scale.set_volume(0.1);
+  scale.set_input_sampling_rate(SAMPLING_RATE);
+  scale.set_input_port(0, &sum, 0);
+
   ATK::TriangleCheckerFilter<double> checker;
   checker.set_input_sampling_rate(SAMPLING_RATE);
   checker.set_amplitude(0);
   checker.set_frequency(1000);
-  checker.set_input_port(0, &sum, 0);
+  checker.set_input_port(0, &scale, 0);
   
   checker.process(PROCESSSIZE);
 }
