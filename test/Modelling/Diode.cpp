@@ -4,6 +4,8 @@
 
 #include <array>
 
+#include <boost/math/constants/constants.hpp>
+
 #include <ATK/config.h>
 
 #include <ATK/Core/InPointerFilter.h>
@@ -25,7 +27,7 @@
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-static constexpr size_t PROCESSSIZE = 2;
+static constexpr size_t PROCESSSIZE = 10;
 static constexpr size_t SAMPLING_RATE = 48000;
 
 BOOST_AUTO_TEST_CASE( Diode_Clipper )
@@ -33,22 +35,24 @@ BOOST_AUTO_TEST_CASE( Diode_Clipper )
   std::array<double, PROCESSSIZE> data;
   for(gsl::index i = 0; i < PROCESSSIZE; ++i)
   {
-    data[i] = std::cos(i);
+    data[i] = std::sin(2 * i * boost::math::constants::pi<double>() / SAMPLING_RATE * 1000);
   }
   
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(SAMPLING_RATE);
   
   ATK::ModellerFilter<double> model(2, 1, 1);
-  model.set_input_sampling_rate(SAMPLING_RATE);
-  model.set_output_sampling_rate(SAMPLING_RATE);
   
   model.add_component(std::make_unique<ATK::Diode<double, 1, 1>>(1e-12), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   model.add_component(std::make_unique<ATK::Capacitor<double>>(22e-9), {{std::make_tuple(ATK::PinType::Dynamic, 0), std::make_tuple(ATK::PinType::Dynamic, 1)}});
   model.add_component(std::make_unique<ATK::Resistor<double>>(10000), {{std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 1)}});
-  
+
+  model.set_input_sampling_rate(SAMPLING_RATE);
+  model.set_output_sampling_rate(SAMPLING_RATE);
+
   model.set_input_port(0, &generator, 0);
-  
+  model.setup();
+
   ATK::VolumeFilter<double> volume;
   volume.set_input_sampling_rate(SAMPLING_RATE);
   volume.set_volume(-1);

@@ -28,7 +28,7 @@ def toto_test():
     
     model.add_component(Resistor(R), [('D', 1), ('I', 0)])
     model.add_component(Capacitor(C), [('D', 0), ('D', 1)])
-    model.add_component(AntiParallelDiode(), [('D', 0), ('S', 0)])
+    model.add_component(AntiParallelDiode(Is=1e-12), [('D', 0), ('S', 0)])
     
     model.dt = dt
     model.setup()
