@@ -30,7 +30,7 @@
 static constexpr size_t PROCESSSIZE = 1000;
 static constexpr size_t SAMPLING_RATE = 48000;
 
-BOOST_AUTO_TEST_CASE( Diode_Clipper )
+BOOST_AUTO_TEST_CASE( Diode_SimpleOverdrive )
 {
   std::array<double, PROCESSSIZE> data;
   for(gsl::index i = 0; i < PROCESSSIZE; ++i)
