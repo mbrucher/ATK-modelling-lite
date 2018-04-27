@@ -159,6 +159,9 @@ namespace ATK
     {
       ++iteration;
     }
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "total iterations: " << iteration;
+#endif
   }
 
   template<typename DataType_>
