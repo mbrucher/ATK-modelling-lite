@@ -60,7 +60,7 @@ class Modeler(object):
                 "\nComponents:\n  " + \
                 "\n  ".join((repr(component) for component in self.components))
         
-    def setup(self, steady_state = True):
+    def setup(self):
         """
         Initializes the internal state
         :param steady_state: if set to True (default), computes a steady state
@@ -68,11 +68,10 @@ class Modeler(object):
         for component in self.components:
             component.update_steady_state(self.state, self.dt)
 
-        if steady_state:
-            self.solve(True)
+        self.solve(True)
     
-            for component in self.components:
-                component.update_steady_state(self.state, self.dt)
+        for component in self.components:
+            component.update_steady_state(self.state, self.dt)
 
         self.initialized = True
         
@@ -120,7 +119,8 @@ class Modeler(object):
                 
         eqs = np.array(eqs)
         jacobian = np.array(jacobian)
-        if np.all(np.abs(jacobian) < EPS):
+
+        if np.all(np.abs(eqs) < EPS):
             return True
         
         delta = np.linalg.solve(jacobian, eqs)

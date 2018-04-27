@@ -81,7 +81,7 @@ class Capacitor(object):
 
 class Coil(object):
     """
-    Class that implements a coilbetween two pins
+    Class that implements a coil between two pins
     Inspired by http://qucs.sourceforge.net/tech/node26.html
     """
     nb_pins = 2

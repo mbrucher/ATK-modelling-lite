@@ -3,16 +3,17 @@
 
 from numpy.testing import assert_almost_equal
 
-from ATK.Modeling import *
+from ATK.Modelling import *
 
-def SimpleBridgeResistorDiode_test():
+def ResistorAntiParallelDiode_test():
     model = Modeler(1, 2, 0)
 
     model.add_component(Resistor(1000), [('D', 0), ('S', 1)])
-    model.add_component(Diode(), [('D', 0), ('S', 0)])
+    model.add_component(AntiParallelDiode(), [('D', 0), ('S', 0)])
     model.static_state[:] = (0, 5)
 
     model.dt = 1.e-3
     model.setup()
 
+    print(model.state)
     assert_almost_equal(model.dynamic_state, [0.8623735])
