@@ -2,6 +2,12 @@
  * \file ModellerFilter.cpp
  */
 
+#define BOOST_LOG_DYN_LINK
+
+#if ENABLE_LOG
+#include <boost/log/trivial.hpp>
+#endif
+
 #include "Component.h"
 #include "ModellerFilter.h"
 
@@ -98,7 +104,10 @@ namespace ATK
     {
       component->update_steady_state(1. / input_sampling_rate);
     }
-
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "init state: " << dynamic_state;
+#endif
+    
     initialized = true;
   }
   
@@ -124,7 +133,10 @@ namespace ATK
       }
 
       solve(false);
-
+#if ENABLE_LOG
+      BOOST_LOG_TRIVIAL(trace) << "final state: " << dynamic_state;
+#endif
+      
       for (auto& component : components)
       {
         component->update_state();
@@ -174,6 +186,10 @@ namespace ATK
       }
     }
 
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "eqs: " << eqs;
+    BOOST_LOG_TRIVIAL(trace) << "jacobian: " << jacobian;
+#endif
     // Check if the equations have converged
     if((eqs.array().abs() < EPS).all())
     {
@@ -189,7 +205,11 @@ namespace ATK
     }
     
     dynamic_state -= delta;
-
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "delta: " << delta;
+    BOOST_LOG_TRIVIAL(trace) << "intermediate state: " << dynamic_state;
+#endif
+    
     return false;
   }
 
