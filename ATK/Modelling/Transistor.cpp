@@ -65,22 +65,22 @@ namespace ATK
   typename NPN<DataType_>::DataType NPN<DataType_>::get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const
   {
     if(pin_index_ref == 0 && pin_index == 0)
-      return ib_Vbc() + ib_Vbe();
+      return -(ib_Vbc() + ib_Vbe());
     if(pin_index_ref == 0 && pin_index == 1)
-      return -ib_Vbc();
+      return ib_Vbc();
     if(pin_index_ref == 0 && pin_index == 2)
       return ib_Vbe();
     if(pin_index_ref == 1 && pin_index == 0)
-      return ic_Vbc() + ic_Vbe();
+      return -(ic_Vbc() + ic_Vbe());
     if(pin_index_ref == 1 && pin_index == 1)
       return ic_Vbc();
     if(pin_index_ref == 1 && pin_index == 2)
       return ic_Vbe();
     if(pin_index_ref == 2 && pin_index == 0)
-      return -(ib_Vbe() + ib_Vbc() + ic_Vbe() + ic_Vbc());
+      return ib_Vbe() + ib_Vbc() + ic_Vbe() + ic_Vbc();
     if(pin_index_ref == 2 && pin_index == 1)
-      return ib_Vbc() + ic_Vbc();
-    return ib_Vbe() + ic_Vbe();
+      return -(ib_Vbc() + ic_Vbc());
+    return -(ib_Vbe() + ic_Vbe());
   }
   
   template<typename DataType_>
@@ -146,22 +146,22 @@ namespace ATK
   typename PNP<DataType_>::DataType PNP<DataType_>::get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const
   {
     if(pin_index_ref == 0 && pin_index == 0)
-      return ib_Vbc() + ib_Vbe();
+      return -(ib_Vbc() + ib_Vbe());
     if(pin_index_ref == 0 && pin_index == 1)
-      return -ib_Vbc();
+      return ib_Vbc();
     if(pin_index_ref == 0 && pin_index == 2)
       return ib_Vbe();
     if(pin_index_ref == 1 && pin_index == 0)
-      return ic_Vbc() + ic_Vbe();
+      return -(ic_Vbc() + ic_Vbe());
     if(pin_index_ref == 1 && pin_index == 1)
       return ic_Vbc();
     if(pin_index_ref == 1 && pin_index == 2)
       return ic_Vbe();
     if(pin_index_ref == 2 && pin_index == 0)
-      return -(ib_Vbe() + ib_Vbc() + ic_Vbe() + ic_Vbc());
+      return ib_Vbe() + ib_Vbc() + ic_Vbe() + ic_Vbc();
     if(pin_index_ref == 2 && pin_index == 1)
-      return ib_Vbc() + ic_Vbc();
-    return ib_Vbe() + ic_Vbe();
+      return -(ib_Vbc() + ic_Vbc());
+    return -(ib_Vbe() + ic_Vbe());
   }
   
   template<typename DataType_>
