@@ -3,7 +3,7 @@
 
 from numpy.testing import assert_almost_equal
 
-from ATK.Modeling import *
+from ATK.Modelling import *
 
 def SimpleBridgeResistor_test():
     model = Modeler(1, 2, 0)
@@ -15,7 +15,6 @@ def SimpleBridgeResistor_test():
     model.dt = 1.e-3
     model.setup()
 
-    print(model.state)
     assert_almost_equal(model.dynamic_state, [5./3])
 
 def ParallelBridgeResistor_test():

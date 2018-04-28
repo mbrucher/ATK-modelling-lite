@@ -3,7 +3,7 @@
 
 from numpy.testing import assert_almost_equal
 
-from ATK.Modeling import *
+from ATK.Modelling import *
 
 def SimpleBridgeResistorDiode_test():
     model = Modeler(1, 2, 0)
@@ -16,3 +16,4 @@ def SimpleBridgeResistorDiode_test():
     model.setup()
 
     assert_almost_equal(model.dynamic_state, [0.8623735])
+

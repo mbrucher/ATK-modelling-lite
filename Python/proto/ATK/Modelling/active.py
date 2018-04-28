@@ -60,23 +60,23 @@ class TransistorNPN(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         if pin_index_ref == 0 and pin_index == 0:
-            return self.ib_vbc(state) + self.ib_vbe(state)
+            return -(self.ib_vbc(state) + self.ib_vbe(state))
         elif pin_index_ref == 0 and pin_index == 1:
-            return -self.ib_vbc(state)
+            return self.ib_vbc(state)
         elif pin_index_ref == 0 and pin_index == 2:
-            return -self.ib_vbe(state)
+            return self.ib_vbe(state)
         elif pin_index_ref == 1 and pin_index == 0:
-            return self.ic_vbc(state) + self.ic_vbe(state)
+            return -(self.ic_vbc(state) + self.ic_vbe(state))
         elif pin_index_ref == 1 and pin_index == 1:
-            return -self.ic_vbc(state)
+            return self.ic_vbc(state)
         elif pin_index_ref == 1 and pin_index == 2:
-            return -self.ic_vbe(state)
+            return self.ic_vbe(state)
         elif pin_index_ref == 2 and pin_index == 0:
-            return -(self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
+            return (self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
         elif pin_index_ref == 2 and pin_index == 1:
-            return self.ib_vbc(state) + self.ic_vbc(state)
+            return -(self.ib_vbc(state) + self.ic_vbc(state))
         elif pin_index_ref == 2 and pin_index == 2:
-            return self.ib_vbe(state) + self.ic_vbe(state)
+            return -(self.ib_vbe(state) + self.ic_vbe(state))
 
     def precompute(self, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
@@ -136,23 +136,23 @@ class TransistorPNP(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         if pin_index_ref == 0 and pin_index == 0:
-            return self.ib_vbc(state) + self.ib_vbe(state)
+            return -(self.ib_vbc(state) + self.ib_vbe(state))
         elif pin_index_ref == 0 and pin_index == 1:
-            return -self.ib_vbc(state)
+            return self.ib_vbc(state)
         elif pin_index_ref == 0 and pin_index == 2:
-            return -self.ib_vbe(state)
+            return self.ib_vbe(state)
         elif pin_index_ref == 1 and pin_index == 0:
-            return self.ic_vbc(state) + self.ic_vbe(state)
+            return -(self.ic_vbc(state) + self.ic_vbe(state))
         elif pin_index_ref == 1 and pin_index == 1:
-            return -self.ic_vbc(state)
+            return self.ic_vbc(state)
         elif pin_index_ref == 1 and pin_index == 2:
-            return -self.ic_vbe(state)
+            return self.ic_vbe(state)
         elif pin_index_ref == 2 and pin_index == 0:
-            return -(self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
+            return (self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
         elif pin_index_ref == 2 and pin_index == 1:
-            return self.ib_vbc(state) + self.ic_vbc(state)
+            return -(self.ib_vbc(state) + self.ic_vbc(state))
         elif pin_index_ref == 2 and pin_index == 2:
-            return self.ib_vbe(state) + self.ic_vbe(state)
+            return -(self.ib_vbe(state) + self.ic_vbe(state))
 
     def precompute(self, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
