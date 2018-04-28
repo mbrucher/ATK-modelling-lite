@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( OpAmp_Follower )
   model.set_input_sampling_rate(48000);
   model.set_output_sampling_rate(48000);
   
-  model.add_component(std::make_unique<ATK::OpAmp<double>>(), {{std::make_tuple(ATK::PinType::Dynamic, 0),std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
+  model.add_component(std::make_unique<ATK::OpAmp<double>>(), {{std::make_tuple(ATK::PinType::Dynamic, 0), std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   
   model.set_input_port(0, &generator, 0);
   

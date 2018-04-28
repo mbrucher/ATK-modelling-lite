@@ -48,7 +48,7 @@ namespace ATK
      * @param jacobian is the jacobian to update
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
-    void add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian, bool steady_state) const override;
+    void add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const override;
 
   private:
     DataType G;

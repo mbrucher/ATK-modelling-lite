@@ -2,9 +2,8 @@
  * \file ModellerFilter.cpp
  */
 
-#define BOOST_LOG_DYN_LINK
-
 #if ENABLE_LOG
+#define BOOST_LOG_DYN_LINK
 #include <boost/log/trivial.hpp>
 #endif
 

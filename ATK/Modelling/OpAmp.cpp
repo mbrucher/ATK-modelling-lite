@@ -33,8 +33,17 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void OpAmp<DataType_>::add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian, bool steady_state) const
+  void OpAmp<DataType_>::add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const
   {
+    eqs(eq_index) = modeller->retrieve_voltage(pins[1]) - modeller->retrieve_voltage(pins[0]);
+    if(std::get<0>(pins[0]) == PinType::Dynamic)
+    {
+      jacobian(eq_index, std::get<1>(pins[0])) = -1;
+    }
+    if(std::get<0>(pins[1]) == PinType::Dynamic)
+    {
+      jacobian(eq_index, std::get<1>(pins[1])) = 1;
+    }
   }
 
   template class OpAmp<double>;
