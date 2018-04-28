@@ -78,6 +78,12 @@ namespace ATK
   }
   
   template<typename DataType_>
+  void ModellerFilter<DataType_>::set_custom_equation(gsl::index eq, std::tuple<Component<DataType>*, gsl::index> custom_equation)
+  {
+    dynamic_pins_equation[eq] = custom_equation;
+  }
+
+  template<typename DataType_>
   void ModellerFilter<DataType_>::init()
   {
     for(auto& component : components)
@@ -171,8 +177,7 @@ namespace ATK
       }
       else
       {
-        //component, eq_number = self.dynamic_pins_equation[i]
-        //eq, jac = component.add_equation(self.state, steady_state, eq_number)
+        std::get<0>(dynamic_pins_equation[i])->add_equation(i, std::get<1>(dynamic_pins_equation[i]), eqs, jacobian, steady_state);
       }
     }
 

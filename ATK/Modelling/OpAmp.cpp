@@ -28,6 +28,8 @@ namespace ATK
   void OpAmp<DataType_>::update_model(ModellerFilter<DataType>* modeller)
   {
     Parent::update_model(modeller);
+    assert(std::get<0>(pins[2]) == PinType::Dynamic);
+    modeller->set_custom_equation(std::get<1>(pins[2]), std::make_tuple(this, 0));
   }
 
   template<typename DataType_>

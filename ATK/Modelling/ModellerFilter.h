@@ -76,6 +76,17 @@ namespace ATK
      */
     void add_component(std::unique_ptr<Component<DataType>> component, std::vector<std::tuple<PinType, gsl::index>> pins);
     
+    /**
+     * Called during model update to remove a Kirchhoff equation and replace it with a component specific one
+     * @param eq is the equation number to replace
+     * @param custom_equation is the custom equation reference that we will use
+     */
+    void set_custom_equation(gsl::index eq, std::tuple<Component<DataType>*, gsl::index> custom_equation);
+    
+    /**
+     * Gets a voltage from one of the states
+     * @param pin is the pin to get the voltage for
+     */
     DataType retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const;
     
     /**
