@@ -45,7 +45,7 @@ class Modeler(object):
         """
         add a new component
         :param component: component to add
-        :param pins: list of tuples indicating how the compoennt is connected
+        :param pins: list of tuples indicating how the component is connected
         """
         self.components.append(component)
         component.pins = pins
@@ -92,7 +92,7 @@ class Modeler(object):
     
     def solve(self, steady_state):
         """
-        Actually solve the equaltion system
+        Actually solve the equation system
         :param steady_state: if set to True (default), computes for a steady state
         """
         iteration = 0
