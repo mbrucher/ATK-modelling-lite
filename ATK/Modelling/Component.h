@@ -10,6 +10,8 @@
 
 #include <gsl/gsl>
 
+#include <Eigen/Eigen>
+
 #include "config.h"
 #include "Types.h"
 
@@ -91,10 +93,13 @@ namespace ATK
     
     /**
      * Add a new equation to the modeller
+     * @param eq_index is equation row in the state vector and the jacobian
      * @param eq_number is the equation number to add
+     * @param eqs is the state vector to update
+     * @param jacobian is the jacobian to update
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
-    virtual void add_equation(gsl::index eq_number, bool steady_state);
+    virtual void add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian, bool steady_state);
   };
 }
 

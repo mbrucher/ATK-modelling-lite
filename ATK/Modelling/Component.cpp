@@ -40,7 +40,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void Component<DataType_>::add_equation(gsl::index eq_number, bool steady_state)
+  void Component<DataType_>::add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic> jacobian, bool steady_state)
   {
   }
   
