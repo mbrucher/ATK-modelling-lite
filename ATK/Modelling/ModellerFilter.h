@@ -45,12 +45,8 @@ namespace ATK
     
     /// vector of dynamic pins, each pin has a list of components connected with it, and the index of the pin for the component
     std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> dynamic_pins;
-    /// Vector of potential component with equation number in case a component replaces an equation with its own
+    /// vector of dynamic pins, indicating if the equation is overriden by a component
     std::vector<std::tuple<Component<DataType>*, gsl::index>> dynamic_pins_equation;
-    /// vector of static pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> static_pins;
-    /// vector of input pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> input_pins;
 
     mutable Eigen::Matrix<DataType, Eigen::Dynamic, 1> dynamic_state;
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state;
@@ -60,7 +56,6 @@ namespace ATK
     
     bool initialized = false;
     
-    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>>& get_pins(PinType type);
     const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_states(PinType type) const;
   public:
     /**

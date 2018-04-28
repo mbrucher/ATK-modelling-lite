@@ -24,8 +24,6 @@ namespace ATK
   , nb_input_pins(nb_input_pins)
   , dynamic_pins(nb_dynamic_pins)
   , dynamic_pins_equation(nb_dynamic_pins, std::make_tuple(nullptr, -1))
-  , static_pins(nb_static_pins)
-  , input_pins(nb_input_pins)
   , dynamic_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_dynamic_pins))
   , static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_static_pins))
   , input_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_input_pins))
@@ -38,20 +36,6 @@ namespace ATK
   {
   }
   
-  template<typename DataType_>
-  std::vector<std::vector<std::tuple<Component<DataType_>*, gsl::index>>>& ModellerFilter<DataType_>::get_pins(PinType type)
-  {
-    switch(type)
-    {
-      case PinType::Static:
-        return static_pins;
-      case PinType::Dynamic:
-        return dynamic_pins;
-      case PinType::Input:
-        return input_pins;
-    }
-  }
-
   template<typename DataType_>
   const Eigen::Matrix<typename ModellerFilter<DataType_>::DataType, Eigen::Dynamic, 1>& ModellerFilter<DataType_>::get_states(PinType type) const
   {
@@ -83,7 +67,10 @@ namespace ATK
   {
     for(gsl::index i = 0; i < pins.size(); ++i)
     {
-      get_pins(std::get<0>(pins[i]))[std::get<1>(pins[i])].push_back(std::make_tuple(component.get(), i));
+      if(std::get<0>(pins[i]) == PinType::Dynamic)
+      {
+          dynamic_pins[std::get<1>(pins[i])].push_back(std::make_tuple(component.get(), i));
+      }
     }
     component->set_pins(std::move(pins));
     component->update_model(this);
