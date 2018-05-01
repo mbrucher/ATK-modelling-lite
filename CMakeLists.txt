@@ -8,8 +8,11 @@ option(ENABLE_SHARED_LIBRARIES "Enable shared libraries generation" ON)
 option(ENABLE_STATIC_LIBRARIES "Enable static libraries generation" OFF)
 
 SET(CMAKE_MODULE_PATH ${ATK_DIR}/share/CMake)
+
 find_package(ATK)
 find_package(Boost REQUIRED log unit_test_framework)
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 add_definitions(-DBOOST_NO_AUTO_PTR)
