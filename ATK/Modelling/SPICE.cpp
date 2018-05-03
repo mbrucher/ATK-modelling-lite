@@ -17,7 +17,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
     throw std::runtime_error("Cannot open file for reading.");
   }
   
-  std::string line;
+  std::string line; // MAybe I should merge lines that start with a '+' before parsing them
   while (std::getline(infile, line))
   {
   }
