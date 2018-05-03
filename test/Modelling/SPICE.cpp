@@ -11,6 +11,6 @@
 
 BOOST_AUTO_TEST_CASE( SPICE_check_empty )
 {
-  auto filter = ATK::parse<double>("toto");
+  auto filter = ATK::parse<double>("foo");
   BOOST_CHECK(filter);
 }
