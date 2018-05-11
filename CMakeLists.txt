@@ -21,7 +21,8 @@ if(ENABLE_CLANG_SUPPORT)
   find_package(LLVM REQUIRED CONFIG)
 
   add_definitions(-DENABLE_CLANG_SUPPORT)
-  link_directories(${LLVM_LIBRARY_DIRS})
+  include_directories(${LLVM_DIR}/../../../include)
+  link_directories(${LLVM_DIR}/../../../lib)
   add_definitions(${LLVM_DEFINITIONS})
 endif(ENABLE_CLANG_SUPPORT)
 
