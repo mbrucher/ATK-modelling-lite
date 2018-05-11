@@ -19,6 +19,7 @@ include(Utilities)
 
 if(ENABLE_CLANG_SUPPORT)
   find_package(LLVM REQUIRED CONFIG)
+  message(status ${LLVM_INCLUDE_DIR})
 
   add_definitions(-DENABLE_CLANG_SUPPORT)
   include_directories(${LLVM_DIR}/../../../include)
