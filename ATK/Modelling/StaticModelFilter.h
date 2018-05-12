@@ -12,6 +12,19 @@
 
 namespace ATK
 {
+  class BaseFilter;
+  
+  /// Class responsible for creating a dynamic model filter
+  template<typename DataType_>
+  class StaticModelFilterGenerator
+  {
+  public:
+    typedef DataType_ DataType;
+    
+    ~StaticModelFilterGenerator();
+    
+    std::unique_ptr<BaseFilter> generateDynamicFilter() const;
+  };
 }
 
 #endif
