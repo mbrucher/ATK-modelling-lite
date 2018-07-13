@@ -18,6 +18,8 @@ namespace ATK
   template<typename DataType_>
   class StaticModelFilterGenerator
   {
+    void parseString(const std::string& fullfile);
+
   public:
     typedef DataType_ DataType;
     
