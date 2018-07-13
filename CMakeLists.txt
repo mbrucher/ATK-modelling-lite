@@ -9,6 +9,7 @@ option(ENABLE_STATIC_LIBRARIES "Enable static libraries generation" OFF)
 option(ENABLE_CLANG_SUPPORT "Enable clang output and static generation" ON)
 
 SET(CMAKE_MODULE_PATH ${ATK_DIR}/share/CMake)
+
 find_package(ATK)
 find_package(Boost REQUIRED log unit_test_framework)
 
