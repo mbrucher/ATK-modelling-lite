@@ -4,6 +4,8 @@
 
 #include <fstream>
 
+#include <ATK/Core/Utilities.h>
+
 #include "ModellerFilter.h"
 
 namespace ATK
@@ -14,7 +16,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
   std::ifstream infile(filename);
   if(infile.fail())
   {
-    throw std::runtime_error("Cannot open file for reading.");
+    throw ATK::RuntimeError("Cannot open file for reading.");
   }
   
   std::string line; // Maybe I should merge lines that start with a '+' before parsing them

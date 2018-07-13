@@ -122,7 +122,7 @@ namespace ATK
     /**
      * Computes a new state based on a new set of inputs
      */
-    void process_impl(size_t size) const override;
+    void process_impl(gsl::index size) const override;
     
   private:
     /**

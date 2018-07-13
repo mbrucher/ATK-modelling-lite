@@ -14,6 +14,7 @@ find_package(ATK)
 find_package(Boost REQUIRED log unit_test_framework)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
+include_directories(${ATK_INCLUDE_DIRS})
 add_definitions(-DBOOST_NO_AUTO_PTR)
 
 include(Utilities)
