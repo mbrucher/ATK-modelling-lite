@@ -3,27 +3,10 @@
  */
 
 #ifdef ENABLE_CLANG_SUPPORT
-#include <llvm/Support/MemoryBuffer.h>
-#include <llvm/Support/raw_ostream.h>
+#include <clang/CodeGen/CodeGenAction.h>
+#include <clang/Tooling/Tooling.h>
 
-#include <clang/AST/ASTContext.h>
-#include <clang/AST/ASTConsumer.h>
-#include <clang/Basic/DiagnosticOptions.h>
-#include <clang/Basic/Diagnostic.h>
-#include <clang/Basic/FileManager.h>
-#include <clang/Basic/FileSystemOptions.h>
-#include <clang/Basic/LangOptions.h>
-#include <clang/Basic/MemoryBufferCache.h>
-#include <clang/Basic/SourceManager.h>
-#include <clang/Basic/TargetInfo.h>
-#include <clang/Frontend/CompilerInstance.h>
-#include <clang/Frontend/TextDiagnosticPrinter.h>
-#include <clang/Lex/HeaderSearch.h>
-#include <clang/Lex/HeaderSearchOptions.h>
-#include <clang/Lex/Preprocessor.h>
-#include <clang/Lex/PreprocessorOptions.h>
-#include <clang/Parse/ParseAST.h>
-#include <clang/Sema/Sema.h>
+#include <llvm/IR/LLVMContext.h>
 
 #include <ATK/Core/BaseFilter.h>
 
@@ -39,80 +22,13 @@ namespace ATK
   template<typename DataType>
   void StaticModelFilterGenerator<DataType>::parseString(const std::string& fullfile)
   {
-    clang::DiagnosticOptions diagnosticOptions;
-    std::unique_ptr<clang::TextDiagnosticPrinter> pTextDiagnosticPrinter =
-      std::make_unique<clang::TextDiagnosticPrinter>(
-                                     llvm::outs(),
-                                     diagnosticOptions);
-    llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> pDiagIDs;
+    llvm::LLVMContext context;
     
-    std::unique_ptr<clang::DiagnosticsEngine> pDiagnosticsEngine =
-      std::make_unique<clang::DiagnosticsEngine>(pDiagIDs, pTextDiagnosticPrinter);
+    std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&context);
+    clang::tooling::runToolOnCode/*WithArgs*/(action.get(), "int foo(int x){ return ++x;}");
     
-    clang::LangOptions languageOptions;
-    clang::FileSystemOptions fileSystemOptions;
-    clang::FileManager fileManager(fileSystemOptions);
-    clang::SourceManager sourceManager(
-                                       *pDiagnosticsEngine,
-                                       fileManager);
-    std::shared_ptr<clang::HeaderSearchOptions> headerSearchOptions(new clang::HeaderSearchOptions());
-    // Add ATK here and other stuff
+    std::unique_ptr<llvm::Module> module = action->takeModule();
     
-    const std::shared_ptr<clang::TargetOptions> targetOptions = std::make_shared<clang::TargetOptions>();
-    targetOptions->Triple = llvm::sys::getDefaultTargetTriple();
-    
-    clang::TargetInfo* pTargetInfo =
-      clang::TargetInfo::CreateTargetInfo(
-                                        *pDiagnosticsEngine,
-                                        targetOptions);
-    
-    clang::HeaderSearch headerSearch(headerSearchOptions,
-                                     sourceManager,
-                                     *pDiagnosticsEngine,
-                                     languageOptions,
-                                     pTargetInfo);
-    clang::MemoryBufferCache PCMCache;
-    clang::CompilerInstance compInst;
-    
-    std::shared_ptr<clang::PreprocessorOptions> pOpts(std::make_shared<clang::PreprocessorOptions>());
-    clang::Preprocessor preprocessor(
-                                     pOpts,
-                                     *pDiagnosticsEngine,
-                                     languageOptions,
-                                     sourceManager,
-                                     PCMCache,
-                                     headerSearch,
-                                     compInst);
-    preprocessor.Initialize(*pTargetInfo);
-    
-    auto filter = llvm::MemoryBuffer::getMemBufferCopy(fullfile);
-    
-    sourceManager.setMainFileID(sourceManager.createFileID(std::move(filter)));
-    const clang::TargetInfo &targetInfo = *pTargetInfo;
-    
-    clang::IdentifierTable identifierTable(languageOptions);
-    clang::SelectorTable selectorTable;
-    
-    clang::Builtin::Context builtinContext;
-    builtinContext.InitializeTarget(targetInfo, nullptr);
-    clang::ASTContext astContext(
-                                 languageOptions,
-                                 sourceManager,
-                                 identifierTable,
-                                 selectorTable,
-                                 builtinContext);
-    astContext.InitBuiltinTypes(*pTargetInfo);
-    clang::ASTConsumer astConsumer;
-    
-    clang::Sema sema(
-                     preprocessor,
-                     astContext,
-                     astConsumer);
-    
-    pTextDiagnosticPrinter->BeginSourceFile(languageOptions, &preprocessor);
-    clang::ParseAST(preprocessor, &astConsumer, astContext);
-    pTextDiagnosticPrinter->EndSourceFile();
-    identifierTable.PrintStats();
   }
 
   template<typename DataType>
