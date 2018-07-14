@@ -37,6 +37,7 @@ namespace ATK
 
     llvm::EngineBuilder builder(std::move(module));
     builder.setMCJITMemoryManager(std::make_unique<llvm::SectionMemoryManager>());
+    builder.setOptLevel(llvm::CodeGenOpt::Level::Aggressive);
     std::unique_ptr<llvm::ExecutionEngine> EE(builder.create());
     
     auto fn = reinterpret_cast<int (*)(int)>(EE->getFunctionAddress("foo"));
