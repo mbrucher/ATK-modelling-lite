@@ -3,14 +3,11 @@
  */
 
 #ifdef ENABLE_CLANG_SUPPORT
-//#include <llvm/Support/Host.h>
+#include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/raw_ostream.h>
 
-//#include <clang/AST/ASTContext.h>
-//#include <clang/AST/ASTConsumer.h>
-//#include <clang/AST/Decl.h>
-//#include <clang/AST/Expr.h>
-//#include <clang/AST/Stmt.h>
+#include <clang/AST/ASTContext.h>
+#include <clang/AST/ASTConsumer.h>
 #include <clang/Basic/DiagnosticOptions.h>
 #include <clang/Basic/Diagnostic.h>
 #include <clang/Basic/FileManager.h>
@@ -25,6 +22,8 @@
 #include <clang/Lex/HeaderSearchOptions.h>
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Lex/PreprocessorOptions.h>
+#include <clang/Parse/ParseAST.h>
+#include <clang/Sema/Sema.h>
 
 #include <ATK/Core/BaseFilter.h>
 
@@ -85,6 +84,35 @@ namespace ATK
                                      headerSearch,
                                      compInst);
     preprocessor.Initialize(*pTargetInfo);
+    
+    auto filter = llvm::MemoryBuffer::getMemBufferCopy(fullfile);
+    
+    sourceManager.setMainFileID(sourceManager.createFileID(std::move(filter)));
+    const clang::TargetInfo &targetInfo = *pTargetInfo;
+    
+    clang::IdentifierTable identifierTable(languageOptions);
+    clang::SelectorTable selectorTable;
+    
+    clang::Builtin::Context builtinContext;
+    builtinContext.InitializeTarget(targetInfo, nullptr);
+    clang::ASTContext astContext(
+                                 languageOptions,
+                                 sourceManager,
+                                 identifierTable,
+                                 selectorTable,
+                                 builtinContext);
+    astContext.InitBuiltinTypes(*pTargetInfo);
+    clang::ASTConsumer astConsumer;
+    
+    clang::Sema sema(
+                     preprocessor,
+                     astContext,
+                     astConsumer);
+    
+    pTextDiagnosticPrinter->BeginSourceFile(languageOptions, &preprocessor);
+    clang::ParseAST(preprocessor, &astConsumer, astContext);
+    pTextDiagnosticPrinter->EndSourceFile();
+    identifierTable.PrintStats();
   }
 
   template<typename DataType>
