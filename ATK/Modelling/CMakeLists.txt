@@ -7,9 +7,62 @@ SET(ATK_MODELLING_LIBRARIES ${ATK_CORE_LIBRARY})
 if(ENABLE_CLANG_SUPPORT)
   LIST(APPEND ATK_MODELLING_DEFINITIONS -DENABLE_CLANG_SUPPORT)
   LIST(APPEND ATK_MODELLING_LIBRARIES
-    LLVMSupport
+    LLVMAnalysis
+    LLVMAsmParser
+    LLVMAsmPrinter
+    LLVMBinaryFormat
+    LLVMBitReader
+    LLVMBitWriter
+    LLVMCodeGen
+    LLVMCore
+    LLVMCoroutines
+    LLVMCoverage
+    LLVMDebugInfoCodeView
     LLVMDemangle
+    LLVMExecutionEngine
+    LLVMGlobalISel
+    LLVMInstCombine
+    LLVMInstrumentation
+    LLVMIRReader
+    LLVMLinker
+    LLVMLTO
+    LLVMMC
+    LLVMMCDisassembler
+    LLVMMCJIT
+    LLVMMCParser
+    LLVMObjCARCOpts
+    LLVMObject
+    LLVMOption
+    LLVMPasses
+    LLVMProfileData
+    LLVMRuntimeDyld
+    LLVMScalarOpts
+    LLVMSelectionDAG
+    LLVMSupport
+    LLVMTarget
+    LLVMTransformUtils
+    LLVMVectorize
+    LLVMX86AsmParser
+    LLVMX86AsmPrinter
+    LLVMX86CodeGen
+    LLVMX86Desc
+    LLVMX86Info
+    LLVMX86Utils
+    LLVMipo
+    clangAnalysis
+    clangAST
+    clangBasic
+    clangCodeGen
+    clangDriver
+    clangEdit
+    clangFrontend
+    clangLex
+    clangParse
+    clangSema
+    clangSerialization
+    clangTooling
     ncurses
+    z
   )
 endif(ENABLE_CLANG_SUPPORT)
 SET(ATK_MODELLING_INCLUDE ${ATK_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})

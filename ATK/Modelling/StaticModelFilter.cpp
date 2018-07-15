@@ -15,6 +15,11 @@
 
 #include "StaticModelFilter.h"
 
+namespace
+{
+  std::unique_ptr<llvm::ExecutionEngine> EE;
+}
+
 namespace ATK
 {
   template<typename DataType>
@@ -23,31 +28,34 @@ namespace ATK
   }
   
   template<typename DataType>
-  void StaticModelFilterGenerator<DataType>::parseString(const std::string& fullfile)
+  std::unique_ptr<BaseFilter> StaticModelFilterGenerator<DataType>::generateDynamicFilter() const
+  {
+    return std::unique_ptr<BaseFilter>();
+  }
+
+  template<typename Function>
+  Function parseString(const std::string& fullfile, const std::string& function)
   {
     llvm::LLVMContext context;
     
     std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&context);
-    clang::tooling::runToolOnCode/*WithArgs*/(action.get(), "int foo(int x){ return ++x;}");
+    clang::tooling::runToolOnCode/*WithArgs*/(action.get(), fullfile);
     
     std::unique_ptr<llvm::Module> module = action->takeModule();
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
     llvm::InitializeNativeTargetAsmParser();
-
+    
     llvm::EngineBuilder builder(std::move(module));
     builder.setMCJITMemoryManager(std::make_unique<llvm::SectionMemoryManager>());
     builder.setOptLevel(llvm::CodeGenOpt::Level::Aggressive);
-    std::unique_ptr<llvm::ExecutionEngine> EE(builder.create());
+    EE.reset(builder.create());
     
-    auto fn = reinterpret_cast<int (*)(int)>(EE->getFunctionAddress("foo"));
+    return reinterpret_cast<Function>(EE->getFunctionAddress("function"));
   }
-
-  template<typename DataType>
-  std::unique_ptr<BaseFilter> StaticModelFilterGenerator<DataType>::generateDynamicFilter() const
-  {
-    return std::unique_ptr<BaseFilter>();
-  }
+  
+  typedef int (*IntInt)(int);
+  template IntInt parseString<IntInt>(const std::string& fullfile, const std::string& function);
 }
 
 #endif

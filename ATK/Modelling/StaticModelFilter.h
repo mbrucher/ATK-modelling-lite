@@ -10,16 +10,16 @@
 #include <memory>
 #include <string>
 
+#include "config.h"
+
 namespace ATK
 {
   class BaseFilter;
   
   /// Class responsible for creating a dynamic model filter
   template<typename DataType_>
-  class StaticModelFilterGenerator
+  class ATK_MODELLING_EXPORT StaticModelFilterGenerator
   {
-    void parseString(const std::string& fullfile);
-
   public:
     typedef DataType_ DataType;
     
@@ -27,6 +27,9 @@ namespace ATK
     
     std::unique_ptr<BaseFilter> generateDynamicFilter() const;
   };
+  
+  template<typename Function>
+  ATK_MODELLING_EXPORT Function parseString(const std::string& fullfile, const std::string& function);
 }
 
 #endif
