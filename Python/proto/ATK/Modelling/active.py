@@ -15,9 +15,9 @@ class TransistorNPN(object):
     """
     nb_pins = 3
     
-    def __init__(self, Is=1e-12, Vt=26e-3, Br=1, Bf=100):
+    def __init__(self, Is=1e-12, Vt=26e-3, Br=1, Bf=100, Ne=1):
         self.Is = Is
-        self.Vt = Vt
+        self.Vt = Vt * Ne
         self.Br = Br
         self.Bf = Bf
 
