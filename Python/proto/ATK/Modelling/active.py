@@ -243,3 +243,33 @@ class VoltageGain(object):
 
     def precompute(self, state, steady_state):
         pass
+
+class Current(object):
+    """
+    Class that implements a perfect current generator between two pins
+    """
+    nb_pins = 2
+    
+    def __init__(self, current):
+        self.current = current
+
+    def __repr__(self):
+        return "%02.2eA between pins (%s,%s)" % (self.current, self.pins[0], self.pins[1])
+
+    def update_model(self, model):
+        pass
+
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
+        pass
+
+    def get_current(self, pin_index, state, steady_state):
+        return self.current * (-1 if 0 == pin_index else 1)
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        return 0
+
+    def precompute(self, state, steady_state):
+        pass

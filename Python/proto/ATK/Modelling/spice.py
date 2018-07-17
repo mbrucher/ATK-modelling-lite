@@ -9,7 +9,7 @@ from collections import defaultdict
 
 from modeling import Modeler
 from passive import Capacitor, Diode, Coil, Resistor
-from active import TransistorNPN, TransistorPNP, VoltageGain
+from active import TransistorNPN, TransistorPNP, VoltageGain, Current
 
 digits = re.compile("([\d\.e-]+)(.*)")
 
@@ -192,6 +192,17 @@ class SpiceModel(object):
         comp.pins = [pin2, pin3, pin0, pin1]
         self.components.append(comp)
 
+    def create_current(self, line):
+        """
+        Create a current
+        """
+        pin0 = self.handle_pin(line[1])
+        pin1 = self.handle_pin(line[2])
+        current = parse_number(line[3])
+        comp = Current(current)
+        comp.pins = [pin0, pin1]
+        self.components.append(comp)
+
     def create_voltage(self, line):
         """
         Create either a fix voltage pin or an input pin
@@ -216,6 +227,8 @@ class SpiceModel(object):
             '.': create_nothing,
             'c': create_capacitor,
             'd': create_diode,
+            'e': create_voltage_gain,
+            'i': create_current,
             'l': create_coil,
             'q': create_transistor,
             'r': create_resistor,
