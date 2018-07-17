@@ -1,5 +1,5 @@
 # ATK-modelling
-A JIT-based modelling tool (real-time spice without MNA).
+A JIT-based modelling tool (real-time spice with MNA).
 
 This is still a work in progress, just at the stage of a Python prototype. The final goal is to have a dynamic SPICE interpreter and in the non-lite version a fully JIT version (which will also generate the corresponding C++ code).
 
