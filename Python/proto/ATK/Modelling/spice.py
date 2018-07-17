@@ -9,7 +9,7 @@ from collections import defaultdict
 
 from modeling import Modeler
 from passive import Capacitor, Diode, Coil, Resistor
-from active import TransistorNPN, TransistorPNP
+from active import TransistorNPN, TransistorPNP, VoltageGain
 
 digits = re.compile("([\d\.e-]+)(.*)")
 
@@ -177,6 +177,19 @@ class SpiceModel(object):
         R = parse_number(line[3])
         comp = Resistor(R)
         comp.pins = [pin0, pin1]
+        self.components.append(comp)
+
+    def create_voltage_gain(self, line):
+        """
+        Create a voltage gain stage
+        """
+        pin0 = self.handle_pin(line[1])
+        pin1 = self.handle_pin(line[2])
+        pin2 = self.handle_pin(line[3])
+        pin3 = self.handle_pin(line[4])
+        gain = parse_number(line[5])
+        comp = VoltageGain(gain)
+        comp.pins = [pin2, pin3, pin0, pin1]
         self.components.append(comp)
 
     def create_voltage(self, line):
