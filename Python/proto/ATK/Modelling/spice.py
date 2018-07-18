@@ -275,6 +275,8 @@ class SpiceModel(object):
         Create the Model for the previous netlist
         """
         model = Modeler(self.nb_dynamic_pins, self.nb_static_pins, self.nb_input_pins)
+        for component in self.components:
+            model.add_component(component, component.pins)
         model.static_state[:] = self.static_state
         
         return model
