@@ -236,9 +236,9 @@ class VoltageGain(object):
         if self.pins[1][0] == "D":
             jac[self.pins[1][1]] = -self.gain
         if self.pins[2][0] == "D":
-            jac[self.pins[0][1]] = 1
+            jac[self.pins[2][1]] = -1
         if self.pins[3][0] == "D":
-            jac[self.pins[1][1]] = -1
+            jac[self.pins[3][1]] = 1
         return eq, jac
 
     def precompute(self, state, steady_state):
