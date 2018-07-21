@@ -54,7 +54,20 @@ namespace fs=std::filesystem;
 
 namespace
 {
-  std::unique_ptr<llvm::ExecutionEngine> EE;
+  class GlobalHandler
+  {
+  public:
+    ~GlobalHandler()
+    {
+      executionEngine.reset();
+    }
+
+    llvm::LLVMContext context;
+    std::unique_ptr<llvm::ExecutionEngine> executionEngine;
+  };
+
+  GlobalHandler handler;
+
   bool LLVMinit = false;
   
   void InitializeLLVM()
@@ -168,6 +181,7 @@ namespace ATK
 #ifdef DEBUG
     headerSearchOptions.Verbose = true;
 #endif
+    auto& codeGenOptions = compilerInvocation.getCodeGenOpts();
 
     frontEndOptions.Inputs.clear();
     frontEndOptions.Inputs.push_back(clang::FrontendInputFile(filename, clang::InputKind::CXX));
@@ -175,8 +189,7 @@ namespace ATK
     targetOptions.Triple = llvm::sys::getDefaultTargetTriple();
     compilerInstance.createDiagnostics(textDiagnosticPrinter.get(), false);
 
-    llvm::LLVMContext context;
-    std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&context);
+    std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&handler.context);
     
     if (!compilerInstance.ExecuteAction(*action))
     {
@@ -198,14 +211,14 @@ namespace ATK
     llvm::EngineBuilder builder(std::move(module));
     builder.setMCJITMemoryManager(std::make_unique<llvm::SectionMemoryManager>());
     builder.setOptLevel(llvm::CodeGenOpt::Level::Aggressive);
-    EE.reset(builder.create());
+    handler.executionEngine.reset(builder.create());
     
-    if (!EE)
+    if (!handler.executionEngine)
     {
-      throw ATK::RuntimeError("Failed to compile file zhen retrieving the ;odule");
+      throw ATK::RuntimeError("Failed to compile file when retrieving the module");
     }
 
-    return reinterpret_cast<Function>(EE->getFunctionAddress(function));
+    return reinterpret_cast<Function>(handler.executionEngine->getFunctionAddress(function));
   }
   
   typedef int(*IntInt)(int);
