@@ -29,7 +29,7 @@ namespace ATK
   };
   
   template<typename Function>
-  ATK_MODELLING_EXPORT Function parseString(const std::string& fullfile, const std::string& function);
+  Function parseString(const std::string& fullfile, const std::string& function);
 }
 
 #endif

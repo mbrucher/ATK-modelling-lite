@@ -153,7 +153,7 @@ namespace ATK
   }
   
   typedef int (*IntInt)(int);
-  template IntInt parseString<IntInt>(const std::string& fullfile, const std::string& function);
+  template ATK_MODELLING_EXPORT IntInt parseString<IntInt>(const std::string& fullfile, const std::string& function);
 }
 
 #endif
