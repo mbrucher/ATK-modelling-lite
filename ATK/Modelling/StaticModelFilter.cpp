@@ -203,9 +203,18 @@ namespace ATK
     }
 
     llvm::PassBuilder passBuilder;
-    llvm::ModulePassManager modulePassManager = passBuilder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O3);
-    llvm::ModuleAnalysisManager moduleAnalysisManager;
+    llvm::LoopAnalysisManager loopAnalysisManager(codeGenOptions.DebugPassManager);
+    llvm::FunctionAnalysisManager functionAnalysisManager(codeGenOptions.DebugPassManager);
+    llvm::CGSCCAnalysisManager cGSCCAnalysisManager(codeGenOptions.DebugPassManager);
+    llvm::ModuleAnalysisManager moduleAnalysisManager(codeGenOptions.DebugPassManager);
+
     passBuilder.registerModuleAnalyses(moduleAnalysisManager);
+    passBuilder.registerCGSCCAnalyses(cGSCCAnalysisManager);
+    passBuilder.registerFunctionAnalyses(functionAnalysisManager);
+    passBuilder.registerLoopAnalyses(loopAnalysisManager);
+    passBuilder.crossRegisterProxies(loopAnalysisManager, functionAnalysisManager, cGSCCAnalysisManager, moduleAnalysisManager);
+
+    llvm::ModulePassManager modulePassManager = passBuilder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O3);
     modulePassManager.run(*module, moduleAnalysisManager);
     
     llvm::EngineBuilder builder(std::move(module));
