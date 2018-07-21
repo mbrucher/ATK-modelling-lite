@@ -39,7 +39,10 @@ namespace fs=std::filesystem;
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/SectionMemoryManager.h>
+#include <llvm/IR/DataLayout.h>
 #include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/PassManager.h>
+#include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
@@ -181,6 +184,16 @@ namespace ATK
     }
 
     std::unique_ptr<llvm::Module> module = action->takeModule();
+    if (!module)
+    {
+      throw ATK::RuntimeError("Failed to retrieve module");
+    }
+
+    llvm::PassBuilder passBuilder;
+    llvm::ModulePassManager modulePassManager = passBuilder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O3);
+    llvm::ModuleAnalysisManager moduleAnalysisManager;
+    passBuilder.registerModuleAnalyses(moduleAnalysisManager);
+    modulePassManager.run(*module, moduleAnalysisManager);
     
     llvm::EngineBuilder builder(std::move(module));
     builder.setMCJITMemoryManager(std::make_unique<llvm::SectionMemoryManager>());
