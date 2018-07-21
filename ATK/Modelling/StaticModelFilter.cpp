@@ -4,7 +4,13 @@
 
 #ifdef ENABLE_CLANG_SUPPORT
 
+#ifdef __APPLE__
+#include <boost/filesystem.hpp>
+namespace fs=boost::filesystem;
+#else
 #include <filesystem>
+namespace fs=std::filesystem;
+#endif
 #include <fstream>
 #include <sstream>
 
@@ -93,18 +99,18 @@ namespace ATK
   template<typename Function>
   Function parseString(const std::string& fullfile, const std::string& function)
   {
-    auto temp_dir = std::filesystem::temp_directory_path();
+    auto temp_dir = fs::temp_directory_path();
 
     auto filename = temp_dir / "SPICE.cpp";
 
     {
-      std::ofstream file(filename);
+      std::ofstream file(filename.string());
 
       file << fullfile << std::endl;
     }
 
     Function fun = parseFile<Function>(filename.string(), function);
-    std::filesystem::remove(filename);
+    fs::remove(filename);
 
     return fun;
   }

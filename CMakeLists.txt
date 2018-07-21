@@ -11,7 +11,7 @@ option(ENABLE_CLANG_SUPPORT "Enable clang output and static generation" ON)
 SET(CMAKE_MODULE_PATH ${ATK_DIR}/share/CMake)
 
 find_package(ATK)
-find_package(Boost REQUIRED log unit_test_framework)
+find_package(Boost REQUIRED log filesystem unit_test_framework system)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 include_directories(${ATK_INCLUDE_DIRS})
