@@ -33,5 +33,5 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
   return std::move(filter);
 }
   
-template std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
+template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
 }
