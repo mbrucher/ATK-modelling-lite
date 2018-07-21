@@ -4,6 +4,8 @@
 
 #ifdef ENABLE_CLANG_SUPPORT
 
+#include <filesystem>
+#include <fstream>
 #include <sstream>
 
 #include <clang/AST/ASTContext.h>
@@ -29,6 +31,7 @@
 
 #include <llvm/InitializePasses.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/SectionMemoryManager.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/Support/MemoryBuffer.h>
@@ -36,6 +39,7 @@
 #include <llvm/Support/raw_ostream.h>
 
 #include <ATK/Core/BaseFilter.h>
+#include <ATK/Core/Utilities.h>
 
 #include "StaticModelFilter.h"
 
@@ -89,6 +93,25 @@ namespace ATK
   template<typename Function>
   Function parseString(const std::string& fullfile, const std::string& function)
   {
+    auto temp_dir = std::filesystem::temp_directory_path();
+
+    auto filename = temp_dir / "SPICE.cpp";
+
+    {
+      std::ofstream file(filename);
+
+      file << fullfile << std::endl;
+    }
+
+    Function fun = parseFile<Function>(filename.string(), function);
+    std::filesystem::remove(filename);
+
+    return fun;
+  }
+
+  template<typename Function>
+  Function parseFile(const std::string& filename, const std::string& function)
+  {
     InitializeLLVM();
     
     clang::DiagnosticOptions diagnosticOptions;
@@ -122,25 +145,34 @@ namespace ATK
       itemcstrs.push_back(itemstrs[idx].c_str());
     }
 
-    auto filter = llvm::MemoryBuffer::getMemBufferCopy(fullfile);
-
     clang::CompilerInvocation::CreateFromArgs(compilerInvocation, itemcstrs.data(), itemcstrs.data() + itemcstrs.size(),
-     *diagnosticsEngine);
+     *diagnosticsEngine.release());
 
     auto* languageOptions = compilerInvocation.getLangOpts();
     auto& preprocessorOptions = compilerInvocation.getPreprocessorOpts();
     auto& targetOptions = compilerInvocation.getTargetOpts();
     auto& frontEndOptions = compilerInvocation.getFrontendOpts();
+#ifdef DEBUG
+    frontEndOptions.ShowStats = true;
+#endif
+    auto& headerSearchOptions = compilerInvocation.getHeaderSearchOpts();
+#ifdef DEBUG
+    headerSearchOptions.Verbose = true;
+#endif
+
     frontEndOptions.Inputs.clear();
-    frontEndOptions.Inputs.push_back(clang::FrontendInputFile(filter.get(), clang::InputKind::CXX));
+    frontEndOptions.Inputs.push_back(clang::FrontendInputFile(filename, clang::InputKind::CXX));
     
     targetOptions.Triple = llvm::sys::getDefaultTargetTriple();
     compilerInstance.createDiagnostics(textDiagnosticPrinter.get(), false);
 
     llvm::LLVMContext context;
-    std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMAction>(&context);
+    std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&context);
     
-    compilerInstance.ExecuteAction(*action);
+    if (!compilerInstance.ExecuteAction(*action))
+    {
+      throw ATK::RuntimeError("Failed to compile file");
+    }
 
     std::unique_ptr<llvm::Module> module = action->takeModule();
     
@@ -149,11 +181,18 @@ namespace ATK
     builder.setOptLevel(llvm::CodeGenOpt::Level::Aggressive);
     EE.reset(builder.create());
     
+    if (!EE)
+    {
+      throw ATK::RuntimeError("Failed to compile file zhen retrieving the ;odule");
+    }
+
     return reinterpret_cast<Function>(EE->getFunctionAddress(function));
   }
   
-  typedef int (*IntInt)(int);
+  typedef int(*IntInt)(int);
   template ATK_MODELLING_EXPORT IntInt parseString<IntInt>(const std::string& fullfile, const std::string& function);
+  typedef int(*IntInt)(int);
+  template ATK_MODELLING_EXPORT IntInt parseFile<IntInt>(const std::string& filenqme, const std::string& function);
 }
 
 #endif

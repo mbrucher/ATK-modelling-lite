@@ -11,5 +11,6 @@
 BOOST_AUTO_TEST_CASE( StaticModelFilter_parseString )
 {
   auto function = ATK::parseString<int (*)(int)>("int foo(int x) {return x + 1;}", "foo");
+  BOOST_CHECK_NE(function, nullptr);
   BOOST_CHECK_EQUAL(function(10), 11);
 }

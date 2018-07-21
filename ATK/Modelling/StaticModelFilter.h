@@ -18,7 +18,7 @@ namespace ATK
   
   /// Class responsible for creating a dynamic model filter
   template<typename DataType_>
-  class ATK_MODELLING_EXPORT StaticModelFilterGenerator
+  class StaticModelFilterGenerator
   {
   public:
     typedef DataType_ DataType;
@@ -29,7 +29,9 @@ namespace ATK
   };
   
   template<typename Function>
-  Function parseString(const std::string& fullfile, const std::string& function);
+  ATK_MODELLING_EXPORT Function parseString(const std::string& fullfile, const std::string& function);
+  template<typename Function>
+  ATK_MODELLING_EXPORT Function parseFile(const std::string& filename, const std::string& function);
 }
 
 #endif
