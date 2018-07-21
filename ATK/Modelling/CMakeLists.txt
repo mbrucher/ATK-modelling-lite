@@ -61,9 +61,17 @@ if(ENABLE_CLANG_SUPPORT)
     clangSema
     clangSerialization
     clangTooling
-    ncurses
-    z
   )
+  if(WIN32)
+    LIST(APPEND ATK_MODELLING_LIBRARIES
+      Version
+    )
+  else(WIN32)
+    LIST(APPEND ATK_MODELLING_LIBRARIES
+      ncurses
+      z
+    )
+  endif(WIN32)
 endif(ENABLE_CLANG_SUPPORT)
 SET(ATK_MODELLING_INCLUDE ${ATK_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
