@@ -6,7 +6,7 @@ V2 mid 0 DC 4.5
 R1 in temp 1k
 C1 temp b 47n
 R2 mid b 470k
-R3 e 0 10k
+R3 out 0 10k
 
 Q1  v+ b out NPN1
 
