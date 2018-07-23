@@ -11,7 +11,7 @@ from modeling import Modeler
 from passive import Capacitor, Diode, Coil, Resistor
 from active import TransistorNPN, TransistorPNP, VoltageGain, Current
 
-digits = re.compile("([\d\.e-]+)(.*)")
+digits = re.compile("([\d\.eE-]+)(.*)")
 
 def scale(suffix):
     if suffix[:3].lower() == "meg":
