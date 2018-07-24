@@ -12,6 +12,7 @@ sys.path.append("/Users/Matthieu/src/AudioTK-Modeling/Python/proto")
 from ATK.Modelling import create_from_netlist
 
 length = 10000
+init = 10
 dt = 1 / 100000
 t = np.arange(length) * dt
 
@@ -21,11 +22,15 @@ y = []
 model = create_from_netlist("DS1-input.cir")
 model.dt = dt
 model.input_state[:] = 2
-model.setup()
-print(model.dynamic_state)
+
+static_state = np.array(model.static_state)
+for i in range(init):
+    model.static_state[:] = static_state * (i+1) / init
+    model.setup()
+
 for v in x:
     d = model((v))
-    y.append(d)
+    y.append(np.copy(d))
     
 
 plt.plot(t, x-2)
