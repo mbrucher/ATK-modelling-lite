@@ -16,7 +16,7 @@ init = 10
 dt = 1 / 100000
 t = np.arange(length) * dt
 
-x = np.sin(2 * np.pi * 50 * t) + 2
+x = np.sin(2 * np.pi * 50 * t)
 y = []
 
 model = create_from_netlist("moog.cir")
@@ -29,9 +29,9 @@ for i in range(init):
 
 for v in x:
     d = model((v))
-    y.append(np.copy(d[10]))
+    y.append(np.copy(d))
     
 
-plt.plot(t, x-2)
+plt.plot(t, x)
 plt.plot(t, y)
 plt.show()
