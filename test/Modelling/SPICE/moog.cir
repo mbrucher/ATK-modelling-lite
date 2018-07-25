@@ -1,12 +1,12 @@
 *** rails ***
-V1   v+ 0 DC 12
+V1   v+ 0 DC 10
 
 *** "ladder" ***
-Vin1 ref 0 DC 2
-Vs1b s1b 0 DC 5
-Vs2b s2b 0 DC 6
-Vs3b s3b 0 DC 7
-Vs4b s4b 0 DC 8
+Vref ref 0 DC -2
+Vs1b s1b 0 DC 3
+Vs2b s2b 0 DC 4
+Vs3b s3b 0 DC 5
+Vs4b s4b 0 DC 6
 
 * input LTP
 Q3  s1- in+ lt Q2N3904
@@ -33,7 +33,7 @@ EGain out 0 s4+ s4- 3
 
 *** dc blocking on output ***
 C10 out in- 1
-R24 in- ref 3.3k
+R24 in- 0 3.3k
 
 *** expo current source ***
 * built with pnp-buffered npn transistor,
@@ -41,7 +41,7 @@ R24 in- ref 3.3k
 Is1 lt 0  10u
 
 * input signal 50hz
-V4 in+ 0 SIN(2 1 50 0 0 0)
+V4 in+ 0 SIN(0 1 50 0 0 0)
 
 .TRAN 10u 40m 0m 5u
 

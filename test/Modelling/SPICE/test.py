@@ -19,9 +19,8 @@ t = np.arange(length) * dt
 x = np.sin(2 * np.pi * 50 * t) + 2
 y = []
 
-model = create_from_netlist("DS1-input.cir")
+model = create_from_netlist("moog.cir")
 model.dt = dt
-model.input_state[:] = 2
 
 static_state = np.array(model.static_state)
 for i in range(init):
@@ -30,7 +29,7 @@ for i in range(init):
 
 for v in x:
     d = model((v))
-    y.append(np.copy(d))
+    y.append(np.copy(d[10]))
     
 
 plt.plot(t, x-2)
