@@ -6,15 +6,27 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(ENABLE_LOG "Enable modelling logging" OFF)
 option(ENABLE_SHARED_LIBRARIES "Enable shared libraries generation" ON)
 option(ENABLE_STATIC_LIBRARIES "Enable static libraries generation" OFF)
+option(ENABLE_CLANG_SUPPORT "Enable clang output and static generation" ON)
 
 SET(CMAKE_MODULE_PATH ${ATK_DIR}/share/CMake)
+
 find_package(ATK)
-find_package(Boost REQUIRED log unit_test_framework)
+find_package(Boost REQUIRED log filesystem unit_test_framework system)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
+include_directories(${ATK_INCLUDE_DIRS})
 add_definitions(-DBOOST_NO_AUTO_PTR)
 
 include(Utilities)
+
+if(ENABLE_CLANG_SUPPORT)
+  find_package(LLVM REQUIRED CONFIG)
+
+  add_definitions(-DENABLE_CLANG_SUPPORT)
+  include_directories(${LLVM_DIR}/../../../include)
+  link_directories(${LLVM_DIR}/../../../lib)
+  add_definitions(${LLVM_DEFINITIONS})
+endif(ENABLE_CLANG_SUPPORT)
 
 add_subdirectory(ATK/Modelling)
 add_subdirectory(Python/ATK/Modelling)
