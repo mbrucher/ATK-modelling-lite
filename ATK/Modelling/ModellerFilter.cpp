@@ -115,7 +115,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void ModellerFilter<DataType_>::process_impl(size_t size) const
+  void ModellerFilter<DataType_>::process_impl(gsl::index size) const
   {
     for(gsl::index i = 0; i < size; ++i)
     {
