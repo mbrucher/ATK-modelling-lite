@@ -2,9 +2,8 @@
  * \file ModellerFilter.cpp
  */
 
-#define BOOST_LOG_DYN_LINK
-
 #if ENABLE_LOG
+#define BOOST_LOG_DYN_LINK
 #include <boost/log/trivial.hpp>
 #endif
 
@@ -24,8 +23,6 @@ namespace ATK
   , nb_input_pins(nb_input_pins)
   , dynamic_pins(nb_dynamic_pins)
   , dynamic_pins_equation(nb_dynamic_pins, std::make_tuple(nullptr, -1))
-  , static_pins(nb_static_pins)
-  , input_pins(nb_input_pins)
   , dynamic_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_dynamic_pins))
   , static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_static_pins))
   , input_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1>::Zero(nb_input_pins))
@@ -38,20 +35,6 @@ namespace ATK
   {
   }
   
-  template<typename DataType_>
-  std::vector<std::vector<std::tuple<Component<DataType_>*, gsl::index>>>& ModellerFilter<DataType_>::get_pins(PinType type)
-  {
-    switch(type)
-    {
-      case PinType::Static:
-        return static_pins;
-      case PinType::Dynamic:
-        return dynamic_pins;
-      case PinType::Input:
-        return input_pins;
-    }
-  }
-
   template<typename DataType_>
   const Eigen::Matrix<typename ModellerFilter<DataType_>::DataType, Eigen::Dynamic, 1>& ModellerFilter<DataType_>::get_states(PinType type) const
   {
@@ -83,13 +66,22 @@ namespace ATK
   {
     for(gsl::index i = 0; i < pins.size(); ++i)
     {
-      get_pins(std::get<0>(pins[i]))[std::get<1>(pins[i])].push_back(std::make_tuple(component.get(), i));
+      if(std::get<0>(pins[i]) == PinType::Dynamic)
+      {
+          dynamic_pins[std::get<1>(pins[i])].push_back(std::make_tuple(component.get(), i));
+      }
     }
     component->set_pins(std::move(pins));
     component->update_model(this);
     components.insert(std::move(component));
   }
   
+  template<typename DataType_>
+  void ModellerFilter<DataType_>::set_custom_equation(gsl::index eq, std::tuple<Component<DataType>*, gsl::index> custom_equation)
+  {
+    dynamic_pins_equation[eq] = custom_equation;
+  }
+
   template<typename DataType_>
   void ModellerFilter<DataType_>::init()
   {
@@ -123,7 +115,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void ModellerFilter<DataType_>::process_impl(size_t size) const
+  void ModellerFilter<DataType_>::process_impl(gsl::index size) const
   {
     for(gsl::index i = 0; i < size; ++i)
     {
@@ -159,6 +151,9 @@ namespace ATK
     {
       ++iteration;
     }
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "total iterations: " << iteration;
+#endif
   }
 
   template<typename DataType_>
@@ -181,8 +176,7 @@ namespace ATK
       }
       else
       {
-        //component, eq_number = self.dynamic_pins_equation[i]
-        //eq, jac = component.add_equation(self.state, steady_state, eq_number)
+        std::get<0>(dynamic_pins_equation[i])->add_equation(i, std::get<1>(dynamic_pins_equation[i]), eqs, jacobian, steady_state);
       }
     }
 

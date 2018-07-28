@@ -9,9 +9,9 @@ from collections import defaultdict
 
 from modeling import Modeler
 from passive import Capacitor, Diode, Coil, Resistor
-from active import TransistorNPN, TransistorPNP
+from active import TransistorNPN, TransistorPNP, VoltageGain, Current
 
-digits = re.compile("([\d\.e-]+)(.*)")
+digits = re.compile("([\d\.eE-]+)(.*)")
 
 def scale(suffix):
     if suffix[:3].lower() == "meg":
@@ -21,8 +21,8 @@ def scale(suffix):
     
     d = {
             'f': 1.e-15,
-            'n': 1.e-12,
-            'p': 1.e-9,
+            'p': 1.e-12,
+            'n': 1.e-9,
             'u': 1.e-6,
             'm': 1.e-3,
             'k': 1.e3,
@@ -68,18 +68,23 @@ class SpiceModel(object):
             split[1] = parse_number(split[1])
             return (split[0].capitalize(), split[1])
         
-        variables = model[3:]
-        variables[0] = variables[0][1:]
+        if "(" in model[2]:
+            tosplit = model[2].split("(")
+            variables = [tosplit[1]] + model[3:]
+            model[2] = tosplit[0]
+        else:
+            variables = model[3:]
+            variables[0] = variables[0][1:]
         variables[-1] = variables[-1][:-1]
         variables = dict([parse_variable(variable) for variable in variables])
-        self.models[model[1]] = (model[2], variables)
+        self.models[model[1]] = (model[2].lower(), variables)
     
     def populate_models(self, netlist):
         """
         Create the internal list of all component custom models that will be used after
         """
         for line in netlist:
-            if line[0] == '.model':
+            if line[0].lower() == '.model':
                 self.create_model(line)
 
     def handle_pin(self, pin):
@@ -157,9 +162,9 @@ class SpiceModel(object):
         """
         pin0 = self.handle_pin(line[1])
         pin1 = self.handle_pin(line[2])
-        pin1 = self.handle_pin(line[3])
+        pin2 = self.handle_pin(line[3])
         params = self.models[line[4]]
-        comp = dispatch_transistor[params[0]](**(params[1]))
+        comp = self.dispatch_transistor[params[0]](**(params[1]))
         comp.pins = [pin1, pin0, pin2]
         self.components.append(comp)
 
@@ -171,6 +176,30 @@ class SpiceModel(object):
         pin1 = self.handle_pin(line[2])
         R = parse_number(line[3])
         comp = Resistor(R)
+        comp.pins = [pin0, pin1]
+        self.components.append(comp)
+
+    def create_voltage_gain(self, line):
+        """
+        Create a voltage gain stage
+        """
+        pin0 = self.handle_pin(line[1])
+        pin1 = self.handle_pin(line[2])
+        pin2 = self.handle_pin(line[3])
+        pin3 = self.handle_pin(line[4])
+        gain = parse_number(line[5])
+        comp = VoltageGain(gain)
+        comp.pins = [pin2, pin3, pin0, pin1]
+        self.components.append(comp)
+
+    def create_current(self, line):
+        """
+        Create a current
+        """
+        pin0 = self.handle_pin(line[1])
+        pin1 = self.handle_pin(line[2])
+        current = parse_number(line[3])
+        comp = Current(current)
         comp.pins = [pin0, pin1]
         self.components.append(comp)
 
@@ -198,6 +227,8 @@ class SpiceModel(object):
             '.': create_nothing,
             'c': create_capacitor,
             'd': create_diode,
+            'e': create_voltage_gain,
+            'i': create_current,
             'l': create_coil,
             'q': create_transistor,
             'r': create_resistor,
@@ -244,6 +275,8 @@ class SpiceModel(object):
         Create the Model for the previous netlist
         """
         model = Modeler(self.nb_dynamic_pins, self.nb_static_pins, self.nb_input_pins)
+        for component in self.components:
+            model.add_component(component, component.pins)
         model.static_state[:] = self.static_state
         
         return model

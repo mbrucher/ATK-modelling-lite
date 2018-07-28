@@ -17,7 +17,7 @@ namespace ATK
     typedef Component<DataType_> Parent;
     typedef DataType_ DataType;
 
-    NPN(DataType Is=1e-14, DataType Vt = 26e-3, DataType Br = 1, DataType Bf = 100);
+    NPN(DataType Is=1e-12, DataType Vt = 26e-3, DataType Br = 1, DataType Bf = 100);
     
     /**
      * Get current for the given pin based on the state
@@ -68,7 +68,7 @@ namespace ATK
     typedef Component<DataType_> Parent;
     typedef DataType_ DataType;
     
-    PNP(DataType Is=1e-14, DataType Vt = 26e-3, DataType Br = 1, DataType Bf = 100);
+    PNP(DataType Is=1e-12, DataType Vt = 26e-3, DataType Br = 1, DataType Bf = 100);
     
     /**
      * Get current for the given pin based on the state

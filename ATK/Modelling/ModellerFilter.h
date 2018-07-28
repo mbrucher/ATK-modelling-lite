@@ -45,12 +45,8 @@ namespace ATK
     
     /// vector of dynamic pins, each pin has a list of components connected with it, and the index of the pin for the component
     std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> dynamic_pins;
-    /// Vector of potential component with equation number in case a component replaces an equation with its own
+    /// vector of dynamic pins, indicating if the equation is overriden by a component
     std::vector<std::tuple<Component<DataType>*, gsl::index>> dynamic_pins_equation;
-    /// vector of static pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> static_pins;
-    /// vector of input pins, each pin has a list of components connected with it, and the index of the pin for the component
-    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>> input_pins;
 
     mutable Eigen::Matrix<DataType, Eigen::Dynamic, 1> dynamic_state;
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state;
@@ -60,7 +56,6 @@ namespace ATK
     
     bool initialized = false;
     
-    std::vector<std::vector<std::tuple<Component<DataType>*, gsl::index>>>& get_pins(PinType type);
     const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_states(PinType type) const;
   public:
     /**
@@ -81,6 +76,17 @@ namespace ATK
      */
     void add_component(std::unique_ptr<Component<DataType>> component, std::vector<std::tuple<PinType, gsl::index>> pins);
     
+    /**
+     * Called during model update to remove a Kirchhoff equation and replace it with a component specific one
+     * @param eq is the equation number to replace
+     * @param custom_equation is the custom equation reference that we will use
+     */
+    void set_custom_equation(gsl::index eq, std::tuple<Component<DataType>*, gsl::index> custom_equation);
+    
+    /**
+     * Gets a voltage from one of the states
+     * @param pin is the pin to get the voltage for
+     */
     DataType retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const;
     
     /**
@@ -116,7 +122,7 @@ namespace ATK
     /**
      * Computes a new state based on a new set of inputs
      */
-    void process_impl(size_t size) const override;
+    void process_impl(gsl::index size) const override;
     
   private:
     /**

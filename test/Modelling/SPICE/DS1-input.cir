@@ -1,0 +1,20 @@
+*** rails ***
+V1   v+ 0 DC 8
+
+*** "ladder" ***
+V2 mid 0 DC 4.5
+R1 in temp 1k
+C1 temp b 47n
+R2 mid b 470k
+R3 out 0 10k
+
+Q1  v+ b out NPN1
+
+* input signal 50hz
+V4 in 0 SIN(0 1 50 0 0 0)
+
+.OP
+.TRAN 10u 40m 0m 5u
+
+.MODEL NPN1 NPN(VT=0.026 IS=6.73E-15 BF=416.4 BR=0.7374 NE=1.259)
+.END
