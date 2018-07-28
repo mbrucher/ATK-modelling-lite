@@ -43,7 +43,7 @@ Is1 lt 0  10u
 * input signal 50hz
 V4 in+ 0 SIN(0 1 50 0 0 0)
 
-.TRAN 10u 40m 0m 5u
+.TRAN 10u 100m 0m 5u
 
 .MODEL Q2N3904 NPN(VT=0.026 IS=6.73E-15 BF=416.4 BR=0.7374 NE=1.259)
 .END
