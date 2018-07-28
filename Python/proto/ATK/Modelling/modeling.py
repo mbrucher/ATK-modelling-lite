@@ -127,6 +127,10 @@ class Modeler(object):
         if np.all(np.abs(delta) < EPS):
             return True
 
+        max_delta = np.max(np.abs(delta))
+        if(max_delta > 1):
+            delta /= max_delta
+            
         self.dynamic_state -= delta
                 
         return False

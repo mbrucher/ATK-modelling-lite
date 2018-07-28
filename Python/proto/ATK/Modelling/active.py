@@ -15,9 +15,9 @@ class TransistorNPN(object):
     """
     nb_pins = 3
     
-    def __init__(self, Is=1e-12, Vt=26e-3, Br=1, Bf=100):
+    def __init__(self, Is=1e-12, Vt=26e-3, Br=1, Bf=100, Ne=1):
         self.Is = Is
-        self.Vt = Vt
+        self.Vt = Vt * Ne
         self.Br = Br
         self.Bf = Bf
 
@@ -196,6 +196,80 @@ class OpAmp(object):
         if self.pins[1][0] == "D":
             jac[self.pins[1][1]] = -1
         return eq, jac
+
+    def precompute(self, state, steady_state):
+        pass
+
+class VoltageGain(object):
+    """
+    Class that implements a voltage gain between 4 pins, Vi+, Vi-, Vo+, Vo-
+    """
+    nb_pins = 4
+    
+    def __init__(self, gain):
+        self.gain = gain
+
+    def __repr__(self):
+        return "Voltage gain between pins (%s,%s,%s,%s) overriding equation at pin %s" % (self.pins[0], self.pins[1], self.pins[2], self.pins[3], self.pins[2])
+    
+    def update_model(self, model):
+        assert self.pins[2][0] == "D"
+        model.dynamic_pins_equation[self.pins[2][1]] = (self, 0)
+
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
+        pass
+
+    def get_current(self, pin_index, state, steady_state):
+        return 0
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        return 0
+
+    def add_equation(self, state, steady_state, eq_number):
+        eq = self.gain * (retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) - (retrieve_voltage(state, self.pins[2]) - retrieve_voltage(state, self.pins[3]))
+        jac = np.zeros(len(state["D"]))
+        if self.pins[0][0] == "D":
+            jac[self.pins[0][1]] = self.gain
+        if self.pins[1][0] == "D":
+            jac[self.pins[1][1]] = -self.gain
+        if self.pins[2][0] == "D":
+            jac[self.pins[2][1]] = -1
+        if self.pins[3][0] == "D":
+            jac[self.pins[3][1]] = 1
+        return eq, jac
+
+    def precompute(self, state, steady_state):
+        pass
+
+class Current(object):
+    """
+    Class that implements a perfect current generator between two pins
+    """
+    nb_pins = 2
+    
+    def __init__(self, current):
+        self.current = current
+
+    def __repr__(self):
+        return "%02.2eA between pins (%s,%s)" % (self.current, self.pins[0], self.pins[1])
+
+    def update_model(self, model):
+        pass
+
+    def update_steady_state(self, state, dt):
+        pass
+
+    def update_state(self, state):
+        pass
+
+    def get_current(self, pin_index, state, steady_state):
+        return self.current * (-1 if 0 == pin_index else 1)
+
+    def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        return 0
 
     def precompute(self, state, steady_state):
         pass
