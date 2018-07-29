@@ -13,6 +13,7 @@
 #include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/home/x3/support/ast/variant.hpp>
 #include <boost/fusion/include/adapted.hpp>
+#include <boost/fusion/include/std_pair.hpp>
 
 namespace ATK
 {
@@ -24,7 +25,9 @@ namespace ast
   namespace fusion = boost::fusion;
   namespace x3 = boost::spirit::x3;
 
-  struct SPICEArg : x3::variant<std::string, std::pair<double, std::string>>
+  typedef std::pair<double, std::string> SPICENumber;
+  
+  struct SPICEArg : x3::variant<std::string, SPICENumber>
   {
     using base_type::base_type;
     using base_type::operator=;
@@ -32,7 +35,8 @@ namespace ast
   
   typedef std::unordered_map<std::string, std::vector<SPICEArg>> Components;
   typedef std::pair<std::string, std::vector<SPICEArg>> Component;
-  typedef std::vector<std::pair<std::string, SPICEArg>> ModelArguments;
+  
+  typedef std::vector<std::pair<std::string, std::pair<double, std::string>>> ModelArguments;
   typedef std::pair<std::string, ModelArguments> ModelImp;
   
   typedef std::unordered_map<std::string, ModelImp> Models;

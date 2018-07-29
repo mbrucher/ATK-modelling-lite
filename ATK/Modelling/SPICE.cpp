@@ -6,8 +6,6 @@
 #include <fstream>
 
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/fusion/include/std_pair.hpp>
-#include <boost/fusion/include/io.hpp>
 
 #include <ATK/Core/Utilities.h>
 
@@ -25,16 +23,16 @@ namespace parser
 {
 namespace x3 = boost::spirit::x3;
 namespace ascii = boost::spirit::x3::ascii;
-  
+
 using x3::lit;
 using x3::lexeme;
   
-using ascii::char_;
-using ascii::string;
+auto const space_comment = x3::lexeme[ '#' >> *(x3::char_ - x3::eol) >> x3::eol];
 
-const auto name = x3::alpha >> *x3::alnum;
+const auto name = x3::rule<class name, std::string>()
+  = x3::alpha >> *x3::alnum;
 
-const auto componentValue = x3::rule<class componentValue, std::pair<double, std::string>>()
+const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
   = x3::double_ >> *x3::char_;
 
 const auto pin = x3::rule<class pin, std::string>()
@@ -42,6 +40,12 @@ const auto pin = x3::rule<class pin, std::string>()
   
 const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
   = componentValue | pin;
+
+const auto componentArguments = x3::rule<class componentArguments, std::vector<ast::SPICEArg>>()
+  = *componentArg;
+
+const auto component = x3::rule<class component, ast::Component>()
+  = name >> componentArguments;
 }
   
 template<typename DataType>
@@ -116,7 +120,7 @@ namespace
   }
 }
   
-double convertComponentValue(const std::pair<double, std::string>& value)
+  double convertComponentValue(const ast::SPICENumber& value)
 {
   return value.first * convertSuffix(value.second);
 }
@@ -126,20 +130,22 @@ double parseComponentValue(const std::string& str)
   using boost::spirit::x3::ascii::space;
   auto iter = str.begin();
   auto end = str.end();
-  std::pair<double, std::string> value;
+  ast::SPICENumber value;
   bool r = phrase_parse(iter, end, parser::componentValue, space, value);
+  assert(r);
   return convertComponentValue(value);
 }
 
 void parseString(ast::SPICEAST& ast, const std::string& str)
 {
-  using boost::spirit::x3::ascii::space;
   auto iter = str.begin();
   auto end = str.end();
-  ast::SPICEArg component;
-  bool r = phrase_parse(iter, end, parser::componentArg, space, component);
+  ast::Component component;
+  bool r = phrase_parse(iter, end, parser::component, parser::space_comment, component);
+  ast.components.insert(std::move(component));
+  assert(r);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
-template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parseStrings<double>(const std::string& filename);
+template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parseStrings<double>(const std::string& strings);
 }
