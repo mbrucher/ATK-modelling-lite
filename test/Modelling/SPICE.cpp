@@ -5,6 +5,8 @@
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/SPICE.h>
 
+#include <ATK/Core/Utilities.h>
+
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN
 
@@ -78,6 +80,12 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_value9 )
   BOOST_CHECK_CLOSE(ATK::parseComponentValue("1T"), 1e12, 1e3);
 }
 
+BOOST_AUTO_TEST_CASE( SPICE_parse_value_fail )
+{
+  BOOST_CHECK_THROW(ATK::parseComponentValue("r1t"), ATK::RuntimeError);
+  BOOST_CHECK_THROW(ATK::parseComponentValue(" 1T"), ATK::RuntimeError);
+}
+
 namespace
 {
   void checkResistor(const ATK::ast::SPICEAST& ast)
@@ -95,13 +103,20 @@ namespace
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
 {
   ATK::ast::SPICEAST ast;
-  ATK::parseString(ast, "R2 mid b 470k");
+  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "R2 mid b 470k"));
   checkResistor(ast);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_spaces )
 {
   ATK::ast::SPICEAST ast;
-  ATK::parseString(ast, "R2  mid  b 470k ");
+  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "R2  mid  b 470k "));
   checkResistor(ast);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_fail )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_THROW(ATK::parseString(ast, "2R"), ATK::RuntimeError);
+  BOOST_CHECK_EQUAL(ast.components.size(), 0);
 }

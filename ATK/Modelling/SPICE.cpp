@@ -127,12 +127,14 @@ namespace
 
 double parseComponentValue(const std::string& str)
 {
-  using boost::spirit::x3::ascii::space;
   auto iter = str.begin();
   auto end = str.end();
   ast::SPICENumber value;
-  bool r = phrase_parse(iter, end, parser::componentValue, space, value);
-  assert(r);
+  bool r = phrase_parse(iter, end, parser::componentValue, parser::space_comment, value);
+  if(!r)
+  {
+    throw ATK::RuntimeError("Failed to parse value");
+  }
   return convertComponentValue(value);
 }
 
@@ -142,8 +144,11 @@ void parseString(ast::SPICEAST& ast, const std::string& str)
   auto end = str.end();
   ast::Component component;
   bool r = phrase_parse(iter, end, parser::component, parser::space_comment, component);
+  if(!r)
+  {
+    throw ATK::RuntimeError("Failed to parse line");
+  }
   ast.components.insert(std::move(component));
-  assert(r);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
