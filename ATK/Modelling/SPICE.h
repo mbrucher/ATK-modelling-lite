@@ -42,7 +42,7 @@ namespace ast
   typedef std::unordered_map<std::string, ModelImp> Models;
   typedef std::pair<std::string, ModelImp> Model;
 
-  struct SPICEEntry : x3::variant<Component>
+  struct SPICEEntry : x3::variant<Component, Model>
   {
     using base_type::base_type;
     using base_type::operator=;
