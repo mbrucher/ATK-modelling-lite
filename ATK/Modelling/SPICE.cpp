@@ -12,11 +12,6 @@
 #include "ModellerFilter.h"
 #include "SPICE.h"
 
-BOOST_FUSION_ADAPT_STRUCT(ATK::ast::SPICEAST,
-                          components,
-                          models
-                          )
-
 namespace ATK
 {
 namespace parser
@@ -46,6 +41,10 @@ const auto componentArguments = x3::rule<class componentArguments, std::vector<a
 
 const auto component = x3::rule<class component, ast::Component>()
   = name >> *lit(' ') >> componentArguments;
+
+const auto entry = x3::rule<class entry, ast::SPICEEntry>()
+  = component;
+
 }
   
 template<typename DataType>
@@ -118,9 +117,17 @@ namespace
         return 1;
     }
   }
+  
+  void populateEntry(ast::SPICEAST& currentAST, ast::SPICEEntry entry)
+  {
+    boost::apply_visitor(
+                         [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
+                         std::move(entry)
+                         );
+  }
 }
   
-  double convertComponentValue(const ast::SPICENumber& value)
+double convertComponentValue(const ast::SPICENumber& value)
 {
   return value.first * convertSuffix(value.second);
 }
@@ -138,17 +145,17 @@ double parseComponentValue(const std::string& str)
   return convertComponentValue(value);
 }
 
-void parseString(ast::SPICEAST& ast, const std::string& str)
+void parseString(ast::SPICEAST& currentAST, const std::string& str)
 {
   auto iter = str.begin();
   auto end = str.end();
-  ast::Component component;
-  bool r = phrase_parse(iter, end, parser::component, parser::space_comment, component);
+  ast::SPICEEntry entry;
+  bool r = phrase_parse(iter, end, parser::entry, parser::space_comment, entry);
   if(!r)
   {
     throw ATK::RuntimeError("Failed to parse line");
   }
-  ast.components.insert(std::move(component));
+  populateEntry(currentAST, entry);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
