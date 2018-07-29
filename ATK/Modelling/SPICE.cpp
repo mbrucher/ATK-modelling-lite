@@ -2,21 +2,17 @@
  * \file SPICE.cpp
  */
 
+#include <algorithm>
 #include <fstream>
 
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/fusion/include/io.hpp>
 
+#include <ATK/Core/Utilities.h>
+
 #include "ModellerFilter.h"
 #include "SPICE.h"
-
-namespace
-{
-  double transform(const std::pair<double, std::string>& value)
-  {
-    return value.first;
-  }
-}
 
 BOOST_FUSION_ADAPT_STRUCT(ATK::AST,
                           components,
@@ -57,7 +53,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
   std::ifstream infile(filename);
   if(infile.fail())
   {
-    throw std::runtime_error("Cannot open file for reading.");
+    throw ATK::RuntimeError("Cannot open file for reading.");
   }
   
   std::string line; // Maybe I should merge lines that start with a '+' before parsing them
@@ -85,7 +81,49 @@ std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::string& string
     
   return std::move(filter);
 }
+
+namespace
+{
+  double convertSuffix(const std::string& suffix)
+  {
+    if(suffix.empty())
+    {
+      return 1;
+    }
+    if(suffix.size() > 2)
+    {
+      std::string cpy(suffix.substr(0, 3));
+      boost::algorithm::to_lower(cpy);
+      if(cpy == "mil")
+      {
+        return 2.54e-6;
+      }
+      if(cpy == "meg")
+      {
+        return 1e6;
+      }
+    }
+    switch(std::tolower(suffix[0]))
+    {
+      case 'f': return 1.e-15;
+      case 'p': return 1.e-12;
+      case 'n': return 1.e-9;
+      case 'u': return 1.e-6;
+      case 'm': return 1.e-3;
+      case 'k': return 1.e3;
+      case 'g': return 1.e9;
+      case 't': return 1.e12;
+      default:
+        return 1;
+    }
+  }
+}
   
+double convertComponentValue(const std::pair<double, std::string>& value)
+{
+  return value.first * convertSuffix(value.second);
+}
+
 double parseComponentValue(const std::string& str)
 {
   using boost::spirit::x3::ascii::space;
@@ -93,7 +131,7 @@ double parseComponentValue(const std::string& str)
   auto end = str.end();
   std::pair<double, std::string> value;
   bool r = phrase_parse(iter, end, parser::componentValue, space, value);
-  return transform(value);
+  return convertComponentValue(value);
 }
   
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);

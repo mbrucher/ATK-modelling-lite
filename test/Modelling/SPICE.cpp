@@ -23,10 +23,57 @@ BOOST_AUTO_TEST_CASE( SPICE_check_existing )
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value )
 {
-  BOOST_CHECK_EQUAL(ATK::parseComponentValue("1000"), 1000);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1000"), 1000, 1);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1e0k"), 1000, 1);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1E0K"), 1000, 1);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value2 )
 {
-  BOOST_CHECK_EQUAL(ATK::parseComponentValue("1k"), 1000);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1mil"), 2.54e-6, 1e-10);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1Mil"), 2.54e-6, 1e-10);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1MIL"), 2.54e-6, 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value3 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1u"), 1e-6, 1e-9);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1U"), 1e-6, 1e-9);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value4 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1n"), 1e-9, 1e-12);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1N"), 1e-9, 1e-12);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value5 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1p"), 1e-12, 1e-15);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1P"), 1e-12, 1e-15);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value6 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1f"), 1e-15, 1e-18);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1F"), 1e-15, 1e-18);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value7 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1meg"), 1e6, 1e-3);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1MEG"), 1e6, 1e-3);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1MeG"), 1e6, 1e-3);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value8 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1g"), 1e9, 1);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1G"), 1e9, 1);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_value9 )
+{
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1t"), 1e12, 1e3);
+  BOOST_CHECK_CLOSE(ATK::parseComponentValue("1T"), 1e12, 1e3);
 }
