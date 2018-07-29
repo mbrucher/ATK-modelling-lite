@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include <boost/spirit/home/x3.hpp>
-#include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/fusion/include/adapted.hpp>
 
 namespace ATK
 {
@@ -21,13 +21,13 @@ namespace ATK
   namespace fusion = boost::fusion;
   namespace x3 = boost::spirit::x3;
 
-  typedef std::unordered_map<std::string, std::string/*std::list<std::string>*/> Components;
-  typedef std::unordered_map<std::string, std::string/*std::list<std::string>*/> Models;
+  typedef std::unordered_map<std::string, std::list<std::string>> Components;
+  typedef std::unordered_map<std::string, std::list<std::string>> Models;
 
   struct AST
   {
-    Components components;
-    Models models;
+    int components;
+    int models;
   };
   
   template<typename DataType>

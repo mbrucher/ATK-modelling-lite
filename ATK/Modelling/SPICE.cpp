@@ -10,6 +10,11 @@
 #include "ModellerFilter.h"
 #include "SPICE.h"
 
+BOOST_FUSION_ADAPT_STRUCT(ATK::AST,
+                          components,
+                          models
+                          )
+
 namespace ATK
 {
 template<typename DataType>
