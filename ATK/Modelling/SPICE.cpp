@@ -14,7 +14,7 @@
 #include "ModellerFilter.h"
 #include "SPICE.h"
 
-BOOST_FUSION_ADAPT_STRUCT(ATK::SPICEAST,
+BOOST_FUSION_ADAPT_STRUCT(ATK::ast::SPICEAST,
                           components,
                           models
                           )
@@ -32,19 +32,16 @@ using x3::lexeme;
 using ascii::char_;
 using ascii::string;
 
-//const auto name = x3::alpha >> *x3::alnum;
+const auto name = x3::alpha >> *x3::alnum;
+
+const auto componentValue = x3::rule<class componentValue, std::pair<double, std::string>>()
+  = x3::double_ >> *x3::char_;
+
+const auto pin = x3::rule<class pin, std::string>()
+  = x3::alpha >> *x3::char_;
   
-//x3::rule<class SPICEArg_value, SPICEArg> SPICEArg_value = "SPICEArg_value";
-  
-//auto const SPICEArg_value_def = +char_;
-
-//BOOST_SPIRIT_DEFINE(SPICEArg_value)
-
-x3::rule<class componentValue, std::pair<double, std::string>> componentValue = "componentValue";
-
-auto const componentValue_def = x3::double_ >> *x3::char_;
-
-BOOST_SPIRIT_DEFINE(componentValue)
+const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
+  = componentValue | pin;
 }
   
 template<typename DataType>
@@ -134,9 +131,13 @@ double parseComponentValue(const std::string& str)
   return convertComponentValue(value);
 }
 
-void parseString(SPICEAST& ast, const std::string& str)
+void parseString(ast::SPICEAST& ast, const std::string& str)
 {
-    
+  using boost::spirit::x3::ascii::space;
+  auto iter = str.begin();
+  auto end = str.end();
+  ast::SPICEArg component;
+  bool r = phrase_parse(iter, end, parser::componentArg, space, component);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);

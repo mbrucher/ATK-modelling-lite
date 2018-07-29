@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_value9 )
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
 {
-  ATK::SPICEAST ast;
-  parseString(ast, "R2 mid b 470k");
+  ATK::ast::SPICEAST ast;
+  ATK::parseString(ast, "R2 mid b 470k");
   BOOST_CHECK_EQUAL(ast.components.size(), 1);
 }

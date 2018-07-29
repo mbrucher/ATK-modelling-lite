@@ -16,31 +16,36 @@
 
 namespace ATK
 {
-  template<typename DataType>
-  class ModellerFilter;
-  
+template<typename DataType>
+class ModellerFilter;
+
+namespace ast
+{
   namespace fusion = boost::fusion;
   namespace x3 = boost::spirit::x3;
 
-  struct SPICEArg : x3::variant<std::string, double>
+  struct SPICEArg : x3::variant<std::string, std::pair<double, std::string>>
   {
     using base_type::base_type;
     using base_type::operator=;
   };
   
   typedef std::unordered_map<std::string, std::vector<SPICEArg>> Components;
+  typedef std::pair<std::string, std::vector<SPICEArg>> Component;
   typedef std::vector<std::pair<std::string, SPICEArg>> ModelArguments;
-  typedef std::pair<std::string, ModelArguments> Model;
+  typedef std::pair<std::string, ModelArguments> ModelImp;
   
-  typedef std::unordered_map<std::string, Model> Models;
+  typedef std::unordered_map<std::string, ModelImp> Models;
+  typedef std::pair<std::string, ModelImp> Model;
 
   struct SPICEAST
   {
     Components components;
     Models models;
   };
+}
 
-  ATK_MODELLING_EXPORT void parseString(SPICEAST& ast, const std::string& str);
+  ATK_MODELLING_EXPORT void parseString(ast::SPICEAST& ast, const std::string& str);
 
   template<typename DataType>
   ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename);
