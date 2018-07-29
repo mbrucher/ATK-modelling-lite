@@ -21,17 +21,21 @@ namespace ascii = boost::spirit::x3::ascii;
 
 using x3::lit;
 using x3::lexeme;
-  
+
+namespace
+{
+  auto tolower = [](auto& ctx){ _val(ctx) += std::tolower(_attr(ctx)); };
+}
+
 auto const space_comment = x3::lexeme[ '#' >> *(x3::char_ - x3::eol) >> x3::eol];
 
 const auto name = x3::rule<class name, std::string>()
-  = x3::alpha >> *x3::alnum;
+  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
 
 const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
-  = x3::double_ >> *x3::char_;
+  = x3::double_ >> *(x3::char_); // to lower is done int he transofrmation function
 
-const auto pin = x3::rule<class pin, std::string>()
-  = x3::alpha >> *(x3::char_ - x3::space);
+const auto pin = name;
   
 const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
   = componentValue | pin;
