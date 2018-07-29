@@ -78,15 +78,30 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_value9 )
   BOOST_CHECK_CLOSE(ATK::parseComponentValue("1T"), 1e12, 1e3);
 }
 
+namespace
+{
+  void checkResistor(const ATK::ast::SPICEAST& ast)
+  {
+    BOOST_CHECK_EQUAL(ast.components.size(), 1);
+    const auto& it = *ast.components.begin();
+    BOOST_CHECK_EQUAL(it.first, "R2");
+    BOOST_CHECK_EQUAL(it.second.size(), 3);
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[0]), "mid");
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[1]), "b");
+    BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 470000.);
+  }
+}
+
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
 {
   ATK::ast::SPICEAST ast;
   ATK::parseString(ast, "R2 mid b 470k");
-  BOOST_CHECK_EQUAL(ast.components.size(), 1);
-  const auto& it = *ast.components.begin();
-  BOOST_CHECK_EQUAL(it.first, "R2");
-  BOOST_CHECK_EQUAL(it.second.size(), 3);
-  BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[0]), "mid");
-  BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[1]), "b");
-  BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 470000.);
+  checkResistor(ast);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_spaces )
+{
+  ATK::ast::SPICEAST ast;
+  ATK::parseString(ast, "R2  mid  b 470k ");
+  checkResistor(ast);
 }
