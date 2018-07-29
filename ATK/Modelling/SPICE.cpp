@@ -14,7 +14,7 @@
 #include "ModellerFilter.h"
 #include "SPICE.h"
 
-BOOST_FUSION_ADAPT_STRUCT(ATK::AST,
+BOOST_FUSION_ADAPT_STRUCT(ATK::SPICEAST,
                           components,
                           models
                           )
@@ -133,7 +133,12 @@ double parseComponentValue(const std::string& str)
   bool r = phrase_parse(iter, end, parser::componentValue, space, value);
   return convertComponentValue(value);
 }
-  
+
+void parseString(SPICEAST& ast, const std::string& str)
+{
+    
+}
+
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parseStrings<double>(const std::string& filename);
 }

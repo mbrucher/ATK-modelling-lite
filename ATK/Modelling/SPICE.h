@@ -22,10 +22,7 @@ namespace ATK
   namespace fusion = boost::fusion;
   namespace x3 = boost::spirit::x3;
 
-  struct SPICEArg : x3::variant<
-  std::string
-  , double
-  >
+  struct SPICEArg : x3::variant<std::string, double>
   {
     using base_type::base_type;
     using base_type::operator=;
@@ -37,12 +34,14 @@ namespace ATK
   
   typedef std::unordered_map<std::string, Model> Models;
 
-  struct AST
+  struct SPICEAST
   {
-    int components;
-    int models;
+    Components components;
+    Models models;
   };
-  
+
+  ATK_MODELLING_EXPORT void parseString(SPICEAST& ast, const std::string& str);
+
   template<typename DataType>
   ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename);
   template<typename DataType>
