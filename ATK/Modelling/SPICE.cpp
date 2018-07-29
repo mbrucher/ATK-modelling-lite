@@ -36,16 +36,16 @@ const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
   = x3::double_ >> *x3::char_;
 
 const auto pin = x3::rule<class pin, std::string>()
-  = x3::alpha >> *x3::char_;
+  = x3::alpha >> *(x3::char_ - x3::space);
   
 const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
   = componentValue | pin;
 
 const auto componentArguments = x3::rule<class componentArguments, std::vector<ast::SPICEArg>>()
-  = *componentArg;
+  = componentArg % ' ';
 
 const auto component = x3::rule<class component, ast::Component>()
-  = name >> componentArguments;
+  = name >> *lit(' ') >> componentArguments;
 }
   
 template<typename DataType>

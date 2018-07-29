@@ -56,6 +56,6 @@ namespace ast
   template<typename DataType>
   ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::string& filename);
   
-  ATK_MODELLING_EXPORT double convertComponentValue(const std::pair<double, std::string>& str);
+  ATK_MODELLING_EXPORT double convertComponentValue(const ast::SPICENumber& str);
   ATK_MODELLING_EXPORT double parseComponentValue(const std::string& str);
 }

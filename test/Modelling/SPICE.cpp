@@ -86,4 +86,7 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
   const auto& it = *ast.components.begin();
   BOOST_CHECK_EQUAL(it.first, "R2");
   BOOST_CHECK_EQUAL(it.second.size(), 3);
+  BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[0]), "mid");
+  BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[1]), "b");
+  BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 470000.);
 }
