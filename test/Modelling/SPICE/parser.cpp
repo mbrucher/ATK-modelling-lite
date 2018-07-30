@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_spaces )
 {
   ATK::ast::SPICEAST ast;
-  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "R2  mid  b 470k"));
+  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "R2  mid  b 470k "));
   checkResistor(ast);
 }
 

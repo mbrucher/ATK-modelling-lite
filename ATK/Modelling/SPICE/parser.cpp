@@ -43,10 +43,10 @@ const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
   = componentValue | pin;
 
 const auto componentArguments = x3::rule<class componentArguments, std::vector<ast::SPICEArg>>()
-  = componentArg % +lit(' ');
+  = componentArg % +(lit(' ') | lit('\n'));
 
 const auto component = x3::rule<class component, ast::Component>()
-  = componentName >> +lit(' ') >> componentArguments;
+  = componentName >> +(lit(' ') | lit('\n')) >> componentArguments >> *(lit(' ') | lit('\n'));
 
 const auto entry = x3::rule<class entry, ast::SPICEEntry>()
   = component;
