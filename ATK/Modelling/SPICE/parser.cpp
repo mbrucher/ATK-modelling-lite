@@ -29,13 +29,15 @@ namespace
 auto const space_comment = x3::lexeme[ '#' >> *(x3::char_ - x3::eol) >> x3::eol];
 
 const auto componentName = x3::rule<class name, std::string>()
-  = (x3::char_("rR")[tolower] >> *(x3::alnum[tolower] | x3::punct));
+  = (x3::char_("rR"
+               "vV"
+               )[tolower] >> *(x3::alnum[tolower] | x3::punct));
 
 const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
-  = x3::double_ >> *(x3::char_); // to lower is done int he transofrmation function
+  = x3::double_ >> *(x3::char_ - x3::space); // to lower is done int he transofrmation function
 
 const auto pin = x3::rule<class pin, std::string>()
-  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));;
+  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
   
 const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
   = componentValue | pin;
@@ -44,7 +46,7 @@ const auto componentArguments = x3::rule<class componentArguments, std::vector<a
   = componentArg % +lit(' ');
 
 const auto component = x3::rule<class component, ast::Component>()
-  = componentName >> *lit(' ') >> componentArguments;
+  = componentName >> +lit(' ') >> componentArguments;
 
 const auto entry = x3::rule<class entry, ast::SPICEEntry>()
   = component;
@@ -146,6 +148,10 @@ double parseComponentValue(const std::string& str)
   {
     throw ATK::RuntimeError("Failed to parse value");
   }
+  if(iter != end)
+  {
+    throw ATK::RuntimeError("Failed to parse line, reminder is " + std::string(iter, end));
+  }
   return convertComponentValue(value);
 }
 
@@ -158,6 +164,10 @@ void parseString(ast::SPICEAST& currentAST, const std::string& str)
   if(!r)
   {
     throw ATK::RuntimeError("Failed to parse line");
+  }
+  if(iter != end)
+  {
+    throw ATK::RuntimeError("Failed to parse line, reminder is " + std::string(iter, end));
   }
   populateEntry(currentAST, entry);
 }

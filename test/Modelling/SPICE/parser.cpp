@@ -86,6 +86,17 @@ namespace
     BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[1]), "b");
     BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 470000.);
   }
+  
+  void checkVoltage(const ATK::ast::SPICEAST& ast)
+  {
+    BOOST_CHECK_EQUAL(ast.components.size(), 1);
+    const auto& it = *ast.components.begin();
+    BOOST_CHECK_EQUAL(it.first, "vcc");
+    BOOST_CHECK_EQUAL(it.second.size(), 3);
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[0]), "ref");
+    BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[1])), 0);
+//BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 5e-6);
+  }
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
@@ -98,7 +109,7 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_spaces )
 {
   ATK::ast::SPICEAST ast;
-  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "R2  mid  b 470k "));
+  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "R2  mid  b 470k"));
   checkResistor(ast);
 }
 
@@ -107,4 +118,11 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_resistor_fail )
   ATK::ast::SPICEAST ast;
   BOOST_CHECK_THROW(ATK::parseString(ast, "2R"), ATK::RuntimeError);
   BOOST_CHECK_EQUAL(ast.components.size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_voltage )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parseString(ast, "Vcc ref 0 5uV"));
+  checkVoltage(ast);
 }
