@@ -1,9 +1,9 @@
 /**
- * \file SPICE.h
+ * \file ast.h
  * Contains the SPICE parser for ATK Modeler
  */
 
-#include "config.h"
+#include <ATK/Modelling/config.h>
 
 #include <list>
 #include <memory>
@@ -17,9 +17,6 @@
 
 namespace ATK
 {
-template<typename DataType>
-class ModellerFilter;
-
 namespace ast
 {
   namespace fusion = boost::fusion;
@@ -57,11 +54,6 @@ namespace ast
 
   ATK_MODELLING_EXPORT void parseString(ast::SPICEAST& ast, const std::string& str);
 
-  template<typename DataType>
-  ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename);
-  template<typename DataType>
-  ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::string& filename);
-  
   ATK_MODELLING_EXPORT double convertComponentValue(const ast::SPICENumber& str);
   ATK_MODELLING_EXPORT double parseComponentValue(const std::string& str);
 }

@@ -1,5 +1,5 @@
 /**
- * \file SPICE.cpp
+ * \file parser.cpp
  */
 
 #include <algorithm>
@@ -9,8 +9,7 @@
 
 #include <ATK/Core/Utilities.h>
 
-#include "ModellerFilter.h"
-#include "SPICE.h"
+#include <ATK/Modelling/SPICE/parser.h>
 
 namespace ATK
 {
@@ -29,13 +28,14 @@ namespace
 
 auto const space_comment = x3::lexeme[ '#' >> *(x3::char_ - x3::eol) >> x3::eol];
 
-const auto name = x3::rule<class name, std::string>()
-  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
+const auto componentName = x3::rule<class name, std::string>()
+  = (x3::char_("rR")[tolower] >> *(x3::alnum[tolower] | x3::punct));
 
 const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
   = x3::double_ >> *(x3::char_); // to lower is done int he transofrmation function
 
-const auto pin = name;
+const auto pin = x3::rule<class pin, std::string>()
+  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));;
   
 const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
   = componentValue | pin;
@@ -44,46 +44,11 @@ const auto componentArguments = x3::rule<class componentArguments, std::vector<a
   = componentArg % +lit(' ');
 
 const auto component = x3::rule<class component, ast::Component>()
-  = name >> *lit(' ') >> componentArguments;
+  = componentName >> *lit(' ') >> componentArguments;
 
 const auto entry = x3::rule<class entry, ast::SPICEEntry>()
   = component;
 
-}
-  
-template<typename DataType>
-std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
-{
-  std::ifstream infile(filename);
-  if(infile.fail())
-  {
-    throw ATK::RuntimeError("Cannot open file for reading.");
-  }
-  
-  std::string line; // Maybe I should merge lines that start with a '+' before parsing them
-  while (std::getline(infile, line))
-  {
-  }
-  
-  int nb_dynamic_pins = 0;
-  int nb_static_pins = 0;
-  int nb_input_pins = 0;
-
-  auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
-  
-  return std::move(filter);
-}
-
-template<typename DataType>
-std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::string& strings)
-{
-  int nb_dynamic_pins = 0;
-  int nb_static_pins = 0;
-  int nb_input_pins = 0;
-    
-  auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
-    
-  return std::move(filter);
 }
 
 namespace
@@ -196,7 +161,4 @@ void parseString(ast::SPICEAST& currentAST, const std::string& str)
   }
   populateEntry(currentAST, entry);
 }
-
-template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
-template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parseStrings<double>(const std::string& strings);
 }
