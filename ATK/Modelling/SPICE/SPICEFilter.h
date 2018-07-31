@@ -3,6 +3,9 @@
  * Contains the SPICE parser for ATK Modeler
  */
 
+#ifndef ATK_MODELLING_SPICE_SPICEFILTER
+#define ATK_MODELLING_SPICE_SPICEFILTER
+
 #include <ATK/Modelling/config.h>
 
 #include <list>
@@ -65,3 +68,6 @@ namespace ast
   ATK_MODELLING_EXPORT double convertComponentValue(const ast::SPICENumber& str);
   ATK_MODELLING_EXPORT double parseComponentValue(const std::string& str);
 }
+
+#endif
+
