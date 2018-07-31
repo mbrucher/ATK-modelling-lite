@@ -1,5 +1,5 @@
 /**
- * \file ast.h
+ * \file parser.h
  * Contains the SPICE parser for ATK Modeler
  */
 
