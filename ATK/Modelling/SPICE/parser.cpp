@@ -13,48 +13,11 @@
 
 namespace ATK
 {
-namespace parser
-{
-namespace x3 = boost::spirit::x3;
-namespace ascii = boost::spirit::x3::ascii;
-
-using x3::lit;
-using x3::lexeme;
-
 namespace
 {
   auto tolower = [](auto& ctx){ _val(ctx) += std::tolower(_attr(ctx)); };
-}
 
-auto const space_comment = x3::lexeme[ '#' >> *(x3::char_ - x3::eol) >> x3::eol];
-
-const auto componentName = x3::rule<class name, std::string>()
-  = (x3::char_("rR"
-               "vV"
-               )[tolower] >> *(x3::alnum[tolower] | x3::punct));
-
-const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
-  = x3::double_ >> *(x3::char_ - x3::space); // to lower is done int he transofrmation function
-
-const auto pin = x3::rule<class pin, std::string>()
-  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
-  
-const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
-  = componentValue | pin;
-
-const auto componentArguments = x3::rule<class componentArguments, std::vector<ast::SPICEArg>>()
-  = componentArg % +(lit(' ') | lit('\n'));
-
-const auto component = x3::rule<class component, ast::Component>()
-  = componentName >> +(lit(' ') | lit('\n')) >> componentArguments >> *(lit(' ') | lit('\n'));
-
-const auto entry = x3::rule<class entry, ast::SPICEEntry>()
-  = component;
-
-}
-
-namespace
-{
+  // convert a SPICE number to an actual number
   double convertSuffix(const std::string& suffix)
   {
     if(suffix.empty())
@@ -88,7 +51,43 @@ namespace
         return 1;
     }
   }
+}
+namespace parser
+{
+  namespace x3 = boost::spirit::x3;
+  namespace ascii = boost::spirit::x3::ascii;
+
+// Rule to bypass comments, we don't bypass spaces between
+auto const space_comment = x3::lexeme[ '*' >> *(x3::char_ - x3::eol) >> x3::eol];
+
+const auto componentName = x3::rule<class name, std::string>()
+  = (x3::char_("rR"
+               "vV"
+               )[tolower] >> *(x3::alnum[tolower] | x3::punct));
+
+const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
+  = x3::double_ >> *(x3::char_ - x3::space); // to lower is done in the transofrmation function
+
+const auto pin = x3::rule<class pin, std::string>()
+  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
   
+const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
+  = componentValue | pin;
+
+const auto componentArguments = x3::rule<class componentArguments, std::vector<ast::SPICEArg>>()
+  = componentArg % +(x3::lit(' ') | x3::lit('\n'));
+
+const auto component = x3::rule<class component, ast::Component>()
+  = componentName >> +(x3::lit(' ') | x3::lit('\n')) >> componentArguments >> *(x3::lit(' ') | x3::lit('\n'));
+
+const auto entry = x3::rule<class entry, ast::SPICEEntry>()
+  = component;
+
+}
+
+  // to replace the apply visit that is missing in boost::variant comapred to std
+namespace
+{
   template <typename ReturnT, typename... Lambdas>
   struct lambda_visitor;
   
