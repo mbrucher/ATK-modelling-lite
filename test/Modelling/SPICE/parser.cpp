@@ -95,7 +95,7 @@ namespace
     BOOST_CHECK_EQUAL(it.second.size(), 3);
     BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[0]), "ref");
     BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[1])), 0);
-    BOOST_CHECK_EQUAL(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 5e-6);
+    BOOST_CHECK_CLOSE(ATK::convertComponentValue(boost::get<ATK::ast::SPICENumber>(it.second[2])), 5e-6, 0.0001);
   }
 }
 

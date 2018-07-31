@@ -55,10 +55,10 @@ namespace ast
   };
 }
 
-  ATK_MODELLING_EXPORT void parseString(ast::SPICEAST& ast, const std::string& str);
+  ATK_MODELLING_EXPORT void parseString(ast::SPICEAST& ast, std::string_view str);
 
   ATK_MODELLING_EXPORT double convertComponentValue(const ast::SPICENumber& str);
-  ATK_MODELLING_EXPORT double parseComponentValue(const std::string& str);
+  ATK_MODELLING_EXPORT double parseComponentValue(std::string_view str);
 }
 
 #endif

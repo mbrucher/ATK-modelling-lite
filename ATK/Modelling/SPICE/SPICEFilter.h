@@ -19,7 +19,7 @@ class ModellerFilter;
 template<typename DataType>
 ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename);
 template<typename DataType>
-ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::string& filename);
+ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::vector<std::string_view>& filename);
 }
 
 #endif

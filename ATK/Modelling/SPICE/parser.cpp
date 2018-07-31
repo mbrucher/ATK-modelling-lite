@@ -137,7 +137,7 @@ double convertComponentValue(const ast::SPICENumber& value)
   return value.first * convertSuffix(value.second);
 }
 
-double parseComponentValue(const std::string& str)
+double parseComponentValue(const std::string_view str)
 {
   auto iter = str.begin();
   auto end = str.end();
@@ -154,7 +154,7 @@ double parseComponentValue(const std::string& str)
   return convertComponentValue(value);
 }
 
-void parseString(ast::SPICEAST& currentAST, const std::string& str)
+void parseString(ast::SPICEAST& currentAST, const std::string_view str)
 {
   auto iter = str.begin();
   auto end = str.end();

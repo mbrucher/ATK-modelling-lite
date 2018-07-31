@@ -42,19 +42,43 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
   std::string line; // Maybe I should merge lines that start with a '+' before parsing them
   while (std::getline(infile, line))
   {
+    try
+    {
+      parseString(tree, line);
+    }
+    catch(const std::exception& e)
+    {
+#if ENABLE_LOG
+      BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
+#endif
+    }
   }
 
   return convert<DataType>(tree);
 }
 
 template<typename DataType>
-std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::string& strings)
+  std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::vector<std::string_view>& strings)
 {
   ast::SPICEAST tree;
 
+  for (size_t i = 0; i < strings.size(); ++i)
+  {
+    try
+    {
+      parseString(tree, strings[i]);
+    }
+    catch(const std::exception& e)
+    {
+#if ENABLE_LOG
+      BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
+#endif
+    }
+  }
+  
   return convert<DataType>(tree);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
-template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parseStrings<double>(const std::string& strings);
+template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parseStrings<double>(const std::vector<std::string_view>& strings);
 }
