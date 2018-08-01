@@ -18,7 +18,7 @@ namespace
   auto tolower = [](auto& ctx){ _val(ctx) += std::tolower(_attr(ctx)); };
 
   // convert a SPICE number to an actual number
-  double convertSuffix(const std::string& suffix)
+  double convert_suffix(const std::string& suffix)
   {
     if(suffix.empty())
     {
@@ -60,32 +60,32 @@ namespace parser
 // Rule to bypass comments, we don't bypass spaces between
 auto const space_comment = x3::lexeme[ '*' >> *(x3::char_ - x3::eol) >> x3::eol];
 
-const auto componentName = x3::rule<class name, std::string>()
+const auto component_name = x3::rule<class name, std::string>()
   = (x3::char_("rR"
                "vV"
                )[tolower] >> *(x3::alnum[tolower] | x3::punct));
 
-const auto componentValue = x3::rule<class componentValue, ast::SPICENumber>()
+const auto component_value = x3::rule<class component_value, ast::SPICENumber>()
   = x3::double_ >> *(x3::char_ - x3::space); // to lower is done in the transofrmation function
 
 const auto pin = x3::rule<class pin, std::string>()
   = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
   
-const auto componentArg = x3::rule<class componentArg, ast::SPICEArg>()
-  = componentValue | pin;
+const auto component_arg = x3::rule<class component_arg, ast::SPICEArg>()
+  = component_value | pin;
 
-const auto componentArguments = x3::rule<class componentArguments, std::vector<ast::SPICEArg>>()
-  = componentArg % +(x3::lit(' ') | x3::lit('\n'));
+const auto component_arguments = x3::rule<class component_arguments, std::vector<ast::SPICEArg>>()
+  = component_arg % +(x3::lit(' ') | x3::lit('\n'));
 
 const auto component = x3::rule<class component, ast::Component>()
-  = componentName >> +(x3::lit(' ') | x3::lit('\n')) >> componentArguments >> *(x3::lit(' ') | x3::lit('\n'));
+  = component_name >> +(x3::lit(' ') | x3::lit('\n')) >> component_arguments >> *(x3::lit(' ') | x3::lit('\n'));
 
 const auto entry = x3::rule<class entry, ast::SPICEEntry>()
   = component;
 
 }
 
-  // to replace the apply visit that is missing in boost::variant comapred to std
+/// to replace the apply visit that is missing in boost::variant comapred to std
 namespace
 {
   template <typename ReturnT, typename... Lambdas>
@@ -122,7 +122,8 @@ namespace
     return { lambdas... };
   }
   
-  void populateEntry(ast::SPICEAST& currentAST, ast::SPICEEntry entry)
+  /// Converts a parsed entry to an AST entry
+  void populate_entry(ast::SPICEAST& currentAST, ast::SPICEEntry entry)
   {
     auto visitor = make_lambda_visitor<void>(
                                              [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
@@ -132,17 +133,17 @@ namespace
   }
 }
   
-double convertComponentValue(const ast::SPICENumber& value)
+double convert_component_value(const ast::SPICENumber& value)
 {
-  return value.first * convertSuffix(value.second);
+  return value.first * convert_suffix(value.second);
 }
 
-double parseComponentValue(const std::string_view str)
+double parse_component_value(const std::string_view str)
 {
   auto iter = str.begin();
   auto end = str.end();
   ast::SPICENumber value;
-  bool r = phrase_parse(iter, end, parser::componentValue, parser::space_comment, value);
+  bool r = phrase_parse(iter, end, parser::component_value, parser::space_comment, value);
   if(!r)
   {
     throw ATK::RuntimeError("Failed to parse value");
@@ -151,10 +152,10 @@ double parseComponentValue(const std::string_view str)
   {
     throw ATK::RuntimeError("Failed to parse line, reminder is " + std::string(iter, end));
   }
-  return convertComponentValue(value);
+  return convert_component_value(value);
 }
 
-void parseString(ast::SPICEAST& currentAST, const std::string_view str)
+void parse_string(ast::SPICEAST& currentAST, const std::string_view str)
 {
   auto iter = str.begin();
   auto end = str.end();
@@ -168,6 +169,6 @@ void parseString(ast::SPICEAST& currentAST, const std::string_view str)
   {
     throw ATK::RuntimeError("Failed to parse line, reminder is " + std::string(iter, end));
   }
-  populateEntry(currentAST, entry);
+  populate_entry(currentAST, entry);
 }
 }

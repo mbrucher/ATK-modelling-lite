@@ -25,40 +25,47 @@ namespace ast
   namespace fusion = boost::fusion;
   namespace x3 = boost::spirit::x3;
 
+  /// A SPICE number is actually a number with possibly a string after indicating its scale, or garbage (F, ohm...)
   typedef std::pair<double, std::string> SPICENumber;
   
-  struct SPICEArg : x3::variant<std::string, SPICENumber>
-  {
-    using base_type::base_type;
-    using base_type::operator=;
-  };
+  /// An entry on a SPICE line can be a string (pin) or a number (component value or a number-only pin)
+  typedef x3::variant<std::string, SPICENumber> SPICEArg;
   
+  /// Map for a component description, basically its name and then pins and values
   typedef std::unordered_map<std::string, std::vector<SPICEArg>> Components;
+  /// Entry in the previous map
   typedef std::pair<std::string, std::vector<SPICEArg>> Component;
   
+  /// Vector describing a model, name of the model, type and then all
   typedef std::vector<std::pair<std::string, std::pair<double, std::string>>> ModelArguments;
+  /// Entry in the previous map
   typedef std::pair<std::string, ModelArguments> ModelImp;
   
+  /// Map with all models
   typedef std::unordered_map<std::string, ModelImp> Models;
+  /// Entry in the previous map
   typedef std::pair<std::string, ModelImp> Model;
 
-  struct SPICEEntry : x3::variant<Component, Model>
-  {
-    using base_type::base_type;
-    using base_type::operator=;
-  };
+  /// End leaf of the AST, will be transformed on the fly to populate SPICEAST
+  typedef x3::variant<Component, Model> SPICEEntry;
 
+  /// The full SPICE AST
   struct SPICEAST
   {
+    /// Map of existign components in the circuit
     Components components;
+    /// Map of all known models
     Models models;
   };
 }
 
-  ATK_MODELLING_EXPORT void parseString(ast::SPICEAST& ast, std::string_view str);
+/// parse one string and populate the AST accordingly
+ATK_MODELLING_EXPORT void parse_string(ast::SPICEAST& ast, std::string_view str);
 
-  ATK_MODELLING_EXPORT double convertComponentValue(const ast::SPICENumber& str);
-  ATK_MODELLING_EXPORT double parseComponentValue(std::string_view str);
+/// Helper function, converts an AST component value to a double
+ATK_MODELLING_EXPORT double convert_component_value(const ast::SPICENumber& str);
+/// Helper function for tests, parses a component value
+ATK_MODELLING_EXPORT double parse_component_value(std::string_view str);
 }
 
 #endif

@@ -30,7 +30,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
   {
     try
     {
-      parseString(tree, line);
+      parse_string(tree, line);
     }
     catch(const std::exception& e)
     {
@@ -52,7 +52,7 @@ template<typename DataType>
   {
     try
     {
-      parseString(tree, strings[i]);
+      parse_string(tree, strings[i]);
     }
     catch(const std::exception& e)
     {
