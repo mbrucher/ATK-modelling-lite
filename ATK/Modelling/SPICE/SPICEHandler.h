@@ -18,6 +18,10 @@ public:
   SPICEHandler(const ast::SPICEAST& tree);
   
   std::tuple<gsl::index, gsl::index, gsl::index> get_pins() const;
+  
+  template<typename DataType>
+  static std::unique_ptr<ModellerFilter<DataType>> convert(const ast::SPICEAST& tree);
+
 };
 }
 

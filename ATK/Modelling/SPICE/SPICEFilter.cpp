@@ -13,22 +13,7 @@
 #include <ATK/Modelling/ModellerFilter.h>
 
 namespace ATK
-{
-namespace
-{
-template<typename DataType>
-std::unique_ptr<ModellerFilter<DataType>> convert(const ast::SPICEAST& tree)
-{
-  SPICEHandler handler(tree);
-  
-  auto [nb_dynamic_pins, nb_static_pins, nb_input_pins] = handler.get_pins();
-  
-  auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
-  
-  return std::move(filter);
-}
-}
-  
+{  
 template<typename DataType>
 std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
 {
@@ -55,7 +40,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
     }
   }
 
-  return convert<DataType>(tree);
+  return SPICEHandler::convert<DataType>(tree);
 }
 
 template<typename DataType>
@@ -77,7 +62,7 @@ template<typename DataType>
     }
   }
   
-  return convert<DataType>(tree);
+  return SPICEHandler::convert<DataType>(tree);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
