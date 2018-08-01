@@ -8,6 +8,7 @@
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/SPICE/SPICEFilter.h>
+#include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/SPICE/parser.h>
 #include <ATK/Modelling/ModellerFilter.h>
 
@@ -18,9 +19,9 @@ namespace
 template<typename DataType>
 std::unique_ptr<ModellerFilter<DataType>> convert(const ast::SPICEAST& tree)
 {
-  int nb_dynamic_pins = 0;
-  int nb_static_pins = 0;
-  int nb_input_pins = 0;
+  SPICEHandler handler(tree);
+  
+  auto [nb_dynamic_pins, nb_static_pins, nb_input_pins] = handler.get_pins();
   
   auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
   
