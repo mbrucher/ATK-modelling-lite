@@ -109,6 +109,30 @@ namespace ATK
       return input_state;
     }
 
+    /// Returns the number of dynamic pins
+    gsl::index get_nb_dynamic_pins() const
+    {
+      return nb_dynamic_pins;
+    }
+
+    /// Returns the number of static pins
+    gsl::index get_nb_static_pins() const
+    {
+      return nb_static_pins;
+    }
+
+    /// Returns the number of input pins
+    gsl::index get_nb_input_pins() const
+    {
+      return nb_input_pins;
+    }
+
+    /// Returns the number of components
+    gsl::index get_nb_components() const
+    {
+      return components.size();
+    }
+
     /**
      * Sets up the internal state of the ModellerFilter
      */
