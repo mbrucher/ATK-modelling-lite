@@ -28,6 +28,8 @@ public:
   template<typename DataType>
   static std::unique_ptr<ModellerFilter<DataType>> convert(const ast::SPICEAST& tree);
 
+  /// Gets through the AST tree and gets data from it
+  void process();
 };
 }
 

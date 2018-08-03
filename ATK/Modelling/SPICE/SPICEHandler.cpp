@@ -15,7 +15,6 @@ namespace ATK
   SPICEHandler::SPICEHandler(const ast::SPICEAST& tree)
   :tree(tree)
   {
-    
   }
 
   std::tuple<gsl::index, gsl::index, gsl::index> SPICEHandler::get_pins() const
@@ -27,12 +26,18 @@ namespace ATK
   std::unique_ptr<ModellerFilter<DataType>> SPICEHandler::convert(const ast::SPICEAST& tree)
   {
     SPICEHandler handler(tree);
+    handler.process();
     
     auto [nb_dynamic_pins, nb_static_pins, nb_input_pins] = handler.get_pins();
     
     auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
     
     return std::move(filter);
+  }
+  
+  void SPICEHandler::process()
+  {
+    
   }
 
   template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> SPICEHandler::convert<double>(const ast::SPICEAST& tree);
