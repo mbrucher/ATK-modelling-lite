@@ -12,6 +12,8 @@
 
 #include <gsl/gsl>
 
+#include <Eigen/Eigen>
+
 #include <ATK/Modelling/config.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Types.h>
@@ -53,6 +55,9 @@ public:
   void process();
   /// Returns the number of each type of pins (static, input, dynamic)
   std::tuple<gsl::index, gsl::index, gsl::index> get_pins() const;
+  /// Returns the known static state of the circuit
+  template<typename DataType>
+  Eigen::Matrix<DataType, Eigen::Dynamic, 1> get_static_state() const;
 };
 }
 

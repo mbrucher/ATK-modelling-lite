@@ -42,6 +42,9 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_1 )
   BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 2);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 0);
+  Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
+  state << 0., 5.;
+  BOOST_CHECK_EQUAL(handler.get_static_state<double>(), state);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
@@ -56,6 +59,9 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
   BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 2);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 0);
+  Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
+  state << 0., 5.;
+  BOOST_CHECK_EQUAL(handler.get_static_state<double>(), state);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_1 )

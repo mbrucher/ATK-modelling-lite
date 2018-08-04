@@ -53,6 +53,7 @@ namespace ATK
     auto [nb_static_pins, nb_input_pins, nb_dynamic_pins] = handler.get_pins();
     
     auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
+    filter->set_static_state(handler.get_static_state<DataType>());
     
     return std::move(filter);
   }
@@ -123,6 +124,17 @@ namespace ATK
       pins.insert(std::make_pair(pin0, std::make_pair(type, map.size())));
       map.insert(pin0);
     }
+  }
+
+  template<typename DataType>
+  Eigen::Matrix<DataType, Eigen::Dynamic, 1> SPICEHandler::get_static_state() const
+  {
+    Eigen::Matrix<DataType, Eigen::Dynamic, 1> state = Eigen::Matrix<DataType, Eigen::Dynamic, 1>(static_voltage.size());
+    for(size_t i = 0; i < static_voltage.size(); ++i)
+    {
+      state(i) = static_voltage[i];
+    }
+    return state;
   }
 
   template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> SPICEHandler::convert<double>(const ast::SPICEAST& tree);
