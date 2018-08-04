@@ -32,6 +32,8 @@ class SPICEHandler
   std::unordered_set<std::string> input_pins;
   /// Set of dynamic pins (i.e. voltage to be computed)
   std::unordered_set<std::string> dynamic_pins;
+  
+  std::vector<double> static_voltage;
 
   /// Gets through the AST tree and gets input pins and static voltages
   void set_static_pins();

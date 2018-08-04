@@ -67,6 +67,7 @@ namespace ATK
     static_pins.insert("0");
     pins.insert(std::make_pair("gnd", std::make_pair(PinType::Static, 0)));
     pins.insert(std::make_pair("0", std::make_pair(PinType::Static, 0)));
+    static_voltage.push_back(0);
     
     for(const auto& component: tree.components)
     {
@@ -88,12 +89,14 @@ namespace ATK
         if(component.second.size() == 3)
         {
           add_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+          static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[2])));
         }
         else if(component.second.size() == 4)
         {
           if(boost::get<std::string>(component.second[2]) == "DC")
           {
             add_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+            static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[3])));
           }
           else
           {
