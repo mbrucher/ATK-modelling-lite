@@ -85,25 +85,40 @@ namespace ATK
         {
           throw ATK::RuntimeError("At least one voltage needs to be set to ground");
         }
-        if(component.second.size() > 5)
+        if(component.second.size() == 3)
         {
-          add_input_pin(pin0, pin1, first_gnd);
+          add_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+        }
+        else if(component.second.size() == 4)
+        {
+          if(boost::get<std::string>(component.second[2]) == "DC")
+          {
+            add_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+          }
+          else
+          {
+            add_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
+          }
+        }
+        else if(component.second.size() >= 5)
+        {
+          add_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
         }
       }
     }
   }
 
-  void SPICEHandler::add_input_pin(const std::string& pin0, const std::string& pin1, bool first_gnd)
+  void SPICEHandler::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd)
   {
     if(first_gnd)
     {
-      pins.insert(std::make_pair(pin1, std::make_pair(PinType::Input, input_pins.size())));
-      input_pins.insert(pin1);
+      pins.insert(std::make_pair(pin1, std::make_pair(type, map.size())));
+      map.insert(pin1);
     }
     else
     {
-      pins.insert(std::make_pair(pin0, std::make_pair(PinType::Input, input_pins.size())));
-      input_pins.insert(pin0);
+      pins.insert(std::make_pair(pin0, std::make_pair(type, map.size())));
+      map.insert(pin0);
     }
   }
 

@@ -35,8 +35,8 @@ class SPICEHandler
 
   /// Gets through the AST tree and gets input pins and static voltages
   void set_static_pins();
-  /// Add a new input pin, zith a flag
-  void add_input_pin(const std::string& pin0, const std::string& pin1, bool first_gnd);
+  /// Add a new pin, with a flag
+  void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd);
 public:
   /**
    * Constructor
