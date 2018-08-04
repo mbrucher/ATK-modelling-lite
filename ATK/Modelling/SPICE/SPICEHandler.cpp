@@ -79,11 +79,31 @@ namespace ATK
 
         std::string pin0 = to_pin(component.second[0]);
         std::string pin1 = to_pin(component.second[1]);
+        auto first_gnd = (pin0 == "0" || pin0 == "gnd");
+        
+        if(pins.find(pin0) == pins.end() && pins.find(pin1) == pins.end())
+        {
+          throw ATK::RuntimeError("At least one voltage needs to be set to ground");
+        }
         if(component.second.size() > 5)
         {
-          
+          add_input_pin(pin0, pin1, first_gnd);
         }
       }
+    }
+  }
+
+  void SPICEHandler::add_input_pin(const std::string& pin0, const std::string& pin1, bool first_gnd)
+  {
+    if(first_gnd)
+    {
+      pins.insert(std::make_pair(pin1, std::make_pair(PinType::Input, input_pins.size())));
+      input_pins.insert(pin1);
+    }
+    else
+    {
+      pins.insert(std::make_pair(pin0, std::make_pair(PinType::Input, input_pins.size())));
+      input_pins.insert(pin0);
     }
   }
 
