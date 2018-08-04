@@ -13,6 +13,7 @@
 #include <gsl/gsl>
 
 #include <ATK/Modelling/config.h>
+#include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Types.h>
 #include <ATK/Modelling/SPICE/parser.h>
 
@@ -32,8 +33,8 @@ class SPICEHandler
   /// Set of dynamic pins (i.e. voltage to be computed)
   std::unordered_set<std::string> dynamic_pins;
 
-  /// Returns the number of each type of pins (static, input, dynamic)
-  std::tuple<gsl::index, gsl::index, gsl::index> get_pins() const;
+  /// Gets through the AST tree and gets input pins and static voltages
+  void set_static_pins();
 public:
   /**
    * Constructor
@@ -46,6 +47,8 @@ public:
 
   /// Gets through the AST tree and gets data from it
   void process();
+  /// Returns the number of each type of pins (static, input, dynamic)
+  std::tuple<gsl::index, gsl::index, gsl::index> get_pins() const;
 };
 }
 
