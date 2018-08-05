@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_wrong_voltage )
   ATK::ast::SPICEAST tree;
   tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("2")}));
   
-  ATK::SPICEHandler handler(tree);
+  ATK::SPICEHandler<double> handler(tree);
   
   BOOST_CHECK_THROW(handler.process(), std::runtime_error);
 }
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_bad )
   ATK::ast::SPICEAST tree;
   tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("2"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
-  ATK::SPICEHandler handler(tree);
+  ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_THROW(handler.process(), std::runtime_error);
 }
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_1 )
   ATK::ast::SPICEAST tree;
   tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
-  ATK::SPICEHandler handler(tree);
+  ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
   
   auto nb_pins = handler.get_pins();
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_1 )
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 0);
   Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
   state << 0., 5.;
-  BOOST_CHECK_EQUAL(handler.get_static_state<double>(), state);
+  BOOST_CHECK_EQUAL(handler.get_static_state(), state);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
   ATK::ast::SPICEAST tree;
   tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("DC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
-  ATK::SPICEHandler handler(tree);
+  ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
 
   auto nb_pins = handler.get_pins();
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 0);
   Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
   state << 0., 5.;
-  BOOST_CHECK_EQUAL(handler.get_static_state<double>(), state);
+  BOOST_CHECK_EQUAL(handler.get_static_state(), state);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_1 )
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_1 )
   ATK::ast::SPICEAST tree;
   tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("AC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
 
-  ATK::SPICEHandler handler(tree);
+  ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
 
   auto nb_pins = handler.get_pins();
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_2 )
   ATK::ast::SPICEAST tree;
   tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("DC"), ATK::ast::SPICEArg(std::make_pair(5, "")), ATK::ast::SPICEArg("AC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
-  ATK::SPICEHandler handler(tree);
+  ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
 
   auto nb_pins = handler.get_pins();

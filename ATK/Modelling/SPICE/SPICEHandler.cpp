@@ -34,36 +34,41 @@ namespace
 
 namespace ATK
 {
-  SPICEHandler::SPICEHandler(const ast::SPICEAST& tree)
+  template<typename DataType>
+  SPICEHandler<DataType>::SPICEHandler(const ast::SPICEAST& tree)
   :tree(tree)
   {
   }
 
-  std::tuple<gsl::index, gsl::index, gsl::index> SPICEHandler::get_pins() const
+  template<typename DataType>
+  std::tuple<gsl::index, gsl::index, gsl::index> SPICEHandler<DataType>::get_pins() const
   {
     return std::make_tuple(static_pins.size(), input_pins.size(), dynamic_pins.size());
   }
   
   template<typename DataType>
-  std::unique_ptr<ModellerFilter<DataType>> SPICEHandler::convert(const ast::SPICEAST& tree)
+  std::unique_ptr<ModellerFilter<DataType>> SPICEHandler<DataType>::convert(const ast::SPICEAST& tree)
   {
-    SPICEHandler handler(tree);
+    SPICEHandler<DataType> handler(tree);
     handler.process();
     
     auto [nb_static_pins, nb_input_pins, nb_dynamic_pins] = handler.get_pins();
     
     auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
-    filter->set_static_state(handler.get_static_state<DataType>());
+    filter->set_static_state(handler.get_static_state());
     
     return std::move(filter);
   }
   
-  void SPICEHandler::process()
+  template<typename DataType>
+  void SPICEHandler<DataType>::process()
   {
     set_static_pins();
+    generate_components();
   }
 
-  void SPICEHandler::set_static_pins()
+  template<typename DataType>
+  void SPICEHandler<DataType>::set_static_pins()
   {
     static_pins.insert("0");
     pins.insert(std::make_pair("gnd", std::make_pair(PinType::Static, 0)));
@@ -112,7 +117,13 @@ namespace ATK
     }
   }
 
-  void SPICEHandler::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd)
+  template<typename DataType>
+  void SPICEHandler<DataType>::generate_components()
+  {
+  }
+  
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd)
   {
     if(first_gnd)
     {
@@ -127,7 +138,7 @@ namespace ATK
   }
 
   template<typename DataType>
-  Eigen::Matrix<DataType, Eigen::Dynamic, 1> SPICEHandler::get_static_state() const
+  Eigen::Matrix<DataType, Eigen::Dynamic, 1> SPICEHandler<DataType>::get_static_state() const
   {
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> state = Eigen::Matrix<DataType, Eigen::Dynamic, 1>(static_voltage.size());
     for(size_t i = 0; i < static_voltage.size(); ++i)
@@ -137,6 +148,5 @@ namespace ATK
     return state;
   }
 
-  template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> SPICEHandler::convert<double>(const ast::SPICEAST& tree);
-
+  template class SPICEHandler<double>;
 }

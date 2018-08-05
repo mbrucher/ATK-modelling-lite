@@ -40,7 +40,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
     }
   }
 
-  return SPICEHandler::convert<DataType>(tree);
+  return SPICEHandler<DataType>::convert(tree);
 }
 
 template<typename DataType>
@@ -62,7 +62,7 @@ template<typename DataType>
     }
   }
   
-  return SPICEHandler::convert<DataType>(tree);
+  return SPICEHandler<DataType>::convert(tree);
 }
 
 template ATK_MODELLING_EXPORT std::unique_ptr<ModellerFilter<double>> parse<double>(const std::string& filename);
