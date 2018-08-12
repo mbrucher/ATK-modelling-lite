@@ -6,6 +6,7 @@
 
 #include <ATK/Core/Utilities.h>
 
+#include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
@@ -124,6 +125,36 @@ namespace ATK
   }
 
   template<typename DataType>
+  void SPICEHandler<DataType>::add_resistance(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_pin(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_pin(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+    components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_capacitor(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_pin(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_pin(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+    components.push_back(std::make_pair(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
   void SPICEHandler<DataType>::generate_components()
   {
     for(const auto& component: tree.components)
@@ -134,16 +165,12 @@ namespace ATK
           break;
         case 'r':
         {
-          if(component.second.size() != 3)
-          {
-            throw RuntimeError("Wrong number of arguments for component " + component.first);
-          }
-          std::string pin0 = to_pin(component.second[0]);
-          add_dynamic_pin(dynamic_pins, pin0);
-          std::string pin1 = to_pin(component.second[1]);
-          add_dynamic_pin(dynamic_pins, pin1);
-          double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
-          components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+          add_resistance(component);
+          break;
+        }
+        case 'c':
+        {
+          add_capacitor(component);
           break;
         }
         default:
