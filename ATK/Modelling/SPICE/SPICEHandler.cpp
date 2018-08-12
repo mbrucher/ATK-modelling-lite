@@ -195,7 +195,7 @@ namespace ATK
   template<typename DataType>
   void SPICEHandler<DataType>::add_dynamic_pin(std::unordered_set<std::string>& map, const std::string& pin)
   {
-    if(pins.find(pin) != pins.end())
+    if(pins.find(pin) == pins.end())
     {
       add_pin(map, PinType::Dynamic, pin);
     }
