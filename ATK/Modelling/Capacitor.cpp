@@ -29,7 +29,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  typename Capacitor<DataType_>::DataType Capacitor<DataType_>::get_current(gsl::index pin_index, bool steady_state) const
+  DataType_ Capacitor<DataType_>::get_current(gsl::index pin_index, bool steady_state) const
   {
     if(steady_state)
     {
@@ -39,7 +39,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  typename Capacitor<DataType_>::DataType Capacitor<DataType_>::get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const
+  DataType_ Capacitor<DataType_>::get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const
   {
     if(steady_state)
     {
@@ -47,6 +47,12 @@ namespace ATK
     }
     return c2t * (0 == pin_index_ref ? 1 : -1) * (1 == pin_index ? 1 : -1);
   }
-  
+
+  template<typename DataType_>
+  DataType_ Capacitor<DataType_>::get_capacitance() const
+  {
+    return C;
+  }
+
   template class Capacitor<double>;
 }
