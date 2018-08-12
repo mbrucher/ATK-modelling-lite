@@ -29,8 +29,10 @@ class SPICEHandler
   /// The AST tree on which we will work
   const ast::SPICEAST& tree;
 
+  typedef std::tuple<PinType, gsl::index> Pin;
+  
   /// Pins name map to actual pin type and id
-  std::unordered_map<std::string, std::pair<PinType, gsl::index>> pins;
+  std::unordered_map<std::string, Pin> pins;
   /// Set of static pins (i.e. fixed voltage)
   std::unordered_set<std::string> static_pins;
   /// Set of static pins (i.e. voltage imposed as filer inputs)
@@ -38,7 +40,7 @@ class SPICEHandler
   /// Set of dynamic pins (i.e. voltage to be computed)
   std::unordered_set<std::string> dynamic_pins;
   /// Set of all the components
-  std::unordered_set<std::unique_ptr<Component<DataType>>> components;
+  std::list<std::pair<std::unique_ptr<Component<DataType>>, std::vector<Pin>>> components;
 
   /// Static voltages given by SPICE
   std::vector<double> static_voltage;
@@ -48,7 +50,11 @@ class SPICEHandler
   /// Going through all the components and populate the component set
   void generate_components();
   /// Add a new pin, with a flag
-  void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd);
+  void add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd);
+  /// Add a dynamic pin if required
+  void add_dynamic_pin(std::unordered_set<std::string>& map, const std::string& pin);
+  /// Add a new pin
+  void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin);
 public:
   /**
    * Constructor
@@ -64,6 +70,8 @@ public:
   std::tuple<gsl::index, gsl::index, gsl::index> get_pins() const;
   /// Returns the known static state of the circuit
   Eigen::Matrix<DataType, Eigen::Dynamic, 1> get_static_state() const;
+  /// Returns the component container
+  auto get_components() const -> const decltype(components)&;
 };
 }
 

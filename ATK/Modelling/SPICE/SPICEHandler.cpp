@@ -7,6 +7,7 @@
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/ModellerFilter.h>
+#include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/SPICE/parser.h>
 
@@ -57,6 +58,11 @@ namespace ATK
     auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
     filter->set_static_state(handler.get_static_state());
     
+    for(auto& component: handler.components)
+    {
+      filter->add_component(std::move(component.first), std::move(component.second));
+    }
+    
     return std::move(filter);
   }
   
@@ -94,24 +100,24 @@ namespace ATK
         }
         if(component.second.size() == 3)
         {
-          add_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+          add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
           static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[2])));
         }
         else if(component.second.size() == 4)
         {
           if(boost::get<std::string>(component.second[2]) == "DC")
           {
-            add_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+            add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
             static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[3])));
           }
           else
           {
-            add_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
+            add_dual_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
           }
         }
         else if(component.second.size() >= 5)
         {
-          add_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
+          add_dual_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
         }
       }
     }
@@ -120,21 +126,59 @@ namespace ATK
   template<typename DataType>
   void SPICEHandler<DataType>::generate_components()
   {
+    for(const auto& component: tree.components)
+    {
+      switch(component.first[0])
+      {
+        case 'v':
+          break;
+        case 'r':
+        {
+          if(component.second.size() != 3)
+          {
+            throw RuntimeError("Wrong number of arguments for component " + component.first);
+          }
+          std::string pin0 = to_pin(component.second[0]);
+          add_dynamic_pin(dynamic_pins, pin0);
+          std::string pin1 = to_pin(component.second[1]);
+          add_dynamic_pin(dynamic_pins, pin1);
+          double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+          components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+          break;
+        }
+        default:
+          throw RuntimeError("Unknown component for name " + component.first);
+      }
+    }
   }
   
   template<typename DataType>
-  void SPICEHandler<DataType>::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd)
+  void SPICEHandler<DataType>::add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd)
   {
     if(first_gnd)
     {
-      pins.insert(std::make_pair(pin1, std::make_pair(type, map.size())));
-      map.insert(pin1);
+      add_pin(map, type, pin1);
     }
     else
     {
-      pins.insert(std::make_pair(pin0, std::make_pair(type, map.size())));
-      map.insert(pin0);
+      add_pin(map, type, pin0);
     }
+  }
+  
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_dynamic_pin(std::unordered_set<std::string>& map, const std::string& pin)
+  {
+    if(pins.find(pin) != pins.end())
+    {
+      add_pin(map, PinType::Dynamic, pin);
+    }
+  }
+  
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin)
+  {
+    pins.insert(std::make_pair(pin, std::make_tuple(type, map.size())));
+    map.insert(pin);
   }
 
   template<typename DataType>
@@ -146,6 +190,12 @@ namespace ATK
       state(i) = static_voltage[i];
     }
     return state;
+  }
+
+  template<typename DataType>
+  auto SPICEHandler<DataType>::get_components() const -> const decltype(components)&
+  {
+    return components;
   }
 
   template class SPICEHandler<double>;

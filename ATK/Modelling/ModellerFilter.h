@@ -69,12 +69,14 @@ namespace ATK
     /// Explicit destructor to avoid more than a forward declaration of Component
     ~ModellerFilter();
     
+    typedef std::tuple<PinType, gsl::index> Pin;
+    
     /**
      * Adds a new component to the model
      * @param component is the new component to add
      * @param pins is a vector with the pins that will be used by the component
      */
-    void add_component(std::unique_ptr<Component<DataType>> component, std::vector<std::tuple<PinType, gsl::index>> pins);
+    void add_component(std::unique_ptr<Component<DataType>> component, std::vector<Pin> pins);
     
     /**
      * Called during model update to remove a Kirchhoff equation and replace it with a component specific one
@@ -87,7 +89,7 @@ namespace ATK
      * Gets a voltage from one of the states
      * @param pin is the pin to get the voltage for
      */
-    DataType retrieve_voltage(const std::tuple<PinType, gsl::index>& pin) const;
+    DataType retrieve_voltage(const Pin& pin) const;
     
     /**
      * Sets the current static state
