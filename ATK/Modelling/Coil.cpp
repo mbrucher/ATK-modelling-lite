@@ -35,13 +35,13 @@ namespace ATK
   }
   
   template<typename DataType_>
-  typename Coil<DataType_>::DataType Coil<DataType_>::get_current(gsl::index pin_index, bool steady_state) const
+  DataType_ Coil<DataType_>::get_current(gsl::index pin_index, bool steady_state) const
   {
     return i * (0 == pin_index ? 1 : -1);
   }
   
   template<typename DataType_>
-  typename Coil<DataType_>::DataType Coil<DataType_>::get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const
+  DataType_ Coil<DataType_>::get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const
   {
     if(steady_state)
     {
@@ -63,5 +63,11 @@ namespace ATK
     }
   }
   
+  template<typename DataType_>
+  DataType_ Coil<DataType_>::get_coil() const
+  {
+    return L;
+  }
+
   template class Coil<double>;
 }

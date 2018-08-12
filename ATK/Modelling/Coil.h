@@ -35,7 +35,7 @@ namespace ATK
      * @param pin_index is the pin from which to compute the current
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
-    DataType get_current(gsl::index pin_index, bool steady_state) const override;
+    DataType_ get_current(gsl::index pin_index, bool steady_state) const override;
     
     /**
      * Get current gradient for the given pins based on the state
@@ -43,13 +43,16 @@ namespace ATK
      * @param pin_index is the pin from which to compute the gradient of the pin_index current
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
-    DataType get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const override;
+    DataType_ get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const override;
 
     /**
      * Precompute internal value before asking current and gradients
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
     void precompute(bool steady_state) override;
+
+    /// Return the coil value
+    DataType_ get_coil() const;
 
   private:
     DataType L;

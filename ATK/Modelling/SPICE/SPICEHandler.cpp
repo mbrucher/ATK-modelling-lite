@@ -7,6 +7,7 @@
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/Capacitor.h>
+#include <ATK/Modelling/Coil.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
@@ -125,21 +126,6 @@ namespace ATK
   }
 
   template<typename DataType>
-  void SPICEHandler<DataType>::add_resistance(const ast::Component& component)
-  {
-    if(component.second.size() != 3)
-    {
-      throw RuntimeError("Wrong number of arguments for component " + component.first);
-    }
-    std::string pin0 = to_pin(component.second[0]);
-    add_dynamic_pin(dynamic_pins, pin0);
-    std::string pin1 = to_pin(component.second[1]);
-    add_dynamic_pin(dynamic_pins, pin1);
-    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
-    components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
-  }
-
-  template<typename DataType>
   void SPICEHandler<DataType>::add_capacitor(const ast::Component& component)
   {
     if(component.second.size() != 3)
@@ -155,24 +141,59 @@ namespace ATK
   }
 
   template<typename DataType>
+  void SPICEHandler<DataType>::add_coil(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_pin(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_pin(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+    components.push_back(std::make_pair(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_resistance(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_pin(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_pin(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+    components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
   void SPICEHandler<DataType>::generate_components()
   {
     for(const auto& component: tree.components)
     {
       switch(component.first[0])
       {
-        case 'v':
-          break;
-        case 'r':
-        {
-          add_resistance(component);
-          break;
-        }
         case 'c':
         {
           add_capacitor(component);
           break;
         }
+        case 'l':
+        {
+          add_coil(component);
+          break;
+        }
+        case 'r':
+        {
+          add_resistance(component);
+          break;
+        }
+        case 'v':
+          break;
         default:
           throw RuntimeError("Unknown component for name " + component.first);
       }
