@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_1 )
   BOOST_CHECK_NO_THROW(handler.process());
   
   auto nb_pins = handler.get_pins();
-  BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 2);
+  BOOST_REQUIRE_EQUAL(std::get<0>(nb_pins), 2);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 0);
   Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
   BOOST_CHECK_NO_THROW(handler.process());
 
   auto nb_pins = handler.get_pins();
-  BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 2);
+  BOOST_REQUIRE_EQUAL(std::get<0>(nb_pins), 2);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 0);
   Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_resistor_1 )
   BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 1);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 1);
-  BOOST_CHECK_EQUAL(handler.get_components().size(), 1);
+  BOOST_REQUIRE_EQUAL(handler.get_components().size(), 1);
   const auto& component = *(*handler.get_components().begin()).first;
   BOOST_CHECK_CLOSE(dynamic_cast<const ATK::Resistor<double>&>(component).get_resistance(), 1000, 0.01);
 }
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor_1 )
   BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 1);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 1);
-  BOOST_CHECK_EQUAL(handler.get_components().size(), 1);
+  BOOST_REQUIRE_EQUAL(handler.get_components().size(), 1);
   const auto& component = *(*handler.get_components().begin()).first;
   BOOST_CHECK_CLOSE(dynamic_cast<const ATK::Capacitor<double>&>(component).get_capacitance(), 1e-6, 0.01);
 }
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_coil_1 )
   BOOST_CHECK_EQUAL(std::get<0>(nb_pins), 1);
   BOOST_CHECK_EQUAL(std::get<1>(nb_pins), 0);
   BOOST_CHECK_EQUAL(std::get<2>(nb_pins), 1);
-  BOOST_CHECK_EQUAL(handler.get_components().size(), 1);
+  BOOST_REQUIRE_EQUAL(handler.get_components().size(), 1);
   const auto& component = *(*handler.get_components().begin()).first;
   BOOST_CHECK_CLOSE(dynamic_cast<const ATK::Coil<double>&>(component).get_coil(), 1e-6, 0.01);
 }
