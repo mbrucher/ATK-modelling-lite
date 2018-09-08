@@ -8,14 +8,16 @@
 
 #include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/Coil.h>
+#include <ATK/Modelling/Diode.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
+#include <ATK/Modelling/Transistor.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/SPICE/parser.h>
 
 namespace
 {
-  class PinVisitor : public boost::static_visitor<std::string>
+  class NameVisitor : public boost::static_visitor<std::string>
   {
   public:
     std::string operator()(const ATK::ast::SPICENumber& number) const
@@ -29,9 +31,9 @@ namespace
     }
   };
 
-  std::string to_pin(const ATK::ast::SPICEArg& arg)
+  std::string to_name(const ATK::ast::SPICEArg& arg)
   {
-    return boost::apply_visitor(PinVisitor(), arg);
+    return boost::apply_visitor(NameVisitor(), arg);
   }
 }
 
@@ -92,8 +94,8 @@ namespace ATK
           throw ATK::RuntimeError("Voltage " + component.first + " is missing values, only " + std::to_string(component.second.size() ));
         }
 
-        std::string pin0 = to_pin(component.second[0]);
-        std::string pin1 = to_pin(component.second[1]);
+        std::string pin0 = to_name(component.second[0]);
+        std::string pin1 = to_name(component.second[1]);
         auto first_gnd = (pin0 == "0" || pin0 == "gnd");
         
         if(pins.find(pin0) == pins.end() && pins.find(pin1) == pins.end())
@@ -132,9 +134,9 @@ namespace ATK
     {
       throw RuntimeError("Wrong number of arguments for component " + component.first);
     }
-    std::string pin0 = to_pin(component.second[0]);
+    std::string pin0 = to_name(component.second[0]);
     add_dynamic_pin(dynamic_pins, pin0);
-    std::string pin1 = to_pin(component.second[1]);
+    std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_pair(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
@@ -147,12 +149,27 @@ namespace ATK
     {
       throw RuntimeError("Wrong number of arguments for component " + component.first);
     }
-    std::string pin0 = to_pin(component.second[0]);
+    std::string pin0 = to_name(component.second[0]);
     add_dynamic_pin(dynamic_pins, pin0);
-    std::string pin1 = to_pin(component.second[1]);
+    std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_pair(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_diode(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_name(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_name(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    std::string diode_model = to_name(component.second[2]);
+    components.push_back(std::make_pair(std::make_unique<Diode<DataType>>(), std::vector<Pin>{pins[pin0], pins[pin1]}));
   }
 
   template<typename DataType>
@@ -162,12 +179,29 @@ namespace ATK
     {
       throw RuntimeError("Wrong number of arguments for component " + component.first);
     }
-    std::string pin0 = to_pin(component.second[0]);
+    std::string pin0 = to_name(component.second[0]);
     add_dynamic_pin(dynamic_pins, pin0);
-    std::string pin1 = to_pin(component.second[1]);
+    std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_transistor(const ast::Component& component)
+  {
+    if(component.second.size() != 4)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_name(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_name(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    std::string pin2 = to_name(component.second[2]);
+    add_dynamic_pin(dynamic_pins, pin2);
+    std::string transistor_model = to_name(component.second[3]);
+    components.push_back(std::make_pair(std::make_unique<NPN<DataType>>(), std::vector<Pin>{pins[pin1], pins[pin0], pins[pin2]}));
   }
 
   template<typename DataType>
@@ -182,9 +216,19 @@ namespace ATK
           add_capacitor(component);
           break;
         }
+        case 'd':
+        {
+          add_diode(component);
+          break;
+        }
         case 'l':
         {
           add_coil(component);
+          break;
+        }
+        case 'q':
+        {
+          add_transistor(component);
           break;
         }
         case 'r':

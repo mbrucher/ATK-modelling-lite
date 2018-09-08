@@ -98,13 +98,36 @@ namespace
     BOOST_CHECK_CLOSE(ATK::convert_component_value(boost::get<ATK::ast::SPICENumber>(it.second[2])), 5e-6, 0.0001);
   }
   
+  void checkDiode(const ATK::ast::SPICEAST& ast)
+  {
+    BOOST_REQUIRE_EQUAL(ast.components.size(), 1);
+    const auto& it = *ast.components.begin();
+    BOOST_CHECK_EQUAL(it.first, "d1");
+    BOOST_REQUIRE_EQUAL(it.second.size(), 3);
+    BOOST_CHECK_EQUAL(ATK::convert_component_value(boost::get<ATK::ast::SPICENumber>(it.second[0])), 4);
+    BOOST_CHECK_EQUAL(ATK::convert_component_value(boost::get<ATK::ast::SPICENumber>(it.second[1])), 5);
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[2]), "mydiode");
+  }
+  
+  void checkTransistor(const ATK::ast::SPICEAST& ast)
+  {
+    BOOST_REQUIRE_EQUAL(ast.components.size(), 1);
+    const auto& it = *ast.components.begin();
+    BOOST_CHECK_EQUAL(it.first, "q5");
+    BOOST_REQUIRE_EQUAL(it.second.size(), 4);
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[0]), "s2-");
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[1]), "s1b");
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[2]), "s1-");
+    BOOST_CHECK_EQUAL(boost::get<std::string>(it.second[3]), "q2n3904");
+  }
+  
   void checkModel(const ATK::ast::SPICEAST& ast)
   {
     BOOST_REQUIRE_EQUAL(ast.models.size(), 1);
     const auto& it = *ast.models.begin();
     BOOST_CHECK_EQUAL(it.first, "q2n3904");
     BOOST_CHECK_EQUAL(it.second.first, "npn");
-    BOOST_REQUIRE_EQUAL(it.second.second.size(), 3);
+    BOOST_REQUIRE_EQUAL(it.second.second.size(), 5);
   }
 }
 
@@ -134,6 +157,20 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_voltage )
   ATK::ast::SPICEAST ast;
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vcc ref 0 5uV"));
   checkVoltage(ast);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_diode )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "D1 4 5 mydiode"));
+  checkDiode(ast);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_transistor )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Q5  s2- s1b s1- Q2N3904"));
+  checkTransistor(ast);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_model )

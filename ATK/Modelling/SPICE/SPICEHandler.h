@@ -60,8 +60,12 @@ class SPICEHandler
   void add_capacitor(const ast::Component& component);
   /// Adds a coil to the model
   void add_coil(const ast::Component& component);
+  /// Adds a diode to the model
+  void add_diode(const ast::Component& component);
   /// Adds a resistance to the model
   void add_resistance(const ast::Component& component);
+  /// Adds a transistor to the model
+  void add_transistor(const ast::Component& component);
 public:
   /**
    * Constructor

@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <fstream>
 
-#define BOOST_SPIRIT_X3_DEBUG
-
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <ATK/Core/Utilities.h>
@@ -59,22 +57,25 @@ namespace parser
   namespace x3 = boost::spirit::x3;
   namespace ascii = boost::spirit::x3::ascii;
 
+auto valid_char = x3::char_[tolower] - x3::space - x3::char_("()= ");
 // Rule to bypass comments, we don't bypass spaces between
 auto const space_comment = x3::lexeme[ '*' >> *(x3::char_ - x3::eol) >> x3::eol];
 
 const auto component_name = x3::rule<class name, std::string>()
-  = (x3::char_(
-               "cC"
-               "lL"
-               "rR"
-               "vV"
-               )[tolower] >> *(x3::alnum[tolower] | x3::punct - x3::char_("()= ")));
+  = x3::char_(
+              "cC"
+              "lL"
+              "rR"
+              "vV"
+              "dD"
+              "qQ"
+              )[tolower] >> *valid_char;
 
 const auto component_value = x3::rule<class component_value, ast::SPICENumber>()
   = x3::double_ >> *(x3::char_ - x3::space - x3::char_("()= ")); // to lower is done in the transofrmation function
 
 const auto pin = x3::rule<class pin, std::string>()
-  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct - x3::char_("()= ")));
+  = x3::alpha[tolower] >> *valid_char;
   
 const auto component_arg = x3::rule<class component_arg, ast::SPICEArg>()
   = component_value | pin;
@@ -140,8 +141,14 @@ namespace
   void populate_entry(ast::SPICEAST& currentAST, ast::SPICEEntry entry)
   {
     auto visitor = make_lambda_visitor<void>(
-                                             [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
-                                             [&](ast::Model& arg) { /*currentAST.models.insert(std::move(arg));*/ }
+                        [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
+                        [&](ast::Model& arg) {
+                          currentAST.models.insert(
+                            std::make_pair(std::get<1>(arg),
+                                           std::make_pair(std::get<2>(arg), std::get<3>(arg))
+                                           )
+                          );
+                        }
                                              );
     boost::apply_visitor(visitor, std::move(entry));
   }
