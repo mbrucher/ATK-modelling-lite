@@ -22,7 +22,6 @@ namespace ATK
 {
 namespace ast
 {
-  namespace fusion = boost::fusion;
   namespace x3 = boost::spirit::x3;
 
   /// A SPICE number is actually a number with possibly a string after indicating its scale, or garbage (F, ohm...)
@@ -37,14 +36,12 @@ namespace ast
   typedef std::pair<std::string, std::vector<SPICEArg>> Component;
   
   /// Vector describing a model, name of the model, type and then all
-  typedef std::vector<std::pair<std::string, std::pair<double, std::string>>> ModelArguments;
-  /// Entry in the previous map
+  typedef std::vector<std::pair<std::string, SPICENumber>> ModelArguments;
   typedef std::pair<std::string, ModelArguments> ModelImp;
-  
+  typedef std::tuple<std::string, std::string, std::string, ModelArguments> Model;
+
   /// Map with all models
   typedef std::unordered_map<std::string, ModelImp> Models;
-  /// Entry in the previous map
-  typedef std::pair<std::string, ModelImp> Model;
 
   /// End leaf of the AST, will be transformed on the fly to populate SPICEAST
   typedef x3::variant<Component, Model> SPICEEntry;

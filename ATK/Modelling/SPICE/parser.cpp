@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <fstream>
 
+#define BOOST_SPIRIT_X3_DEBUG
+
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <ATK/Core/Utilities.h>
@@ -66,13 +68,13 @@ const auto component_name = x3::rule<class name, std::string>()
                "lL"
                "rR"
                "vV"
-               )[tolower] >> *(x3::alnum[tolower] | x3::punct));
+               )[tolower] >> *(x3::alnum[tolower] | x3::punct - x3::char_("()= ")));
 
 const auto component_value = x3::rule<class component_value, ast::SPICENumber>()
-  = x3::double_ >> *(x3::char_ - x3::space); // to lower is done in the transofrmation function
+  = x3::double_ >> *(x3::char_ - x3::space - x3::char_("()= ")); // to lower is done in the transofrmation function
 
 const auto pin = x3::rule<class pin, std::string>()
-  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct));
+  = (x3::alpha[tolower] >> *(x3::alnum[tolower] | x3::punct - x3::char_("()= ")));
   
 const auto component_arg = x3::rule<class component_arg, ast::SPICEArg>()
   = component_value | pin;
@@ -81,10 +83,19 @@ const auto component_arguments = x3::rule<class component_arguments, std::vector
   = component_arg % +(x3::lit(' ') | x3::lit('\n'));
 
 const auto component = x3::rule<class component, ast::Component>()
-  = component_name >> +(x3::lit(' ') | x3::lit('\n')) >> component_arguments >> *(x3::lit(' ') | x3::lit('\n'));
+  = component_name >> +(x3::lit(' ') | x3::lit('\n')) >> component_arguments >> *x3::lit(' ');
+
+  const auto model_arg = x3::rule<class model_arg, std::pair<std::string, ast::SPICENumber>>()
+  = pin >> *x3::lit(' ') >> x3::lit('=') >> *x3::lit(' ') >> component_value;
+
+const auto model_args = x3::rule<class model_args, ast::ModelArguments>()
+  = model_arg % +(x3::lit(' ') | x3::lit('\n'));
+
+const auto model = x3::rule<class model, ast::Model>()
+  = (x3::string(".model") | x3::string(".MODEL")) >> +x3::lit(' ') >> pin >> +x3::lit(' ') >> pin >> *x3::lit(' ') >> x3::lit('(') >> *x3::lit(' ') >> model_args >> *x3::lit(' ') >> x3::lit(')') >> *x3::lit(' ');
 
 const auto entry = x3::rule<class entry, ast::SPICEEntry>()
-  = component;
+  = component | model;
 
 }
 
@@ -130,7 +141,7 @@ namespace
   {
     auto visitor = make_lambda_visitor<void>(
                                              [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
-                                             [&](ast::Model& arg) { }
+                                             [&](ast::Model& arg) { /*currentAST.models.insert(std::move(arg));*/ }
                                              );
     boost::apply_visitor(visitor, std::move(entry));
   }

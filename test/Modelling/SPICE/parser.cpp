@@ -97,6 +97,15 @@ namespace
     BOOST_CHECK_EQUAL(ATK::convert_component_value(boost::get<ATK::ast::SPICENumber>(it.second[1])), 0);
     BOOST_CHECK_CLOSE(ATK::convert_component_value(boost::get<ATK::ast::SPICENumber>(it.second[2])), 5e-6, 0.0001);
   }
+  
+  void checkModel(const ATK::ast::SPICEAST& ast)
+  {
+    BOOST_REQUIRE_EQUAL(ast.models.size(), 1);
+    const auto& it = *ast.models.begin();
+    BOOST_CHECK_EQUAL(it.first, "q2n3904");
+    BOOST_CHECK_EQUAL(it.second.first, "npn");
+    BOOST_REQUIRE_EQUAL(it.second.second.size(), 3);
+  }
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_parse_resistor )
@@ -125,4 +134,11 @@ BOOST_AUTO_TEST_CASE( SPICE_parse_voltage )
   ATK::ast::SPICEAST ast;
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vcc ref 0 5uV"));
   checkVoltage(ast);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_parse_model )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".MODEL Q2N3904 NPN(VT=0.026 IS=6.73E-15 BF=416.4 BR=0.7374 NE=1.259)"));
+  checkModel(ast);
 }
