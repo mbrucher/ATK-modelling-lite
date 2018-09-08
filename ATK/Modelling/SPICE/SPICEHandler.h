@@ -56,6 +56,8 @@ class SPICEHandler
   /// Add a new pin
   void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin);
   
+  std::unique_ptr<Component<DataType>> create_component(const std::string& model_name) const;
+  
   /// Adds a capacitor to the model
   void add_capacitor(const ast::Component& component);
   /// Adds a coil to the model

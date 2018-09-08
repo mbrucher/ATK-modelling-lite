@@ -128,6 +128,33 @@ namespace ATK
   }
 
   template<typename DataType>
+  std::unique_ptr<Component<DataType>> SPICEHandler<DataType>::create_component(const std::string& model_name) const
+  {
+    auto model = tree.models.find(model_name);
+    if(model == tree.models.end())
+    {
+      throw RuntimeError("Unknown model named " + model_name);
+    }
+    
+    if(model->second.first == "d")
+    {
+      return std::make_unique<Diode<DataType>>();
+    }
+    
+    if(model->second.first == "npn")
+    {
+      return std::make_unique<NPN<DataType>>();
+    }
+    
+    if(model->second.first == "pnp")
+    {
+      return std::make_unique<PNP<DataType>>();
+    }
+
+    throw RuntimeError("Unknown model class named " + model->second.first);
+  }
+  
+  template<typename DataType>
   void SPICEHandler<DataType>::add_capacitor(const ast::Component& component)
   {
     if(component.second.size() != 3)
@@ -169,7 +196,7 @@ namespace ATK
     std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     std::string diode_model = to_name(component.second[2]);
-    components.push_back(std::make_pair(std::make_unique<Diode<DataType>>(), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    components.push_back(std::make_pair(create_component(diode_model), std::vector<Pin>{pins[pin0], pins[pin1]}));
   }
 
   template<typename DataType>
@@ -201,7 +228,7 @@ namespace ATK
     std::string pin2 = to_name(component.second[2]);
     add_dynamic_pin(dynamic_pins, pin2);
     std::string transistor_model = to_name(component.second[3]);
-    components.push_back(std::make_pair(std::make_unique<NPN<DataType>>(), std::vector<Pin>{pins[pin1], pins[pin0], pins[pin2]}));
+    components.push_back(std::make_pair(create_component(transistor_model), std::vector<Pin>{pins[pin1], pins[pin0], pins[pin2]}));
   }
 
   template<typename DataType>
