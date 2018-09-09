@@ -36,7 +36,7 @@ namespace ast
   typedef std::pair<std::string, std::vector<SPICEArg>> Component;
   
   /// Vector describing a model, name of the model, type and then all
-  typedef std::vector<std::pair<std::string, SPICENumber>> ModelArguments;
+  typedef std::unordered_map<std::string, SPICENumber> ModelArguments;
   typedef std::pair<std::string, ModelArguments> ModelImp;
   typedef std::tuple<std::string, std::string, std::string, ModelArguments> Model;
 

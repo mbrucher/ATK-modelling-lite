@@ -4,6 +4,9 @@
 
 #include <memory>
 
+#include <boost/preprocessor/seq.hpp>
+#include <boost/preprocessor/tuple.hpp>
+
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/Capacitor.h>
@@ -35,6 +38,27 @@ namespace
   {
     return boost::apply_visitor(NameVisitor(), arg);
   }
+  
+#define DEFINE_VARIABLE_HELPER(r, data, TUPLE) DataType BOOST_PP_TUPLE_ELEM(0, TUPLE) = BOOST_PP_TUPLE_ELEM(1, TUPLE);
+#define POPULATE_VARIABLE_HELPER(r, data, TUPLE) \
+  if(const auto arg = args.find(BOOST_STRINGIZE(BOOST_PP_TUPLE_ELEM(0, TUPLE))); arg != args.end()) \
+  { \
+    BOOST_PP_TUPLE_ELEM(0, TUPLE) = ATK::convert_component_value(arg->second); \
+  } \
+
+#define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
+  
+  template<typename DataType>
+  class DiodeHelper
+  {
+  public:
+    void populate(const ATK::ast::ModelArguments& args)
+    {
+      BOOST_PP_SEQ_FOR_EACH(POPULATE_VARIABLE_HELPER, _, DIODE_SEQ)
+    }
+
+    BOOST_PP_SEQ_FOR_EACH(DEFINE_VARIABLE_HELPER, _, DIODE_SEQ)
+  };
 }
 
 namespace ATK
@@ -138,7 +162,9 @@ namespace ATK
     
     if(model->second.first == "d")
     {
-      return std::make_unique<Diode<DataType>>();
+      DiodeHelper<DataType> helper;
+      helper.populate(model->second.second);
+      return std::make_unique<Diode<DataType>>(helper.is, helper.n, helper.vt);
     }
     
     if(model->second.first == "npn")
