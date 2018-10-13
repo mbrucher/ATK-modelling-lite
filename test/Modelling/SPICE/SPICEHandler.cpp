@@ -180,4 +180,9 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_bridge )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 1 0 100"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R1 1 ref 100"));
   std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  filter->set_input_sampling_rate(48000);
+  filter->set_output_sampling_rate(48000);
+  filter->process(1);
+  auto output = filter->get_output_array(0);
+  BOOST_CHECK_EQUAL(output[0], 2.5);
 }
