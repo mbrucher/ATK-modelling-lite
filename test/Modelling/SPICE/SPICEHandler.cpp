@@ -172,3 +172,12 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_coil_2 )
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_THROW(handler.process(), ATK::RuntimeError);
 }
+
+BOOST_AUTO_TEST_CASE( SPICE_Handler_bridge )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vcc ref 0 5V"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 1 0 100"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R1 1 ref 100"));
+  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+}
