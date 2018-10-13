@@ -46,19 +46,25 @@ namespace
     BOOST_PP_TUPLE_ELEM(0, TUPLE) = ATK::convert_component_value(arg->second); \
   } \
 
-#define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
-  
-  template<typename DataType>
-  class DiodeHelper
-  {
-  public:
-    void populate(const ATK::ast::ModelArguments& args)
-    {
-      BOOST_PP_SEQ_FOR_EACH(POPULATE_VARIABLE_HELPER, _, DIODE_SEQ)
-    }
-
-    BOOST_PP_SEQ_FOR_EACH(DEFINE_VARIABLE_HELPER, _, DIODE_SEQ)
+#define HELPER(name, SEQ) \
+  template<typename DataType> \
+  class name \
+  { \
+  public: \
+    void populate(const ATK::ast::ModelArguments& args) \
+    { \
+      BOOST_PP_SEQ_FOR_EACH(POPULATE_VARIABLE_HELPER, _, SEQ) \
+    } \
+ \
+    BOOST_PP_SEQ_FOR_EACH(DEFINE_VARIABLE_HELPER, _, SEQ) \
   };
+  
+#define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
+  HELPER(DiodeHelper, DIODE_SEQ)
+#define NPN_SEQ ((vt,26e-3))((is,1e-12))((br,1))((bf,100))
+  HELPER(NPNHelper, NPN_SEQ)
+#define PNP_SEQ ((vt,26e-3))((is,1e-12))((br,1))((bf,100))
+  HELPER(PNPHelper, PNP_SEQ)
 }
 
 namespace ATK
@@ -115,7 +121,7 @@ namespace ATK
       {
         if(component.second.size() < 3)
         {
-          throw ATK::RuntimeError("Voltage " + component.first + " is missing values, only " + std::to_string(component.second.size() ));
+          throw ATK::RuntimeError("Voltage " + component.first + " is missing values, only " + std::to_string(component.second.size()));
         }
 
         std::string pin0 = to_name(component.second[0]);
@@ -169,12 +175,16 @@ namespace ATK
     
     if(model->second.first == "npn")
     {
-      return std::make_unique<NPN<DataType>>();
+      NPNHelper<DataType> helper;
+      helper.populate(model->second.second);
+      return std::make_unique<NPN<DataType>>(helper.vt, helper.is, helper.br, helper.bf);
     }
     
     if(model->second.first == "pnp")
     {
-      return std::make_unique<PNP<DataType>>();
+      PNPHelper<DataType> helper;
+      helper.populate(model->second.second);
+      return std::make_unique<PNP<DataType>>(helper.vt, helper.is, helper.br, helper.bf);
     }
 
     throw RuntimeError("Unknown model class named " + model->second.first);
