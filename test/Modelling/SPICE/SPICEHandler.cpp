@@ -255,3 +255,33 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor )
     BOOST_CHECK_CLOSE(output[i], 1 - std::exp(-(i+.5) / sampling_reate), 0.001);
   }
 }
+
+BOOST_AUTO_TEST_CASE( SPICE_Handler_coil )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 1 0 1000"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "L0 1 in 1000"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vin in 0 AC 5V"));
+  
+  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  filter->set_input_sampling_rate(sampling_reate);
+  filter->set_output_sampling_rate(sampling_reate);
+  
+  std::vector<double> data(PROCESSSIZE);
+  for(ptrdiff_t i = 0; i < PROCESSSIZE; ++i)
+  {
+    data[i] = 1;
+  }
+  ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
+  generator.set_output_sampling_rate(sampling_reate);
+  
+  filter->set_input_port(0, generator, 0);
+  
+  filter->process(PROCESSSIZE);
+  auto output = filter->get_output_array(0);
+  
+  for(gsl::index i = 0; i < PROCESSSIZE; ++i)
+  {
+    BOOST_CHECK_CLOSE(output[i], 1 - std::exp(-(i+.5) / sampling_reate), 1);
+  }
+}

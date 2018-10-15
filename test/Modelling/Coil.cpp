@@ -18,12 +18,12 @@
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-static constexpr size_t PROCESSSIZE = 100;
+constexpr size_t PROCESSSIZE = 100;
 
-static constexpr double R = 1000;
-static constexpr double L = 1e3;
-static constexpr double rate = 48e3;
-static constexpr double dt = 1/rate;
+constexpr double R = 1000;
+constexpr double L = 1e3;
+constexpr double rate = 48e3;
+constexpr double dt = 1/rate;
 
 BOOST_AUTO_TEST_CASE( Coil_RC )
 {
