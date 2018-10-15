@@ -29,7 +29,7 @@ class SPICEHandler
   /// The AST tree on which we will work
   const ast::SPICEAST& tree;
 
-  typedef std::tuple<PinType, gsl::index> Pin;
+  using Pin = std::tuple<PinType, gsl::index>;
   
   /// Pins name map to actual pin type and id
   std::unordered_map<std::string, Pin> pins;

@@ -14,8 +14,8 @@ namespace ATK
   class ATK_MODELLING_EXPORT Capacitor final: public Component<DataType_>
   {
   public:
-    typedef Component<DataType_> Parent;
-    typedef DataType_ DataType;
+    using Parent = Component<DataType_>;
+    using DataType = DataType_;
 
     Capacitor(DataType C);
     

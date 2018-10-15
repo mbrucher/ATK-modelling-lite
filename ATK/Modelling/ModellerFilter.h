@@ -28,8 +28,8 @@ namespace ATK
   class ATK_MODELLING_EXPORT ModellerFilter: public TypedBaseFilter<DataType_>
   {
   public:
-    typedef TypedBaseFilter<DataType_> Parent;
-    typedef DataType_ DataType;
+    using Parent = TypedBaseFilter<DataType_>;
+    using DataType = DataType_;
 
     using Parent::input_sampling_rate;
     using Parent::output_sampling_rate;
@@ -69,7 +69,7 @@ namespace ATK
     /// Explicit destructor to avoid more than a forward declaration of Component
     ~ModellerFilter();
     
-    typedef std::tuple<PinType, gsl::index> Pin;
+    using Pin = std::tuple<PinType, gsl::index>;
     
     /**
      * Adds a new component to the model

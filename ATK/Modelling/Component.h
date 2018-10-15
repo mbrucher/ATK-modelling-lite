@@ -25,7 +25,7 @@ namespace ATK
   class ATK_MODELLING_EXPORT Component
   {
   public:
-    typedef DataType_ DataType;
+    using DataType = DataType_;
 
   protected:
     /// Local pins to which this component is connected to

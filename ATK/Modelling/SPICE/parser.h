@@ -25,26 +25,26 @@ namespace ast
   namespace x3 = boost::spirit::x3;
 
   /// A SPICE number is actually a number with possibly a string after indicating its scale, or garbage (F, ohm...)
-  typedef std::pair<double, std::string> SPICENumber;
+  using SPICENumber =std::pair<double, std::string>;
   
   /// An entry on a SPICE line can be a string (pin) or a number (component value or a number-only pin)
-  typedef x3::variant<std::string, SPICENumber> SPICEArg;
+  using SPICEArg = x3::variant<std::string, SPICENumber>;
   
   /// Map for a component description, basically its name and then pins and values
-  typedef std::unordered_map<std::string, std::vector<SPICEArg>> Components;
+  using Components = std::unordered_map<std::string, std::vector<SPICEArg>>;
   /// Entry in the previous map
-  typedef std::pair<std::string, std::vector<SPICEArg>> Component;
+  using Component = std::pair<std::string, std::vector<SPICEArg>>;
   
   /// Vector describing a model, name of the model, type and then all
-  typedef std::unordered_map<std::string, SPICENumber> ModelArguments;
-  typedef std::pair<std::string, ModelArguments> ModelImp;
-  typedef std::tuple<std::string, std::string, std::string, ModelArguments> Model;
+  using ModelArguments = std::unordered_map<std::string, SPICENumber>;
+  using ModelImp = std::pair<std::string, ModelArguments>;
+  using Model = std::tuple<std::string, std::string, std::string, ModelArguments>;
 
   /// Map with all models
-  typedef std::unordered_map<std::string, ModelImp> Models;
+  using Models = std::unordered_map<std::string, ModelImp>;
 
   /// End leaf of the AST, will be transformed on the fly to populate SPICEAST
-  typedef x3::variant<Component, Model> SPICEEntry;
+  using SPICEEntry = x3::variant<Component, Model>;
 
   /// The full SPICE AST
   struct SPICEAST

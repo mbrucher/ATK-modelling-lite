@@ -14,8 +14,8 @@ namespace ATK
   class ATK_MODELLING_EXPORT Diode final: public Component<DataType_>
   {
   public:
-    typedef Component<DataType_> Parent;
-    typedef DataType_ DataType;
+    using Parent = Component<DataType_>;
+    using DataType = DataType_;
 
     Diode(DataType Is=1e-14, DataType N=1.24, DataType Vt = 26e-3);
     
