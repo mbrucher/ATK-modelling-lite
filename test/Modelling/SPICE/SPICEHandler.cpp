@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_diode_static )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "D0 0 1 mydiode"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vref ref 0 5V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model mydiode d (Is=1e-14 N=1.24 Vt=26e-3)"));
-
+  
   std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
@@ -302,4 +302,52 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_diode_static )
   auto output = filter->get_output_array(0);
   
   BOOST_CHECK_CLOSE(output[0], 0.8623735, 0.001);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_Handler_NPN_static )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 1 0 1470"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R1 1 ref 16670"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R2 2 ref 1000"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R3 3 0 100"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Q0 2 1 3 trans"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vref ref 0 5V"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model trans npn (toto=1)"));
+  
+  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  filter->set_input_sampling_rate(sampling_reate);
+  filter->set_output_sampling_rate(sampling_reate);
+  
+  filter->process(1);
+  auto output0 = filter->get_output_array(0);
+  BOOST_CHECK_CLOSE(output0[0], 4.0510473e-01, 0.001);
+  auto output1 = filter->get_output_array(1);
+  BOOST_CHECK_CLOSE(output1[0], 4.9942860, 0.001);
+  auto output2 = filter->get_output_array(2);
+  BOOST_CHECK_CLOSE(output2[0], 5.7711532e-04, 0.001);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_Handler_PNP_static )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 1 0 1470"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R1 1 ref 16670"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R2 2 ref 1000"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R3 3 0 100"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Q0 2 1 3 trans"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vref ref 0 -5V"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model trans pnp (toto=1)"));
+  
+  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  filter->set_input_sampling_rate(sampling_reate);
+  filter->set_output_sampling_rate(sampling_reate);
+  
+  filter->process(1);
+  auto output0 = filter->get_output_array(0);
+  BOOST_CHECK_CLOSE(output0[0], -4.0510473e-01, 0.001);
+  auto output1 = filter->get_output_array(1);
+  BOOST_CHECK_CLOSE(output1[0], -4.9942860, 0.001);
+  auto output2 = filter->get_output_array(2);
+  BOOST_CHECK_CLOSE(output2[0], -5.7711532e-04, 0.001);
 }
