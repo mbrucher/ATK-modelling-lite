@@ -94,7 +94,7 @@ namespace ATK
     
     for(auto& component: handler.components)
     {
-      filter->add_component(std::move(component.first), std::move(component.second));
+      filter->add_component(std::move(std::get<0>(component)), std::move(std::get<1>(component)));
     }
     
     return std::move(filter);
@@ -111,8 +111,8 @@ namespace ATK
   void SPICEHandler<DataType>::set_static_pins()
   {
     static_pins.insert("0");
-    pins.insert(std::make_pair("gnd", std::make_pair(PinType::Static, 0)));
-    pins.insert(std::make_pair("0", std::make_pair(PinType::Static, 0)));
+    pins.insert(std::make_pair("gnd", std::make_tuple(PinType::Static, 0)));
+    pins.insert(std::make_pair("0", std::make_tuple(PinType::Static, 0)));
     static_voltage.push_back(0);
     
     for(const auto& component: tree.components)
@@ -202,7 +202,7 @@ namespace ATK
     std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
-    components.push_back(std::make_pair(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    components.push_back(std::make_tuple(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
   }
 
   template<typename DataType>
@@ -217,7 +217,7 @@ namespace ATK
     std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
-    components.push_back(std::make_pair(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    components.push_back(std::make_tuple(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
   }
 
   template<typename DataType>
@@ -232,7 +232,7 @@ namespace ATK
     std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     std::string diode_model = to_name(component.second[2]);
-    components.push_back(std::make_pair(create_component(diode_model), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    components.push_back(std::make_tuple(create_component(diode_model), std::vector<Pin>{pins[pin0], pins[pin1]}));
   }
 
   template<typename DataType>
@@ -247,7 +247,7 @@ namespace ATK
     std::string pin1 = to_name(component.second[1]);
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
-    components.push_back(std::make_pair(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    components.push_back(std::make_tuple(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
   }
 
   template<typename DataType>
@@ -264,7 +264,7 @@ namespace ATK
     std::string pin2 = to_name(component.second[2]);
     add_dynamic_pin(dynamic_pins, pin2);
     std::string transistor_model = to_name(component.second[3]);
-    components.push_back(std::make_pair(create_component(transistor_model), std::vector<Pin>{pins[pin1], pins[pin0], pins[pin2]}));
+    components.push_back(std::make_tuple(create_component(transistor_model), std::vector<Pin>{pins[pin1], pins[pin0], pins[pin2]}));
   }
 
   template<typename DataType>
