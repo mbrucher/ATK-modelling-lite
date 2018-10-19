@@ -5,6 +5,11 @@
 #include <algorithm>
 #include <fstream>
 
+#if ENABLE_LOG
+#define BOOST_LOG_DYN_LINK
+#include <boost/log/trivial.hpp>
+#endif
+
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/SPICE/SPICEFilter.h>
