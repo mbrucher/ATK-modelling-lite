@@ -5,11 +5,6 @@
 #include <algorithm>
 #include <fstream>
 
-#if ENABLE_LOG
-#define BOOST_LOG_DYN_LINK
-#include <boost/log/trivial.hpp>
-#endif
-
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/SPICE/SPICEFilter.h>
@@ -40,7 +35,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
     catch(const std::exception& e)
     {
 #if ENABLE_LOG
-      BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
+      //BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
 #endif
     }
   }
@@ -62,7 +57,7 @@ std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::vector<std::st
     catch(const std::exception& e)
     {
 #if ENABLE_LOG
-      BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
+      //BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
 #endif
     }
   }
