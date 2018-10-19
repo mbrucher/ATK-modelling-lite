@@ -24,7 +24,7 @@
 namespace ATK
 {
 template<typename DataType>
-class SPICEHandler
+class ATK_MODELLING_EXPORT SPICEHandler
 {
   /// The AST tree on which we will work
   const ast::SPICEAST& tree;
@@ -40,7 +40,7 @@ class SPICEHandler
   /// Set of dynamic pins (i.e. voltage to be computed)
   std::unordered_set<std::string> dynamic_pins;
   /// Set of all the components
-  std::list<std::pair<std::unique_ptr<Component<DataType>>, std::vector<Pin>>> components;
+  std::list<std::tuple<std::unique_ptr<Component<DataType>>, std::vector<Pin>>> components;
 
   /// Static voltages given by SPICE
   std::vector<double> static_voltage;
@@ -73,6 +73,8 @@ public:
    * Constructor
    */
   SPICEHandler(const ast::SPICEAST& tree);
+
+  SPICEHandler(const SPICEHandler&) = delete;
 
   // Automatic dynamic filter builder
   static std::unique_ptr<ModellerFilter<DataType>> convert(const ast::SPICEAST& tree);

@@ -49,7 +49,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
 }
 
 template<typename DataType>
-  std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::vector<std::string_view>& strings)
+std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::vector<std::string_view>& strings)
 {
   ast::SPICEAST tree;
 
