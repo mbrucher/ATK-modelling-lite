@@ -40,7 +40,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
     catch(const std::exception& e)
     {
 #if ENABLE_LOG
-      BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
+      BOOST_LOG_TRIVIAL(error) << "parsing error: " << e.what();
 #endif
     }
   }
@@ -62,7 +62,7 @@ std::unique_ptr<ModellerFilter<DataType>> parseStrings(const std::vector<std::st
     catch(const std::exception& e)
     {
 #if ENABLE_LOG
-      BOOST_LOG_WARN(trace) << "parsing error: " << e.what();
+      BOOST_LOG_TRIVIAL(error) << "parsing error: " << e.what();
 #endif
     }
   }
