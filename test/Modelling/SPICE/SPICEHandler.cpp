@@ -351,3 +351,23 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_PNP_static )
   auto output2 = filter->get_output_array(2);
   BOOST_CHECK_CLOSE(output2[0], -5.7711532e-04, 0.001);
 }
+
+BOOST_AUTO_TEST_CASE( SPICE_Handler_matched )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 out ref1 200e3"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Q0 ref2 ref1 out transn"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Q1 0 ref1 out transp"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "V1 ref1 0 1V"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "V2 ref2 0 2V"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model transn npn (toto=1)"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model transp pnp (toto=1)"));
+
+  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  filter->set_input_sampling_rate(sampling_reate);
+  filter->set_output_sampling_rate(sampling_reate);
+  
+  filter->process(1);
+  auto output0 = filter->get_output_array(0);
+  BOOST_CHECK_CLOSE(output0[0], 1, 0.01);
+}
