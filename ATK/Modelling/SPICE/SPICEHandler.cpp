@@ -177,14 +177,14 @@ namespace ATK
     {
       NPNHelper<DataType> helper;
       helper.populate(model->second.second);
-      return std::make_unique<NPN<DataType>>(helper.vt, helper.is, helper.br, helper.bf);
+      return std::make_unique<NPN<DataType>>(helper.is, helper.vt, helper.br, helper.bf);
     }
     
     if(model->second.first == "pnp")
     {
       PNPHelper<DataType> helper;
       helper.populate(model->second.second);
-      return std::make_unique<PNP<DataType>>(helper.vt, helper.is, helper.br, helper.bf);
+      return std::make_unique<PNP<DataType>>(helper.is, helper.vt, helper.br, helper.bf);
     }
 
     throw RuntimeError("Unknown model class named " + model->second.first);
