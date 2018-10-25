@@ -14,8 +14,8 @@ namespace ATK
   class ATK_MODELLING_EXPORT NPN final: public Component<DataType_>
   {
   public:
-    typedef Component<DataType_> Parent;
-    typedef DataType_ DataType;
+    using Parent = Component<DataType_>;
+    using DataType = DataType_;
 
     NPN(DataType Is=1e-12, DataType Vt = 26e-3, DataType Br = 1, DataType Bf = 100);
     
@@ -65,8 +65,8 @@ namespace ATK
   class ATK_MODELLING_EXPORT PNP final: public Component<DataType_>
   {
   public:
-    typedef Component<DataType_> Parent;
-    typedef DataType_ DataType;
+    using Parent = Component<DataType_>;
+    using DataType = DataType_;
     
     PNP(DataType Is=1e-12, DataType Vt = 26e-3, DataType Br = 1, DataType Bf = 100);
     

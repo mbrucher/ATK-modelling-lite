@@ -10,8 +10,8 @@
 #include "Component.h"
 #include "ModellerFilter.h"
 
-static constexpr gsl::index MAX_ITERATION = 200;
-static constexpr double EPS = 1e-8;
+constexpr gsl::index MAX_ITERATION = 200;
+constexpr double EPS = 1e-8;
 
 namespace ATK
 {

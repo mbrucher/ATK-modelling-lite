@@ -25,8 +25,8 @@
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-static constexpr size_t PROCESSSIZE = 1000;
-static constexpr size_t SAMPLING_RATE = 48000;
+static constexpr gsl::index PROCESSSIZE = 1000;
+static constexpr gsl::index SAMPLING_RATE = 48000;
 
 BOOST_AUTO_TEST_CASE( Transistor_PushPull )
 {
