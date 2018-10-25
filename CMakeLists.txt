@@ -4,6 +4,7 @@ project(Audio-modelling)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(ENABLE_LOG "Enable modelling logging" OFF)
+option(ENABLE_PYTHON "Enable Python support" OFF)
 option(ENABLE_SHARED_LIBRARIES "Enable shared libraries generation" ON)
 option(ENABLE_STATIC_LIBRARIES "Enable static libraries generation" OFF)
 option(ENABLE_CLANG_SUPPORT "Enable clang output and static generation" ON)
@@ -19,6 +20,13 @@ add_definitions(-DBOOST_NO_AUTO_PTR)
 
 include(Utilities)
 
+if(ENABLE_PYTHON)
+  add_subdirectory(${ATK_ORIGINAL_DIR}/3rdParty/pybind11 ${CMAKE_BINARY_DIR}/3rdParty/pybind11 )
+
+  LIST(APPEND CMAKE_MODULE_PATH ${ATK_ORIGINAL_DIR}/3rdParty/pybind11/tools)
+  FIND_PACKAGE(PythonLibsNew REQUIRED)
+endif(ENABLE_PYTHON)
+
 if(ENABLE_CLANG_SUPPORT)
   find_package(LLVM REQUIRED CONFIG)
 
@@ -29,7 +37,9 @@ if(ENABLE_CLANG_SUPPORT)
 endif(ENABLE_CLANG_SUPPORT)
 
 add_subdirectory(ATK/Modelling)
-add_subdirectory(Python/ATK/Modelling)
+if(ENABLE_PYTHON)
+  add_subdirectory(Python/ATK/Modelling)
+endif()
 add_subdirectory(test)
 
 FILE(GLOB_RECURSE CMAKE_OTHER_SRC Python/proto/*.py)
