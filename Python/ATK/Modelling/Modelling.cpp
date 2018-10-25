@@ -7,8 +7,6 @@
 
 namespace py = pybind11;
 
-using namespace ATK;
-
 namespace
 {
 }
