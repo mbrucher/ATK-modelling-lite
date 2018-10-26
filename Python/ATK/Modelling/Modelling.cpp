@@ -21,5 +21,9 @@ PYBIND11_MODULE(PythonModelling, m)
   py::object f2 = (py::object) py::module::import("ATK.Core").attr("DoubleTypedBaseFilter");
   
   py::class_<ATK::ast::SPICEAST>(m, "AST")
-  .def(py::init());
+  .def(py::init())
+  .def("parse_string", [](ATK::ast::SPICEAST& ast, const std::string& str){
+    ATK::parse_string(ast, str);
+  })
+  ;
 }
