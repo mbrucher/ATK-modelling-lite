@@ -141,7 +141,7 @@ namespace ATK
         }
         else if(component.second.size() == 4)
         {
-          if(boost::get<std::string>(component.second[2]) == "DC")
+          if(boost::get<std::string>(component.second[2]) == "dc")
           {
             add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
             static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[3])));

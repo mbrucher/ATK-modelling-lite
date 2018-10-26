@@ -62,4 +62,40 @@ for line in cir:
   except:
     print(line)
 
+import numpy as np
+from matplotlib import pyplot as plt
+
+plt.style.use("dark_background")
+
+length = 10
+sampling_rate = 100000
+t = np.arange(length)[None, :] * (1/sampling_rate)
+
+x = np.sin(2 * np.pi * 50 * t)
+
+input = DoubleInPointerFilter(x)
+input.input_sampling_rate = sampling_rate
+input.output_sampling_rate = sampling_rate
+
 filter = DoubleModellerFilter.create_dynamic_filter(ast)
+filter.input_sampling_rate = sampling_rate
+filter.output_sampling_rate = sampling_rate
+filter.set_input_port(0, input, 0)
+
+y = np.zeros((1, length))
+output = DoubleOutPointerFilter(y)
+output.input_sampling_rate = sampling_rate
+output.output_sampling_rate = sampling_rate
+print(input.nb_output_ports)
+print(filter.nb_input_ports)
+print(filter.nb_output_ports)
+print(output.nb_input_ports)
+output.set_input_port(0, filter, 0)
+
+output.process(length)
+
+plt.plot(t[0], x[0])
+plt.plot(t[0], y[0])
+plt.title("Moog filter in pure Python")
+plt.show()
+
