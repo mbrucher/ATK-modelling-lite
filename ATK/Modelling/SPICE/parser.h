@@ -25,7 +25,7 @@ namespace ast
   namespace x3 = boost::spirit::x3;
 
   /// A SPICE number is actually a number with possibly a string after indicating its scale, or garbage (F, ohm...)
-  using SPICENumber =std::pair<double, std::string>;
+  using SPICENumber = std::pair<double, std::string>;
   
   /// An entry on a SPICE line can be a string (pin) or a number (component value or a number-only pin)
   using SPICEArg = x3::variant<std::string, SPICENumber>;
