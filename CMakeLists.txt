@@ -45,6 +45,7 @@ endif(ENABLE_CLANG_SUPPORT)
 add_subdirectory(ATK/Modelling)
 if(ENABLE_PYTHON)
   add_subdirectory(Python/ATK/Modelling)
+  add_subdirectory(test/Python/Modelling)
 endif()
 add_subdirectory(test)
 
