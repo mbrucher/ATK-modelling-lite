@@ -7,9 +7,9 @@ from __future__ import print_function
 import re
 from collections import defaultdict
 
-from modeling import Modeler
-from passive import Capacitor, Diode, Coil, Resistor
-from active import TransistorNPN, TransistorPNP, VoltageGain, Current
+from .modeling import Modeler
+from .passive import Capacitor, Diode, Coil, Resistor
+from .active import TransistorNPN, TransistorPNP, VoltageGain, Current
 
 digits = re.compile("([\d\.eE-]+)(.*)")
 
