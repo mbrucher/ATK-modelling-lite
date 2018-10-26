@@ -69,6 +69,8 @@ const auto component_name = x3::rule<class name, std::string>()
               "vV"
               "dD"
               "qQ"
+              "iI"
+              "eE"
               )[tolower] >> *valid_char;
 
 const auto component_value = x3::rule<class component_value, ast::SPICENumber>()

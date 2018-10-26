@@ -68,6 +68,11 @@ class ATK_MODELLING_EXPORT SPICEHandler
   void add_resistance(const ast::Component& component);
   /// Adds a transistor to the model
   void add_transistor(const ast::Component& component);
+
+  /// Adds a current generator to the model
+  void add_current(const ast::Component& component);
+  /// Adds a voltage multiplier to the model
+  void add_voltage_multiplier(const ast::Component& component);
 public:
   /**
    * Constructor

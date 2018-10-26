@@ -1,9 +1,9 @@
 /**
- * \file OpAmp.h
+ * \file VoltageGain.h
  */
 
-#ifndef ATK_MODELLING_OPAMP_H
-#define ATK_MODELLING_OPAMP_H
+#ifndef ATK_MODELLING_VOLTAGEGAIN_H
+#define ATK_MODELLING_VOLTAGEGAIN_H
 
 #include "Component.h"
 
@@ -11,13 +11,13 @@ namespace ATK
 {
   /// Resistor component
   template<typename DataType_>
-  class ATK_MODELLING_EXPORT OpAmp final: public Component<DataType_>
+  class ATK_MODELLING_EXPORT VoltageGain final: public Component<DataType_>
   {
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
 
-    OpAmp();
+    VoltageGain(DataType_ G);
     
     /**
      * Get current for the given pin based on the state
@@ -50,6 +50,9 @@ namespace ATK
      */
     void add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const override;
 
+  private:
+    DataType G;
+    
   protected:
     using Parent::modeller;
     using Parent::pins;

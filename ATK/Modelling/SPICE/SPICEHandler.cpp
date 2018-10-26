@@ -11,10 +11,12 @@
 
 #include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/Coil.h>
+#include <ATK/Modelling/Current.h>
 #include <ATK/Modelling/Diode.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/Transistor.h>
+#include <ATK/Modelling/VoltageGain.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/SPICE/parser.h>
 
@@ -268,6 +270,40 @@ namespace ATK
   }
 
   template<typename DataType>
+  void SPICEHandler<DataType>::add_current(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_name(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_name(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+    components.push_back(std::make_tuple(std::make_unique<Current<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+  }
+
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_voltage_multiplier(const ast::Component& component)
+  {
+    if(component.second.size() != 5)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_name(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_name(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    std::string pin2 = to_name(component.second[2]);
+    add_dynamic_pin(dynamic_pins, pin2);
+    std::string pin3 = to_name(component.second[3]);
+    add_dynamic_pin(dynamic_pins, pin3);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[4]));
+    components.push_back(std::make_tuple(std::make_unique<VoltageGain<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1], pins[pin2], pins[pin3]}));
+  }
+  
+  template<typename DataType>
   void SPICEHandler<DataType>::generate_components()
   {
     for(const auto& component: tree.components)
@@ -282,6 +318,16 @@ namespace ATK
         case 'd':
         {
           add_diode(component);
+          break;
+        }
+        case 'e':
+        {
+          add_voltage_multiplier(component);
+          break;
+        }
+        case 'i':
+        {
+          add_current(component);
           break;
         }
         case 'l':
