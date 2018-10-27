@@ -143,7 +143,7 @@ namespace
   void populate_entry(ast::SPICEAST& currentAST, ast::SPICEEntry entry)
   {
     auto visitor = make_lambda_visitor<void>(
-                        [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
+                        [&](ast::Component& arg) { currentAST.components.push_back(std::move(arg)); },
                         [&](ast::Model& arg) {
                           currentAST.models.insert(
                             std::make_pair(std::get<1>(arg),

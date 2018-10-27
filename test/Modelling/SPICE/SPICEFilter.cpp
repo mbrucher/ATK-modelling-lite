@@ -22,9 +22,9 @@ BOOST_AUTO_TEST_CASE( SPICE_Filter_check_existing )
   auto filter = ATK::parse<double>("SPICE/rf.cir");
   BOOST_REQUIRE(filter);
   BOOST_CHECK_EQUAL(filter->get_nb_input_pins(), 1);
-  BOOST_REQUIRE_EQUAL(filter->get_nb_static_pins(), 2);
   BOOST_CHECK_EQUAL(filter->get_nb_dynamic_pins(), 5);
   BOOST_CHECK_EQUAL(filter->get_nb_components(), 8);
+  BOOST_REQUIRE_EQUAL(filter->get_nb_static_pins(), 2);
   Eigen::Matrix<double, Eigen::Dynamic, 1> state(2);
   state << 0., 5.;
   BOOST_CHECK_EQUAL(filter->get_static_state(), state);

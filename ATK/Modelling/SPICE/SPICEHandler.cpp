@@ -322,6 +322,9 @@ namespace ATK
   {
     for(const auto& component: tree.components)
     {
+#if ENABLE_LOG
+      BOOST_LOG_TRIVIAL(trace) << "Adding component: " << component.first;
+#endif
       switch(component.first[0])
       {
         case 'c':
@@ -385,6 +388,9 @@ namespace ATK
   {
     if(pins.find(pin) == pins.end())
     {
+#if ENABLE_LOG
+      BOOST_LOG_TRIVIAL(trace) << "Adding dynamic pin " << pin << " index " << map.size();
+#endif
       add_pin(map, PinType::Dynamic, pin);
     }
   }

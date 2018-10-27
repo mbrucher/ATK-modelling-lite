@@ -30,11 +30,11 @@ namespace ast
   /// An entry on a SPICE line can be a string (pin) or a number (component value or a number-only pin)
   using SPICEArg = x3::variant<std::string, SPICENumber>;
   
-  /// Map for a component description, basically its name and then pins and values
-  using Components = std::unordered_map<std::string, std::vector<SPICEArg>>;
-  /// Entry in the previous map
+  /// Entry in the components container
   using Component = std::pair<std::string, std::vector<SPICEArg>>;
-  
+  /// Container for a component description, basically its name and then pins and values
+  using Components = std::list<Component>;
+
   /// Vector describing a model, name of the model, type and then all
   using ModelArguments = std::unordered_map<std::string, SPICENumber>;
   using ModelImp = std::pair<std::string, ModelArguments>;
