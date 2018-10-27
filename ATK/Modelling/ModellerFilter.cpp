@@ -12,6 +12,7 @@
 
 constexpr gsl::index MAX_ITERATION = 200;
 constexpr double EPS = 1e-8;
+constexpr gsl::index INIT_WARMUP = 10;
 
 namespace ATK
 {
@@ -110,7 +111,14 @@ namespace ATK
     
     if(!initialized)
     {
-      init();
+      auto target_static_state = static_state;
+      
+      for(gsl::index i = 0; i < INIT_WARMUP; ++i)
+      {
+        static_state = target_static_state * ((i+1.) / INIT_WARMUP);
+        init();
+      }
+      static_state = target_static_state;
     }
   }
 
@@ -196,6 +204,12 @@ namespace ATK
     if((delta.array().abs() < EPS).all())
     {
       return true;
+    }
+    
+    auto max_delta = delta.array().abs().maxCoeff();
+    if(max_delta > 1)
+    {
+      delta /= max_delta;
     }
     
     dynamic_state -= delta;

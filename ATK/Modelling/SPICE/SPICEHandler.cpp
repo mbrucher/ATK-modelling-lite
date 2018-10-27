@@ -68,9 +68,9 @@ namespace
   
 #define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
   HELPER(DiodeHelper, DIODE_SEQ)
-#define NPN_SEQ ((vt,26e-3))((is,1e-12))((br,1))((bf,100))
+#define NPN_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
   HELPER(NPNHelper, NPN_SEQ)
-#define PNP_SEQ ((vt,26e-3))((is,1e-12))((br,1))((bf,100))
+#define PNP_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
   HELPER(PNPHelper, PNP_SEQ)
 }
 
@@ -193,14 +193,14 @@ namespace ATK
     {
       NPNHelper<DataType> helper;
       helper.populate(model->second.second);
-      return std::make_unique<NPN<DataType>>(helper.is, helper.vt, helper.br, helper.bf);
+      return std::make_unique<NPN<DataType>>(helper.is, helper.vt, helper.ne, helper.br, helper.bf);
     }
     
     if(model->second.first == "pnp")
     {
       PNPHelper<DataType> helper;
       helper.populate(model->second.second);
-      return std::make_unique<PNP<DataType>>(helper.is, helper.vt, helper.br, helper.bf);
+      return std::make_unique<PNP<DataType>>(helper.is, helper.vt, helper.ne, helper.br, helper.bf);
     }
 
     throw RuntimeError("Unknown model class named " + model->second.first);
@@ -219,6 +219,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding capacitor: " << value;
+#endif
   }
 
   template<typename DataType>
@@ -234,6 +238,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding coil: " << value;
+#endif
   }
 
   template<typename DataType>
@@ -264,6 +272,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding resistor: " << value;
+#endif
   }
 
   template<typename DataType>
@@ -296,6 +308,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Current<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding current: " << value;
+#endif
   }
 
   template<typename DataType>
@@ -315,6 +331,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin3);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[4]));
     components.push_back(std::make_tuple(std::make_unique<VoltageGain<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1], pins[pin2], pins[pin3]}));
+
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding voltage multiplier: " << value;
+#endif
   }
   
   template<typename DataType>
