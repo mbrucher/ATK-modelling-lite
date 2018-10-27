@@ -221,7 +221,7 @@ namespace ATK
     components.push_back(std::make_tuple(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
 
 #if ENABLE_LOG
-    BOOST_LOG_TRIVIAL(trace) << "Adding capacitor: " << value;
+    BOOST_LOG_TRIVIAL(trace) << "Adding capacitor: " << value << "\t" << pin0 << "\t" << pin1;
 #endif
   }
 
@@ -240,7 +240,7 @@ namespace ATK
     components.push_back(std::make_tuple(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
     
 #if ENABLE_LOG
-    BOOST_LOG_TRIVIAL(trace) << "Adding coil: " << value;
+    BOOST_LOG_TRIVIAL(trace) << "Adding coil: " << value << "\t" << pin0 << "\t" << pin1;
 #endif
   }
 
@@ -274,7 +274,7 @@ namespace ATK
     components.push_back(std::make_tuple(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
 
 #if ENABLE_LOG
-    BOOST_LOG_TRIVIAL(trace) << "Adding resistor: " << value;
+    BOOST_LOG_TRIVIAL(trace) << "Adding resistor: " << value << "\t" << pin0 << "\t" << pin1;
 #endif
   }
 
@@ -310,7 +310,7 @@ namespace ATK
     components.push_back(std::make_tuple(std::make_unique<Current<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
     
 #if ENABLE_LOG
-    BOOST_LOG_TRIVIAL(trace) << "Adding current: " << value;
+    BOOST_LOG_TRIVIAL(trace) << "Adding current: " << value << "\t" << pin0 << "\t" << pin1;
 #endif
   }
 
@@ -330,10 +330,10 @@ namespace ATK
     std::string pin3 = to_name(component.second[3]);
     add_dynamic_pin(dynamic_pins, pin3);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[4]));
-    components.push_back(std::make_tuple(std::make_unique<VoltageGain<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1], pins[pin2], pins[pin3]}));
+    components.push_back(std::make_tuple(std::make_unique<VoltageGain<DataType>>(value), std::vector<Pin>{pins[pin2], pins[pin3], pins[pin0], pins[pin1]}));
 
 #if ENABLE_LOG
-    BOOST_LOG_TRIVIAL(trace) << "Adding voltage multiplier: " << value;
+    BOOST_LOG_TRIVIAL(trace) << "Adding voltage multiplier: " << value << "\t" << pin2 << "\t" << pin3 << "\t" << pin0 << "\t" << pin1;
 #endif
   }
   
