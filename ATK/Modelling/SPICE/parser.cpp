@@ -151,7 +151,7 @@ namespace
                                            )
                           );
                         }
-                                             );
+                        );
     boost::apply_visitor(visitor, std::move(entry));
   }
 }

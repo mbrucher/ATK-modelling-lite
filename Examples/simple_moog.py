@@ -4,7 +4,6 @@ from ATK.Core import DoubleInPointerFilter, DoubleOutPointerFilter
 from ATK.Modelling import AST, DoubleModellerFilter
 
 ast = AST()
-ast.parse_string("R0 out ref1 200e3")
 
 cir = """*** rails ***
 V1   v+ 0 DC 10
@@ -46,7 +45,7 @@ R24 in- 0 3.3k
 *** expo current source ***
 * built with pnp-buffered npn transistor,
 * in this case we just use a current source
-Is1 lt 0  10u
+Is1 lt 0 10u
 
 * input signal 50hz
 V4 in+ 0 0 1 50 0 0 0
@@ -57,17 +56,19 @@ V4 in+ 0 0 1 50 0 0 0
 .END""".split("\n")
 
 for line in cir:
+  if len(line) == 0 or line[0] == "*":
+    continue
   try:
     ast.parse_string(line)
   except:
-    print(line)
+    pass
 
 import numpy as np
 from matplotlib import pyplot as plt
 
 plt.style.use("dark_background")
 
-length = 10
+length = 10000
 sampling_rate = 100000
 t = np.arange(length)[None, :] * (1/sampling_rate)
 
@@ -86,11 +87,7 @@ y = np.zeros((1, length))
 output = DoubleOutPointerFilter(y)
 output.input_sampling_rate = sampling_rate
 output.output_sampling_rate = sampling_rate
-print(input.nb_output_ports)
-print(filter.nb_input_ports)
-print(filter.nb_output_ports)
-print(output.nb_input_ports)
-output.set_input_port(0, filter, 0)
+output.set_input_port(0, filter, 10)
 
 output.process(length)
 

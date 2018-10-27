@@ -149,7 +149,6 @@ namespace ATK
     }
   }
 
-
   template<typename DataType_>
   void ModellerFilter<DataType_>::solve(bool steady_state) const
   {
@@ -228,7 +227,7 @@ namespace ATK
     for(const auto& component: dynamic_pins[i])
     {
       current += std::get<0>(component)->get_current(std::get<1>(component), steady_state);
-      
+
       const auto& pins = std::get<0>(component)->get_pins();
       
       for(gsl::index j = 0; j < pins.size(); ++j)

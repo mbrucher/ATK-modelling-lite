@@ -43,15 +43,15 @@ namespace ATK
     }
     if(std::get<0>(pins[1]) == PinType::Dynamic)
     {
-      jacobian(eq_index, std::get<1>(pins[1])) = G;
+      jacobian(eq_index, std::get<1>(pins[1])) = -G;
     }
     if(std::get<0>(pins[2]) == PinType::Dynamic)
     {
-      jacobian(eq_index, std::get<1>(pins[0])) = -1;
+      jacobian(eq_index, std::get<1>(pins[2])) = -1;
     }
     if(std::get<0>(pins[3]) == PinType::Dynamic)
     {
-      jacobian(eq_index, std::get<1>(pins[1])) = 1;
+      jacobian(eq_index, std::get<1>(pins[3])) = 1;
     }
   }
 
