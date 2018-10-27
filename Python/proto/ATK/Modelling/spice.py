@@ -44,7 +44,7 @@ class SpiceModel(object):
         self.models = defaultdict(dict)
         self.components = []
         self.static = set((0,)) # Always start with pin 0 = GND
-        self.dynamic = set()
+        self.dynamic = []
         self.input = set()
         self.static_state = [0]
         # pins, we will use this list to map names to actual SPICE pins that
@@ -254,7 +254,7 @@ class SpiceModel(object):
         for pin in self.temp_pins:
             if pin not in self.pins:
                 self.pins[pin] = 'D', len(self.dynamic)
-                self.dynamic.add(pin)
+                self.dynamic.append(pin)
                 self.nb_dynamic_pins += 1
 
         for component in self.components:
