@@ -41,6 +41,7 @@ std::unique_ptr<ModellerFilter<DataType>> parse(const std::string& filename)
     {
 #if ENABLE_LOG
       BOOST_LOG_TRIVIAL(error) << "parsing error: " << e.what();
+      BOOST_LOG_TRIVIAL(error) << "line: " << line;
 #endif
     }
   }

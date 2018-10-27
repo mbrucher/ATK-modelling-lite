@@ -7,6 +7,11 @@
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/tuple.hpp>
 
+#if ENABLE_LOG
+#define BOOST_LOG_DYN_LINK
+#include <boost/log/trivial.hpp>
+#endif
+
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/Capacitor.h>
@@ -91,6 +96,12 @@ namespace ATK
     
     auto [nb_static_pins, nb_input_pins, nb_dynamic_pins] = handler.get_pins();
     
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Static pins: " << nb_static_pins;
+    BOOST_LOG_TRIVIAL(trace) << "Input pins: " << nb_input_pins;
+    BOOST_LOG_TRIVIAL(trace) << "Dynamic pins: " << nb_dynamic_pins;
+#endif
+
     auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
     filter->set_static_state(handler.get_static_state());
     
@@ -121,6 +132,9 @@ namespace ATK
     {
       if(component.first[0] == 'v')
       {
+#if ENABLE_LOG
+        BOOST_LOG_TRIVIAL(trace) << "Adding voltage: " << component.first;
+#endif
         if(component.second.size() < 3)
         {
           throw ATK::RuntimeError("Voltage " + component.first + " is missing values, only " + std::to_string(component.second.size()));
