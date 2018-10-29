@@ -69,6 +69,8 @@ const auto component_name = x3::rule<class name, std::string>()
               "vV"
               "dD"
               "qQ"
+              "iI"
+              "eE"
               )[tolower] >> *valid_char;
 
 const auto component_value = x3::rule<class component_value, ast::SPICENumber>()
@@ -141,7 +143,7 @@ namespace
   void populate_entry(ast::SPICEAST& currentAST, ast::SPICEEntry entry)
   {
     auto visitor = make_lambda_visitor<void>(
-                        [&](ast::Component& arg) { currentAST.components.insert(std::move(arg)); },
+                        [&](ast::Component& arg) { currentAST.components.push_back(std::move(arg)); },
                         [&](ast::Model& arg) {
                           currentAST.models.insert(
                             std::make_pair(std::get<1>(arg),
@@ -149,7 +151,7 @@ namespace
                                            )
                           );
                         }
-                                             );
+                        );
     boost::apply_visitor(visitor, std::move(entry));
   }
 }

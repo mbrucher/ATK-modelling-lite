@@ -24,7 +24,7 @@ constexpr double sampling_reate = 48000;
 BOOST_AUTO_TEST_CASE( SPICE_Handler_wrong_voltage )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("2")}));
+  tree.components.push_back(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("2")}));
   
   ATK::SPICEHandler<double> handler(tree);
   
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_wrong_voltage )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_bad )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("2"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
+  tree.components.push_back(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("2"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_THROW(handler.process(), std::runtime_error);
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_bad )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_1 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
+  tree.components.push_back(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_1 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("DC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
+  tree.components.push_back(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("dc"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_static_voltage_2 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_1 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("AC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
+  tree.components.push_back(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("AC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
 
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_1 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_2 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("DC"), ATK::ast::SPICEArg(std::make_pair(5, "")), ATK::ast::SPICEArg("AC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
+  tree.components.push_back(std::make_pair("vcc", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg("dc"), ATK::ast::SPICEArg(std::make_pair(5, "")), ATK::ast::SPICEArg("AC"), ATK::ast::SPICEArg(std::make_pair(5, ""))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_input_voltage_2 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_resistor_1 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("r0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kohms"))}));
+  tree.components.push_back(std::make_pair("r0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kohms"))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_resistor_1 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_resistor_2 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("r0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kohms")), ATK::ast::SPICEArg(std::make_pair(1, "kohms"))}));
+  tree.components.push_back(std::make_pair("r0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kohms")), ATK::ast::SPICEArg(std::make_pair(1, "kohms"))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_THROW(handler.process(), ATK::RuntimeError);
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_resistor_2 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor_1 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("c0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "uf"))}));
+  tree.components.push_back(std::make_pair("c0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "uf"))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor_1 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor_2 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("c0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kf")), ATK::ast::SPICEArg(std::make_pair(1, "kfarads"))}));
+  tree.components.push_back(std::make_pair("c0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kf")), ATK::ast::SPICEArg(std::make_pair(1, "kfarads"))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_THROW(handler.process(), ATK::RuntimeError);
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor_2 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_coil_1 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("l0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "uh"))}));
+  tree.components.push_back(std::make_pair("l0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "uh"))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_NO_THROW(handler.process());
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_coil_1 )
 BOOST_AUTO_TEST_CASE( SPICE_Handler_coil_2 )
 {
   ATK::ast::SPICEAST tree;
-  tree.components.insert(std::make_pair("l0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kf")), ATK::ast::SPICEArg(std::make_pair(1, "kfarads"))}));
+  tree.components.push_back(std::make_pair("l0", std::vector<ATK::ast::SPICEArg>{ATK::ast::SPICEArg("1"), ATK::ast::SPICEArg("0"), ATK::ast::SPICEArg(std::make_pair(1, "kf")), ATK::ast::SPICEArg(std::make_pair(1, "kfarads"))}));
   
   ATK::SPICEHandler<double> handler(tree);
   BOOST_CHECK_THROW(handler.process(), ATK::RuntimeError);
@@ -352,7 +352,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_PNP_static )
   BOOST_CHECK_CLOSE(output2[0], -5.7711532e-04, 0.001);
 }
 
-BOOST_AUTO_TEST_CASE( SPICE_Handler_matched )
+BOOST_AUTO_TEST_CASE( SPICE_Handler_NPN_PNP_matched )
 {
   ATK::ast::SPICEAST ast;
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 out ref1 200e3"));
@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_matched )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "V2 ref2 0 2V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model transn npn (toto=1)"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model transp pnp (toto=1)"));
-
+  
   std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
@@ -370,4 +370,20 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_matched )
   filter->process(1);
   auto output0 = filter->get_output_array(0);
   BOOST_CHECK_CLOSE(output0[0], 1, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE( SPICE_Handler_current )
+{
+  ATK::ast::SPICEAST ast;
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 out 0 200"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Is ref out .001"));
+  BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "V1 ref 0 1V"));
+  
+  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  filter->set_input_sampling_rate(sampling_reate);
+  filter->set_output_sampling_rate(sampling_reate);
+  
+  filter->process(1);
+  auto output0 = filter->get_output_array(0);
+  BOOST_CHECK_CLOSE(output0[0], .2, 0.01);
 }

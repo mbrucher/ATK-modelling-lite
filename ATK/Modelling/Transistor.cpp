@@ -10,8 +10,8 @@
 namespace ATK
 {
   template<typename DataType_>
-  NPN<DataType_>::NPN(DataType Is, DataType Vt, DataType Br, DataType Bf)
-  :Is(Is), Vt(Vt), Br(Br), Bf(Bf), expVbe(0), expVbc(0)
+  NPN<DataType_>::NPN(DataType Is, DataType Vt, DataType Ne, DataType Br, DataType Bf)
+  :Is(Is), Vt(Vt*Ne), Br(Br), Bf(Bf), expVbe(0), expVbc(0)
   {
   }
 
@@ -91,8 +91,8 @@ namespace ATK
   }
 
   template<typename DataType_>
-  PNP<DataType_>::PNP(DataType Is, DataType Vt, DataType Br, DataType Bf)
-  :Is(Is), Vt(Vt), Br(Br), Bf(Bf), expVbe(0), expVbc(0)
+  PNP<DataType_>::PNP(DataType Is, DataType Vt, DataType Ne, DataType Br, DataType Bf)
+  :Is(Is), Vt(Vt*Ne), Br(Br), Bf(Bf), expVbe(0), expVbc(0)
   {
   }
   

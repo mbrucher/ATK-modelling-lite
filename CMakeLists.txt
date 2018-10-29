@@ -20,11 +20,17 @@ add_definitions(-DBOOST_NO_AUTO_PTR)
 
 include(Utilities)
 
+link_directories(${ATK_DIR}/lib)
+
 if(ENABLE_PYTHON)
   add_subdirectory(${ATK_ORIGINAL_DIR}/3rdParty/pybind11 ${CMAKE_BINARY_DIR}/3rdParty/pybind11 )
 
   LIST(APPEND CMAKE_MODULE_PATH ${ATK_ORIGINAL_DIR}/3rdParty/pybind11/tools)
   FIND_PACKAGE(PythonLibsNew REQUIRED)
+
+  IF(NOT DEFINED PYTHON_INSTALL_FOLDER)
+    set(PYTHON_INSTALL_FOLDER "${CMAKE_INSTALL_PREFIX}/lib/")
+  ENDIF(NOT DEFINED PYTHON_INSTALL_FOLDER)
 endif(ENABLE_PYTHON)
 
 if(ENABLE_CLANG_SUPPORT)
@@ -39,6 +45,7 @@ endif(ENABLE_CLANG_SUPPORT)
 add_subdirectory(ATK/Modelling)
 if(ENABLE_PYTHON)
   add_subdirectory(Python/ATK/Modelling)
+  add_subdirectory(test/Python/Modelling)
 endif()
 add_subdirectory(test)
 

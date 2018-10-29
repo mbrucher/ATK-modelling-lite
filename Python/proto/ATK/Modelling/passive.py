@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import math
 
-from modeling import retrieve_voltage
+from .modeling import retrieve_voltage
 
 class Resistor(object):
     """

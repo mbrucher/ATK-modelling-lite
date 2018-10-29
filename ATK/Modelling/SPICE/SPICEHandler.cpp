@@ -7,14 +7,21 @@
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/tuple.hpp>
 
+#if ENABLE_LOG
+#define BOOST_LOG_DYN_LINK
+#include <boost/log/trivial.hpp>
+#endif
+
 #include <ATK/Core/Utilities.h>
 
 #include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/Coil.h>
+#include <ATK/Modelling/Current.h>
 #include <ATK/Modelling/Diode.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/Transistor.h>
+#include <ATK/Modelling/VoltageGain.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/SPICE/parser.h>
 
@@ -61,9 +68,9 @@ namespace
   
 #define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
   HELPER(DiodeHelper, DIODE_SEQ)
-#define NPN_SEQ ((vt,26e-3))((is,1e-12))((br,1))((bf,100))
+#define NPN_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
   HELPER(NPNHelper, NPN_SEQ)
-#define PNP_SEQ ((vt,26e-3))((is,1e-12))((br,1))((bf,100))
+#define PNP_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
   HELPER(PNPHelper, PNP_SEQ)
 }
 
@@ -89,6 +96,12 @@ namespace ATK
     
     auto [nb_static_pins, nb_input_pins, nb_dynamic_pins] = handler.get_pins();
     
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Static pins: " << nb_static_pins;
+    BOOST_LOG_TRIVIAL(trace) << "Input pins: " << nb_input_pins;
+    BOOST_LOG_TRIVIAL(trace) << "Dynamic pins: " << nb_dynamic_pins;
+#endif
+
     auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
     filter->set_static_state(handler.get_static_state());
     
@@ -119,6 +132,9 @@ namespace ATK
     {
       if(component.first[0] == 'v')
       {
+#if ENABLE_LOG
+        BOOST_LOG_TRIVIAL(trace) << "Adding voltage: " << component.first;
+#endif
         if(component.second.size() < 3)
         {
           throw ATK::RuntimeError("Voltage " + component.first + " is missing values, only " + std::to_string(component.second.size()));
@@ -139,7 +155,7 @@ namespace ATK
         }
         else if(component.second.size() == 4)
         {
-          if(boost::get<std::string>(component.second[2]) == "DC")
+          if(boost::get<std::string>(component.second[2]) == "dc")
           {
             add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
             static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[3])));
@@ -177,14 +193,14 @@ namespace ATK
     {
       NPNHelper<DataType> helper;
       helper.populate(model->second.second);
-      return std::make_unique<NPN<DataType>>(helper.is, helper.vt, helper.br, helper.bf);
+      return std::make_unique<NPN<DataType>>(helper.is, helper.vt, helper.ne, helper.br, helper.bf);
     }
     
     if(model->second.first == "pnp")
     {
       PNPHelper<DataType> helper;
       helper.populate(model->second.second);
-      return std::make_unique<PNP<DataType>>(helper.is, helper.vt, helper.br, helper.bf);
+      return std::make_unique<PNP<DataType>>(helper.is, helper.vt, helper.ne, helper.br, helper.bf);
     }
 
     throw RuntimeError("Unknown model class named " + model->second.first);
@@ -203,6 +219,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Capacitor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding capacitor: " << value << "\t" << pin0 << "\t" << pin1;
+#endif
   }
 
   template<typename DataType>
@@ -218,6 +238,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Coil<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding coil: " << value << "\t" << pin0 << "\t" << pin1;
+#endif
   }
 
   template<typename DataType>
@@ -248,6 +272,10 @@ namespace ATK
     add_dynamic_pin(dynamic_pins, pin1);
     double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
     components.push_back(std::make_tuple(std::make_unique<Resistor<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding resistor: " << value << "\t" << pin0 << "\t" << pin1;
+#endif
   }
 
   template<typename DataType>
@@ -268,10 +296,55 @@ namespace ATK
   }
 
   template<typename DataType>
+  void SPICEHandler<DataType>::add_current(const ast::Component& component)
+  {
+    if(component.second.size() != 3)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_name(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_name(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[2]));
+    components.push_back(std::make_tuple(std::make_unique<Current<DataType>>(value), std::vector<Pin>{pins[pin0], pins[pin1]}));
+    
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding current: " << value << "\t" << pin0 << "\t" << pin1;
+#endif
+  }
+
+  template<typename DataType>
+  void SPICEHandler<DataType>::add_voltage_multiplier(const ast::Component& component)
+  {
+    if(component.second.size() != 5)
+    {
+      throw RuntimeError("Wrong number of arguments for component " + component.first);
+    }
+    std::string pin0 = to_name(component.second[0]);
+    add_dynamic_pin(dynamic_pins, pin0);
+    std::string pin1 = to_name(component.second[1]);
+    add_dynamic_pin(dynamic_pins, pin1);
+    std::string pin2 = to_name(component.second[2]);
+    add_dynamic_pin(dynamic_pins, pin2);
+    std::string pin3 = to_name(component.second[3]);
+    add_dynamic_pin(dynamic_pins, pin3);
+    double value = convert_component_value(boost::get<ast::SPICENumber>(component.second[4]));
+    components.push_back(std::make_tuple(std::make_unique<VoltageGain<DataType>>(value), std::vector<Pin>{pins[pin2], pins[pin3], pins[pin0], pins[pin1]}));
+
+#if ENABLE_LOG
+    BOOST_LOG_TRIVIAL(trace) << "Adding voltage multiplier: " << value << "\t" << pin2 << "\t" << pin3 << "\t" << pin0 << "\t" << pin1;
+#endif
+  }
+  
+  template<typename DataType>
   void SPICEHandler<DataType>::generate_components()
   {
     for(const auto& component: tree.components)
     {
+#if ENABLE_LOG
+      BOOST_LOG_TRIVIAL(trace) << "Adding component: " << component.first;
+#endif
       switch(component.first[0])
       {
         case 'c':
@@ -282,6 +355,16 @@ namespace ATK
         case 'd':
         {
           add_diode(component);
+          break;
+        }
+        case 'e':
+        {
+          add_voltage_multiplier(component);
+          break;
+        }
+        case 'i':
+        {
+          add_current(component);
           break;
         }
         case 'l':
@@ -325,6 +408,9 @@ namespace ATK
   {
     if(pins.find(pin) == pins.end())
     {
+#if ENABLE_LOG
+      BOOST_LOG_TRIVIAL(trace) << "Adding dynamic pin " << pin << " index " << map.size();
+#endif
       add_pin(map, PinType::Dynamic, pin);
     }
   }
