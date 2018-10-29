@@ -83,16 +83,30 @@ filter.input_sampling_rate = sampling_rate
 filter.output_sampling_rate = sampling_rate
 filter.set_input_port(0, input, 0)
 
-y = np.zeros((1, length))
+y = np.zeros((11, length))
 output = DoubleOutPointerFilter(y)
 output.input_sampling_rate = sampling_rate
 output.output_sampling_rate = sampling_rate
-output.set_input_port(0, filter, 10)
+output.set_input_port(0, filter, 0)
+output.set_input_port(1, filter, 1)
+output.set_input_port(2, filter, 2)
+output.set_input_port(3, filter, 3)
+output.set_input_port(4, filter, 4)
+output.set_input_port(5, filter, 5)
+output.set_input_port(6, filter, 6)
+output.set_input_port(7, filter, 7)
+output.set_input_port(8, filter, 8)
+output.set_input_port(9, filter, 9)
+output.set_input_port(10, filter, 10)
 
-output.process(length)
+def generate(x):
+    input.set_pointer(x)
+    output.process(length)
+
+generate(x)
 
 plt.plot(t[0], x[0])
-plt.plot(t[0], y[0])
-plt.title("Moog filter in pure Python")
-plt.show()
+for i in range(11):
+    plt.plot(t[0], y[i])
+plt.title("Moog filter (dynamic ATK)")
 
