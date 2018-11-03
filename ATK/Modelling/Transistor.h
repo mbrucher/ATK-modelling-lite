@@ -6,6 +6,7 @@
 #define ATK_MODELLING_TRANSISTOR_H
 
 #include "Component.h"
+#include "StaticTransistor.h"
 
 namespace ATK
 {
@@ -13,6 +14,7 @@ namespace ATK
   template<typename DataType_>
   class ATK_MODELLING_EXPORT NPN final: public Component<DataType_>
   {
+    StaticNPN<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -40,30 +42,16 @@ namespace ATK
      */
     void precompute(bool steady_state) override;
 
-  private:
-    DataType Is;
-    DataType Vt;
-    DataType Br;
-    DataType Bf;
-    DataType expVbe;
-    DataType expVbc;
-    
-    DataType ib() const;
-    DataType ic() const;
-    DataType ib_Vbc() const;
-    DataType ib_Vbe() const;
-    DataType ic_Vbc() const;
-    DataType ic_Vbe() const;
-
   protected:
     using Parent::modeller;
     using Parent::pins;
   };
 
-  /// Transistor NPN component
+  /// Transistor PNP component
   template<typename DataType_>
   class ATK_MODELLING_EXPORT PNP final: public Component<DataType_>
   {
+    StaticPNP<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -90,21 +78,6 @@ namespace ATK
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
     void precompute(bool steady_state) override;
-    
-  private:
-    DataType Is;
-    DataType Vt;
-    DataType Br;
-    DataType Bf;
-    DataType expVbe;
-    DataType expVbc;
-    
-    DataType ib() const;
-    DataType ic() const;
-    DataType ib_Vbc() const;
-    DataType ib_Vbe() const;
-    DataType ic_Vbc() const;
-    DataType ic_Vbe() const;
     
   protected:
     using Parent::modeller;
