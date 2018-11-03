@@ -6,6 +6,7 @@
 #define ATK_MODELLING_CAPACITOR_H
 
 #include "Component.h"
+#include "StaticCapacitor.h"
 
 namespace ATK
 {
@@ -13,6 +14,7 @@ namespace ATK
   template<typename DataType_>
   class ATK_MODELLING_EXPORT Capacitor final: public Component<DataType_>
   {
+    StaticCapacitor<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -48,11 +50,6 @@ namespace ATK
     /// Return the capacitor value
     DataType_ get_capacitance() const;
     
-  private:
-    DataType C;
-    DataType c2t;
-    DataType iceq;
-
   protected:
     using Parent::modeller;
     using Parent::pins;
