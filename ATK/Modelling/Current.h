@@ -1,37 +1,26 @@
 /**
- * \file Coil.h
+ * \file Current.h
  */
 
-#ifndef ATK_MODELLING_COIL_H
-#define ATK_MODELLING_COIL_H
+#ifndef ATK_MODELLING_CURRENT_H
+#define ATK_MODELLING_CURRENT_H
 
 #include "Component.h"
-#include "StaticCoil.h"
+#include "StaticCurrent.h"
 
 namespace ATK
 {
-  /// Coil component
+  /// Current generator component
   template<typename DataType_>
-  class ATK_MODELLING_EXPORT Coil final: public Component<DataType_>
+  class ATK_MODELLING_EXPORT Current final: public Component<DataType_>
   {
-    StaticCoil<DataType_> inner;
+    StaticCurrent<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
 
-    Coil(DataType L);
+    Current(DataType C);
     
-    /**
-     * Update the component for its steady state condition
-     * @param dt is the delat that will be used in following updates
-     */
-    void update_steady_state(DataType dt) override;
-    
-    /**
-     * Update the component for its current state condition
-     */
-    void update_state() override;
-
     /**
      * Get current for the given pin based on the state
      * @param pin_index is the pin from which to compute the current
@@ -46,16 +35,10 @@ namespace ATK
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
     DataType_ get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const override;
-
-    /**
-     * Precompute internal value before asking current and gradients
-     * @param steady_state is a flag to indcate steady state computation (used for some components)
-     */
-    void precompute(bool steady_state) override;
-
-    /// Return the coil value
-    DataType_ get_coil() const;
-
+    
+    /// Return the current value
+    DataType_ get_current() const;
+    
   protected:
     using Parent::modeller;
     using Parent::pins;

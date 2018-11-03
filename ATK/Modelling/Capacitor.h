@@ -6,6 +6,7 @@
 #define ATK_MODELLING_CAPACITOR_H
 
 #include "Component.h"
+#include "StaticCapacitor.h"
 
 namespace ATK
 {
@@ -13,9 +14,10 @@ namespace ATK
   template<typename DataType_>
   class ATK_MODELLING_EXPORT Capacitor final: public Component<DataType_>
   {
+    StaticCapacitor<DataType_> inner;
   public:
-    typedef Component<DataType_> Parent;
-    typedef DataType_ DataType;
+    using Parent = Component<DataType_>;
+    using DataType = DataType_;
 
     Capacitor(DataType C);
     
@@ -35,7 +37,7 @@ namespace ATK
      * @param pin_index is the pin from which to compute the current
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
-    DataType get_current(gsl::index pin_index, bool steady_state) const override;
+    DataType_ get_current(gsl::index pin_index, bool steady_state) const override;
     
     /**
      * Get current gradient for the given pins based on the state
@@ -43,13 +45,11 @@ namespace ATK
      * @param pin_index is the pin from which to compute the gradient of the pin_index current
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
-    DataType get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const override;
+    DataType_ get_gradient(gsl::index pin_index_ref, gsl::index pin_index, bool steady_state) const override;
     
-  private:
-    DataType C;
-    DataType c2t;
-    DataType iceq;
-
+    /// Return the capacitor value
+    DataType_ get_capacitance() const;
+    
   protected:
     using Parent::modeller;
     using Parent::pins;

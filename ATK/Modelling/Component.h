@@ -25,7 +25,7 @@ namespace ATK
   class ATK_MODELLING_EXPORT Component
   {
   public:
-    typedef DataType_ DataType;
+    using DataType = DataType_;
 
   protected:
     /// Local pins to which this component is connected to
@@ -36,11 +36,15 @@ namespace ATK
     
     /// The current modeller where the component is located
     ModellerFilter<DataType>* modeller;
-    
+
   public:
     /// Virtual destructor
     virtual ~Component();
-    
+
+    Component() = default;
+    Component(const Component&) = delete;
+    Component& operator=(const Component&) = delete;
+
     /**
      * sets the pins for the component
      * @params pins is the set of pins for this component

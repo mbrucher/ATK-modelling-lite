@@ -10,8 +10,9 @@
 #include "Component.h"
 #include "ModellerFilter.h"
 
-static constexpr gsl::index MAX_ITERATION = 200;
-static constexpr double EPS = 1e-8;
+constexpr gsl::index MAX_ITERATION = 200;
+constexpr double EPS = 1e-8;
+constexpr gsl::index INIT_WARMUP = 10;
 
 namespace ATK
 {
@@ -110,7 +111,14 @@ namespace ATK
     
     if(!initialized)
     {
-      init();
+      auto target_static_state = static_state;
+      
+      for(gsl::index i = 0; i < INIT_WARMUP; ++i)
+      {
+        static_state = target_static_state * ((i+1.) / INIT_WARMUP);
+        init();
+      }
+      static_state = target_static_state;
     }
   }
 
@@ -140,7 +148,6 @@ namespace ATK
       }
     }
   }
-
 
   template<typename DataType_>
   void ModellerFilter<DataType_>::solve(bool steady_state) const
@@ -198,6 +205,12 @@ namespace ATK
       return true;
     }
     
+    auto max_delta = delta.array().abs().maxCoeff();
+    if(max_delta > 1)
+    {
+      delta /= max_delta;
+    }
+    
     dynamic_state -= delta;
 #if ENABLE_LOG
     BOOST_LOG_TRIVIAL(trace) << "delta: " << delta;
@@ -214,7 +227,7 @@ namespace ATK
     for(const auto& component: dynamic_pins[i])
     {
       current += std::get<0>(component)->get_current(std::get<1>(component), steady_state);
-      
+
       const auto& pins = std::get<0>(component)->get_pins();
       
       for(gsl::index j = 0; j < pins.size(); ++j)
