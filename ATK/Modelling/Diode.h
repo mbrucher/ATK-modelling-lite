@@ -6,6 +6,7 @@
 #define ATK_MODELLING_DIODE_H
 
 #include "Component.h"
+#include "StaticDiode.h"
 
 namespace ATK
 {
@@ -13,6 +14,7 @@ namespace ATK
   template<typename DataType_, unsigned int direct = 1, unsigned int indirect = 0>
   class ATK_MODELLING_EXPORT Diode final: public Component<DataType_>
   {
+    StaticDiode<DataType_, direct, indirect> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -39,12 +41,6 @@ namespace ATK
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
     void precompute(bool steady_state) override;
-
-  private:
-    DataType Is;
-    DataType N;
-    DataType Vt;
-    DataType precomp;
 
   protected:
     using Parent::modeller;
