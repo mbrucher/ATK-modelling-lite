@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( Transistor_NPN )
   
   BOOST_CHECK_CLOSE(4.0510473e-01, model.get_output_array(0)[0], 0.001);
   BOOST_CHECK_CLOSE(4.9942860e+00, model.get_output_array(1)[0], 0.001);
-  BOOST_CHECK_CLOSE(5.7711532e-04, model.get_output_array(2)[0], 0.001);
+  BOOST_CHECK_CLOSE(5.7725996e-04, model.get_output_array(2)[0], 0.001);
 }
 
 BOOST_AUTO_TEST_CASE( Transistor_PNP )
@@ -101,5 +101,5 @@ BOOST_AUTO_TEST_CASE( Transistor_PNP )
   
   BOOST_CHECK_CLOSE(-4.0510473e-01, model.get_output_array(0)[0], 0.001);
   BOOST_CHECK_CLOSE(-4.9942860e+00, model.get_output_array(1)[0], 0.001);
-  BOOST_CHECK_CLOSE(-5.7711532e-04, model.get_output_array(2)[0], 0.001);
+  BOOST_CHECK_CLOSE(-5.7725996e-04, model.get_output_array(2)[0], 0.001);
 }

@@ -6,6 +6,7 @@
 #define ATK_MODELLING_COIL_H
 
 #include "Component.h"
+#include "StaticCoil.h"
 
 namespace ATK
 {
@@ -13,6 +14,7 @@ namespace ATK
   template<typename DataType_>
   class ATK_MODELLING_EXPORT Coil final: public Component<DataType_>
   {
+    StaticCoil<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -53,13 +55,6 @@ namespace ATK
 
     /// Return the coil value
     DataType_ get_coil() const;
-
-  private:
-    DataType L;
-    DataType l2t;
-    DataType invl2t;
-    DataType veq;
-    DataType i;
 
   protected:
     using Parent::modeller;

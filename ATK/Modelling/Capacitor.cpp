@@ -9,7 +9,7 @@ namespace ATK
 {
   template<typename DataType_>
   Capacitor<DataType_>::Capacitor(DataType_ C)
-  :C(C), c2t(0), iceq(0)
+  :inner(C)
   {
   }
 
@@ -17,15 +17,13 @@ namespace ATK
   void Capacitor<DataType_>::update_steady_state(DataType dt)
   {
     Parent::update_steady_state(dt);
-    c2t = (2 * C) / dt;
-
-    iceq = c2t * (modeller->retrieve_voltage(pins[1]) - modeller->retrieve_voltage(pins[0]));
+    inner.update_steady_state(dt, modeller->retrieve_voltage(pins[0]), modeller->retrieve_voltage(pins[1]));
   }
   
   template<typename DataType_>
   void Capacitor<DataType_>::update_state()
   {
-    iceq = 2 * c2t * (modeller->retrieve_voltage(pins[1]) - modeller->retrieve_voltage(pins[0])) - iceq;
+    inner.update_state(modeller->retrieve_voltage(pins[0]), modeller->retrieve_voltage(pins[1]));
   }
   
   template<typename DataType_>
@@ -35,7 +33,7 @@ namespace ATK
     {
       return 0;
     }
-    return ((modeller->retrieve_voltage(pins[1]) - modeller->retrieve_voltage(pins[0]))  * c2t - iceq) * (0 == pin_index ? 1 : -1);
+    return inner.get_current(modeller->retrieve_voltage(pins[0]), modeller->retrieve_voltage(pins[1])) * (0 == pin_index ? 1 : -1);
   }
   
   template<typename DataType_>
@@ -45,13 +43,13 @@ namespace ATK
     {
       return 0;
     }
-    return c2t * (0 == pin_index_ref ? 1 : -1) * (1 == pin_index ? 1 : -1);
+    return inner.get_gradient() * (0 == pin_index_ref ? 1 : -1) * (1 == pin_index ? 1 : -1);
   }
 
   template<typename DataType_>
   DataType_ Capacitor<DataType_>::get_capacitance() const
   {
-    return C;
+    return inner.get_capacitance();
   }
 
   template class Capacitor<double>;

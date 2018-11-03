@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_NPN_static )
   auto output1 = filter->get_output_array(1);
   BOOST_CHECK_CLOSE(output1[0], 4.9942860, 0.001);
   auto output2 = filter->get_output_array(2);
-  BOOST_CHECK_CLOSE(output2[0], 5.7711532e-04, 0.001);
+  BOOST_CHECK_CLOSE(output2[0], 5.7725996e-04, 0.001);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_Handler_PNP_static )
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_PNP_static )
   auto output1 = filter->get_output_array(1);
   BOOST_CHECK_CLOSE(output1[0], -4.9942860, 0.001);
   auto output2 = filter->get_output_array(2);
-  BOOST_CHECK_CLOSE(output2[0], -5.7711532e-04, 0.001);
+  BOOST_CHECK_CLOSE(output2[0], -5.7725996e-04, 0.001);
 }
 
 BOOST_AUTO_TEST_CASE( SPICE_Handler_NPN_PNP_matched )
