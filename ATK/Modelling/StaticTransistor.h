@@ -97,11 +97,11 @@ namespace ATK
   public:
     DataType ib() const
     {
-      return Is * ((expVbe - 1) / Bf + (expVbc - 1) / Br);
+      return -Is * ((expVbe - 1) / Bf + (expVbc - 1) / Br);
     }
     DataType ic() const
     {
-      return Is * ((expVbe - expVbc) - (expVbc - 1) / Br);
+      return -Is * ((expVbe - expVbc) - (expVbc - 1) / Br);
     }
     DataType ib_Vbc() const
     {
