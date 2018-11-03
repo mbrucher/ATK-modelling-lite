@@ -6,6 +6,7 @@
 #define ATK_MODELLING_CURRENT_H
 
 #include "Component.h"
+#include "StaticCurrent.h"
 
 namespace ATK
 {
@@ -13,6 +14,7 @@ namespace ATK
   template<typename DataType_>
   class ATK_MODELLING_EXPORT Current final: public Component<DataType_>
   {
+    StaticCurrent<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -36,8 +38,6 @@ namespace ATK
     
     /// Return the current value
     DataType_ get_current() const;
-  private:
-    DataType C;
     
   protected:
     using Parent::modeller;
