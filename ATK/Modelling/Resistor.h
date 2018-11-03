@@ -6,6 +6,7 @@
 #define ATK_MODELLING_RESISTOR_H
 
 #include "Component.h"
+#include "StaticResistor.h"
 
 namespace ATK
 {
@@ -13,6 +14,8 @@ namespace ATK
   template<typename DataType_>
   class ATK_MODELLING_EXPORT Resistor final: public Component<DataType_>
   {
+    /// Underlying resistor component
+    StaticResistor<DataType_> inner;
   public:
     using Parent = Component<DataType_>;
     using DataType = DataType_;
@@ -36,9 +39,6 @@ namespace ATK
     
     /// Return the resistance value
     DataType_ get_resistance() const;
-  private:
-    DataType G;
-    
   protected:
     using Parent::modeller;
     using Parent::pins;
