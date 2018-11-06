@@ -36,7 +36,7 @@ namespace ATK
     /**
      * Update the component for its current state condition
      */
-    void update_state()
+    void update_state() const
     {
       veq = 2 * l2t * i - veq;
     }
@@ -84,10 +84,10 @@ namespace ATK
 
   private:
     DataType L;
-    DataType l2t;
-    DataType invl2t;
-    DataType veq;
-    DataType i;
+    DataType l2t = 0;
+    DataType invl2t = 0;
+    mutable DataType veq = 0;
+    DataType i = 0;
   };
 }
 

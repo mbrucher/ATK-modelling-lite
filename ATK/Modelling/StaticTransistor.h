@@ -24,7 +24,7 @@ namespace ATK
     /**
      * Precompute internal value before asking current and gradients
      */
-    void precompute(DataType V0, DataType V1, DataType V2)
+    void precompute(DataType V0, DataType V1, DataType V2) const
     {
       expVbe = fmath::exp((V0 - V2) / Vt);
       expVbc = fmath::exp((V0 - V1) / Vt);
@@ -35,8 +35,8 @@ namespace ATK
     const DataType Vt;
     const DataType Br;
     const DataType Bf;
-    DataType expVbe;
-    DataType expVbc;
+    mutable DataType expVbe;
+    mutable DataType expVbc;
 
   public:
     DataType ib() const
@@ -80,7 +80,7 @@ namespace ATK
     /**
      * Precompute internal value before asking current and gradients
      */
-    void precompute(DataType V0, DataType V1, DataType V2)
+    void precompute(DataType V0, DataType V1, DataType V2) const
     {
       expVbe = fmath::exp(-(V0 - V2) / Vt);
       expVbc = fmath::exp(-(V0 - V1) / Vt);
@@ -91,8 +91,8 @@ namespace ATK
     const DataType Vt;
     const DataType Br;
     const DataType Bf;
-    DataType expVbe;
-    DataType expVbc;
+    mutable DataType expVbe;
+    mutable DataType expVbc;
     
   public:
     DataType ib() const

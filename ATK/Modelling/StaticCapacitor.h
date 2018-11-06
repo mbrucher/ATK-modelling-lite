@@ -32,7 +32,7 @@ namespace ATK
     /**
      * Update the component for its current state condition
      */
-    void update_state(DataType V0, DataType V1)
+    void update_state(DataType V0, DataType V1) const
     {
       iceq = 2 * c2t * (V1 - V0) - iceq;
     }
@@ -61,8 +61,8 @@ namespace ATK
     
   private:
     DataType C;
-    DataType c2t;
-    DataType iceq;
+    DataType c2t = 0;
+    mutable DataType iceq = 0;
   };
 }
 
