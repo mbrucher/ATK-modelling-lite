@@ -28,25 +28,6 @@
 
 namespace
 {
-  class NameVisitor : public boost::static_visitor<std::string>
-  {
-  public:
-    std::string operator()(const ATK::ast::SPICENumber& number) const
-    {
-      return std::to_string(int(number.first));
-    }
-    
-    std::string operator()(const std::string & str) const
-    {
-      return str;
-    }
-  };
-
-  std::string to_name(const ATK::ast::SPICEArg& arg)
-  {
-    return boost::apply_visitor(NameVisitor(), arg);
-  }
-  
 #define DEFINE_VARIABLE_HELPER(r, data, TUPLE) DataType BOOST_PP_TUPLE_ELEM(0, TUPLE) = BOOST_PP_TUPLE_ELEM(1, TUPLE);
 #define POPULATE_VARIABLE_HELPER(r, data, TUPLE) \
   if(const auto arg = args.find(BOOST_STRINGIZE(BOOST_PP_TUPLE_ELEM(0, TUPLE))); arg != args.end()) \
@@ -117,12 +98,12 @@ namespace ATK
   template<typename DataType>
   void SPICEHandler<DataType>::process()
   {
-    set_static_pins();
+    set_static_pins(tree, static_pins, static_voltage, input_pins, pins);
     generate_components();
   }
 
   template<typename DataType>
-  void SPICEHandler<DataType>::set_static_pins()
+  void SPICEHandler<DataType>::set_static_pins(const ast::SPICEAST& tree, std::unordered_set<std::string>& static_pins, std::vector<double>& static_voltage, std::unordered_set<std::string>& input_pins, std::unordered_map<std::string, Pin>& pins)
   {
     static_pins.insert("0");
     pins.insert(std::make_pair("gnd", std::make_tuple(PinType::Static, 0)));
@@ -151,24 +132,24 @@ namespace ATK
         }
         if(component.second.size() == 3)
         {
-          add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+          add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd, pins);
           static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[2])));
         }
         else if(component.second.size() == 4)
         {
           if(boost::get<std::string>(component.second[2]) == "dc")
           {
-            add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd);
+            add_dual_pin(static_pins, PinType::Static, pin0, pin1, first_gnd, pins);
             static_voltage.push_back((first_gnd ? -1 : 1) * convert_component_value(boost::get<ast::SPICENumber>(component.second[3])));
           }
           else
           {
-            add_dual_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
+            add_dual_pin(input_pins, PinType::Input, pin0, pin1, first_gnd, pins);
           }
         }
         else if(component.second.size() >= 5)
         {
-          add_dual_pin(input_pins, PinType::Input, pin0, pin1, first_gnd);
+          add_dual_pin(input_pins, PinType::Input, pin0, pin1, first_gnd, pins);
         }
       }
     }
@@ -392,15 +373,15 @@ namespace ATK
   }
   
   template<typename DataType>
-  void SPICEHandler<DataType>::add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd)
+  void SPICEHandler<DataType>::add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd, std::unordered_map<std::string, Pin>& pins)
   {
     if(first_gnd)
     {
-      add_pin(map, type, pin1);
+      add_pin(map, type, pin1, pins);
     }
     else
     {
-      add_pin(map, type, pin0);
+      add_pin(map, type, pin0, pins);
     }
   }
   
@@ -412,12 +393,12 @@ namespace ATK
 #if ENABLE_LOG
       BOOST_LOG_TRIVIAL(trace) << "Adding dynamic pin " << pin << " index " << map.size();
 #endif
-      add_pin(map, PinType::Dynamic, pin);
+      add_pin(map, PinType::Dynamic, pin, pins);
     }
   }
   
   template<typename DataType>
-  void SPICEHandler<DataType>::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin)
+  void SPICEHandler<DataType>::add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin, std::unordered_map<std::string, Pin>& pins)
   {
     pins.insert(std::make_pair(pin, std::make_tuple(type, map.size())));
     map.insert(pin);

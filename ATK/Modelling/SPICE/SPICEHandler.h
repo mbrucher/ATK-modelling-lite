@@ -23,6 +23,25 @@
 
 namespace ATK
 {
+  class NameVisitor : public boost::static_visitor<std::string>
+  {
+  public:
+    std::string operator()(const ATK::ast::SPICENumber& number) const
+    {
+      return std::to_string(int(number.first));
+    }
+    
+    std::string operator()(const std::string & str) const
+    {
+      return str;
+    }
+  };
+  
+  inline std::string to_name(const ATK::ast::SPICEArg& arg)
+  {
+    return boost::apply_visitor(NameVisitor(), arg);
+  }
+
 template<typename DataType>
 class ATK_MODELLING_EXPORT SPICEHandler
 {
@@ -45,17 +64,13 @@ class ATK_MODELLING_EXPORT SPICEHandler
   /// Static voltages given by SPICE
   std::vector<double> static_voltage;
 
-  /// Gets through the AST tree and gets input pins and static voltages
-  void set_static_pins();
   /// Going through all the components and populate the component set
   void generate_components();
-  /// Add a new pin, with a flag
-  void add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd);
   /// Add a dynamic pin if required
   void add_dynamic_pin(std::unordered_set<std::string>& map, const std::string& pin);
-  /// Add a new pin
-  void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin);
-  
+  /// Add a new pin, with a flag
+  static void add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd, std::unordered_map<std::string, Pin>& pins);
+
   std::unique_ptr<Component<DataType>> create_component(const std::string& model_name) const;
   
   /// Adds a capacitor to the model
@@ -74,6 +89,11 @@ class ATK_MODELLING_EXPORT SPICEHandler
   /// Adds a voltage multiplier to the model
   void add_voltage_multiplier(const ast::Component& component);
 public:
+  /// Add a new pin
+  static void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin, std::unordered_map<std::string, Pin>& pins);
+  /// Gets through the AST tree and gets input pins and static voltages
+  static void set_static_pins(const ast::SPICEAST& tree, std::unordered_set<std::string>& static_pins, std::vector<double>& static_voltage, std::unordered_set<std::string>& input_pins, std::unordered_map<std::string, Pin>& pins);
+
   /**
    * Constructor
    */
