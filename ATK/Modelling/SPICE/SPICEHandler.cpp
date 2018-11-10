@@ -4,9 +4,6 @@
 
 #include <memory>
 
-#include <boost/preprocessor/seq.hpp>
-#include <boost/preprocessor/tuple.hpp>
-
 #if ENABLE_LOG
 #define BOOST_LOG_DYN_LINK
 #include <boost/log/trivial.hpp>
@@ -25,36 +22,6 @@
 #include <ATK/Modelling/VoltageGain.h>
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/SPICE/parser.h>
-
-namespace
-{
-#define DEFINE_VARIABLE_HELPER(r, data, TUPLE) DataType BOOST_PP_TUPLE_ELEM(0, TUPLE) = BOOST_PP_TUPLE_ELEM(1, TUPLE);
-#define POPULATE_VARIABLE_HELPER(r, data, TUPLE) \
-  if(const auto arg = args.find(BOOST_STRINGIZE(BOOST_PP_TUPLE_ELEM(0, TUPLE))); arg != args.end()) \
-  { \
-    BOOST_PP_TUPLE_ELEM(0, TUPLE) = ATK::convert_component_value(arg->second); \
-  } \
-
-#define HELPER(name, SEQ) \
-  template<typename DataType> \
-  class name \
-  { \
-  public: \
-    void populate(const ATK::ast::ModelArguments& args) \
-    { \
-      BOOST_PP_SEQ_FOR_EACH(POPULATE_VARIABLE_HELPER, _, SEQ) \
-    } \
- \
-    BOOST_PP_SEQ_FOR_EACH(DEFINE_VARIABLE_HELPER, _, SEQ) \
-  };
-  
-#define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
-  HELPER(DiodeHelper, DIODE_SEQ)
-#define NPN_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
-  HELPER(NPNHelper, NPN_SEQ)
-#define PNP_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
-  HELPER(PNPHelper, PNP_SEQ)
-}
 
 namespace ATK
 {
