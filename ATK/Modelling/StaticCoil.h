@@ -64,7 +64,7 @@ namespace ATK
     /**
      * Precompute internal value before asking current and gradients
      */
-    void precompute(DataType V0, DataType V1, bool steady_state)
+    void precompute(DataType V0, DataType V1, bool steady_state) const
     {
       if(steady_state)
       {
@@ -87,7 +87,7 @@ namespace ATK
     DataType l2t = 0;
     DataType invl2t = 0;
     mutable DataType veq = 0;
-    DataType i = 0;
+    mutable DataType i = 0;
   };
 }
 
