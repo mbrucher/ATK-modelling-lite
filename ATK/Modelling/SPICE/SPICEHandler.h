@@ -11,9 +11,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <boost/preprocessor/seq.hpp>
-#include <boost/preprocessor/tuple.hpp>
-
 #include <gsl/gsl>
 
 #include <Eigen/Eigen>
@@ -23,62 +20,15 @@
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Types.h>
 #include <ATK/Modelling/SPICE/parser.h>
+#include <ATK/Modelling/SPICE/Utilities.h>
 
 namespace ATK
 {
-#define DEFINE_VARIABLE_HELPER(r, data, TUPLE) DataType BOOST_PP_TUPLE_ELEM(0, TUPLE) = BOOST_PP_TUPLE_ELEM(1, TUPLE);
-#define POPULATE_VARIABLE_HELPER(r, data, TUPLE) \
-if(const auto arg = args.find(BOOST_STRINGIZE(BOOST_PP_TUPLE_ELEM(0, TUPLE))); arg != args.end()) \
-{ \
-BOOST_PP_TUPLE_ELEM(0, TUPLE) = convert_component_value(arg->second); \
-} \
-
-#define HELPER(name, SEQ) \
-template<typename DataType> \
-class name \
-{ \
-public: \
-void populate(const ast::ModelArguments& args) \
-{ \
-BOOST_PP_SEQ_FOR_EACH(POPULATE_VARIABLE_HELPER, _, SEQ) \
-} \
-\
-BOOST_PP_SEQ_FOR_EACH(DEFINE_VARIABLE_HELPER, _, SEQ) \
-};
-  
-#define DIODE_SEQ ((vt,26e-3))((is,1e-14))((n,1.24))
-  HELPER(DiodeHelper, DIODE_SEQ)
-#define NPN_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
-  HELPER(NPNHelper, NPN_SEQ)
-#define PNP_SEQ ((vt,26e-3))((is,1e-12))((ne,1))((br,1))((bf,100))
-  HELPER(PNPHelper, PNP_SEQ)
-  
-  class NameVisitor : public boost::static_visitor<std::string>
-  {
-  public:
-    std::string operator()(const ATK::ast::SPICENumber& number) const
-    {
-      return std::to_string(int(number.first));
-    }
-    
-    std::string operator()(const std::string & str) const
-    {
-      return str;
-    }
-  };
-  
-  inline std::string to_name(const ATK::ast::SPICEArg& arg)
-  {
-    return boost::apply_visitor(NameVisitor(), arg);
-  }
-
 template<typename DataType>
 class ATK_MODELLING_EXPORT SPICEHandler
 {
   /// The AST tree on which we will work
   const ast::SPICEAST& tree;
-
-  using Pin = std::tuple<PinType, gsl::index>;
   
   /// Pins name map to actual pin type and id
   std::unordered_map<std::string, Pin> pins;
@@ -98,8 +48,6 @@ class ATK_MODELLING_EXPORT SPICEHandler
   void generate_components();
   /// Add a dynamic pin if required
   void add_dynamic_pin(std::unordered_set<std::string>& map, const std::string& pin);
-  /// Add a new pin, with a flag
-  static void add_dual_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin0, const std::string& pin1, bool first_gnd, std::unordered_map<std::string, Pin>& pins);
 
   std::unique_ptr<Component<DataType>> create_component(const std::string& model_name) const;
   
@@ -118,12 +66,8 @@ class ATK_MODELLING_EXPORT SPICEHandler
   void add_current(const ast::Component& component);
   /// Adds a voltage multiplier to the model
   void add_voltage_multiplier(const ast::Component& component);
-public:
-  /// Add a new pin
-  static void add_pin(std::unordered_set<std::string>& map, PinType type, const std::string& pin, std::unordered_map<std::string, Pin>& pins);
-  /// Gets through the AST tree and gets input pins and static voltages
-  static void set_static_pins(const ast::SPICEAST& tree, std::unordered_set<std::string>& static_pins, std::vector<double>& static_voltage, std::unordered_set<std::string>& input_pins, std::unordered_map<std::string, Pin>& pins);
 
+public:
   /**
    * Constructor
    */
