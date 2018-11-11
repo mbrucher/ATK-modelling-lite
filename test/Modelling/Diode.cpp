@@ -11,7 +11,7 @@
 #include <ATK/Core/InPointerFilter.h>
 #include <ATK/Core/OutPointerFilter.h>
 
-#include <ATK/Modelling/ModellerFilter.h>
+#include <ATK/Modelling/DynamicModellerFilter.h>
 #include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/Diode.h>
 #include <ATK/Modelling/Resistor.h>
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( Diode_SimpleOverdrive )
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(SAMPLING_RATE);
   
-  ATK::ModellerFilter<double> model(2, 1, 1);
+  ATK::DynamicModellerFilter<double> model(2, 1, 1);
   
   model.add_component(std::make_unique<ATK::Diode<double, 1, 1>>(1e-12, 1), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   model.add_component(std::make_unique<ATK::Capacitor<double>>(22e-9), {{std::make_tuple(ATK::PinType::Dynamic, 0), std::make_tuple(ATK::PinType::Dynamic, 1)}});

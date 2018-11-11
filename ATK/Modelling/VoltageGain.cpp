@@ -2,7 +2,7 @@
  * \file VoltageGain.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "VoltageGain.h"
 
 namespace ATK
@@ -26,7 +26,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void VoltageGain<DataType_>::update_model(ModellerFilter<DataType>* modeller)
+  void VoltageGain<DataType_>::update_model(DynamicModellerFilter<DataType>* modeller)
   {
     Parent::update_model(modeller);
     assert(std::get<0>(pins[2]) == PinType::Dynamic);

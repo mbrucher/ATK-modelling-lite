@@ -18,7 +18,7 @@ namespace ATK
   }
 
   template<typename DataType_>
-  void Component<DataType_>::update_model(ModellerFilter<DataType>* modeller)
+  void Component<DataType_>::update_model(DynamicModellerFilter<DataType>* modeller)
   {
     this->modeller = modeller;
   }

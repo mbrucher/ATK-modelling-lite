@@ -7,6 +7,7 @@
 #include <ATK/Modelling/SPICE/SPICEHandler.h>
 #include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/Coil.h>
+#include <ATK/Modelling/DynamicModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 
 #include <ATK/Core/Utilities.h>
@@ -186,7 +187,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_simple_bridge )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vcc ref 0 5V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R0 1 0 100"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R1 1 ref 100"));
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   filter->process(1);
@@ -203,7 +204,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_divider_bridge )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vin in 0 AC 5V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "R2 in 1 100"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -233,7 +234,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_capacitor )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "C0 1 0 1m"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vin in 0 AC 5V"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -263,7 +264,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_coil )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "L0 1 in 1000"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vin in 0 AC 5V"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -294,7 +295,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_diode_static )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vref ref 0 5V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model mydiode d (Is=1e-14 N=1.24 Vt=26e-3)"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -315,7 +316,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_NPN_static )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vref ref 0 5V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model trans npn (toto=1)"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -339,7 +340,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_PNP_static )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Vref ref 0 -5V"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model trans pnp (toto=1)"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -363,7 +364,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_NPN_PNP_matched )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model transn npn (toto=1)"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, ".model transp pnp (toto=1)"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   
@@ -379,7 +380,7 @@ BOOST_AUTO_TEST_CASE( SPICE_Handler_current )
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "Is ref out .001"));
   BOOST_CHECK_NO_THROW(ATK::parse_string(ast, "V1 ref 0 1V"));
   
-  std::unique_ptr<ATK::ModellerFilter<double>> filter = ATK::SPICEHandler<double>::convert(ast);
+  auto filter = ATK::SPICEHandler<double>::convert(ast);
   filter->set_input_sampling_rate(sampling_reate);
   filter->set_output_sampling_rate(sampling_reate);
   

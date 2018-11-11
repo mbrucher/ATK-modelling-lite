@@ -18,6 +18,7 @@
 #include <ATK/Modelling/Coil.h>
 #include <ATK/Modelling/Current.h>
 #include <ATK/Modelling/Diode.h>
+#include <ATK/Modelling/DynamicModellerFilter.h>
 #include <ATK/Modelling/ModellerFilter.h>
 #include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/Transistor.h>
@@ -102,7 +103,7 @@ namespace ATK
     BOOST_LOG_TRIVIAL(trace) << "Dynamic pins: " << nb_dynamic_pins;
 #endif
 
-    auto filter = std::make_unique<ModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
+    auto filter = std::make_unique<DynamicModellerFilter<DataType>>(nb_dynamic_pins, nb_static_pins, nb_input_pins);
     filter->set_static_state(handler.get_static_state());
     
     for(auto& component: handler.components)
@@ -110,7 +111,7 @@ namespace ATK
       filter->add_component(std::move(std::get<0>(component)), std::move(std::get<1>(component)));
     }
     
-    return std::move(filter);
+    return std::unique_ptr<ModellerFilter<DataType>>(std::move(filter));
   }
   
   template<typename DataType>

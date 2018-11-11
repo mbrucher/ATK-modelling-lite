@@ -9,7 +9,7 @@
 #include <ATK/Core/InPointerFilter.h>
 #include <ATK/Core/OutPointerFilter.h>
 
-#include <ATK/Modelling/ModellerFilter.h>
+#include <ATK/Modelling/DynamicModellerFilter.h>
 #include <ATK/Modelling/OpAmp.h>
 #include <ATK/Modelling/Resistor.h>
 
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( OpAmp_Follower )
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(48000);
   
-  ATK::ModellerFilter<double> model(1, 1, 1);
+  ATK::DynamicModellerFilter<double> model(1, 1, 1);
   model.set_input_sampling_rate(48000);
   model.set_output_sampling_rate(48000);
   
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( OpAmp_DoubleNonInverter )
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(48000);
   
-  ATK::ModellerFilter<double> model(2, 1, 1);
+  ATK::DynamicModellerFilter<double> model(2, 1, 1);
   model.set_input_sampling_rate(48000);
   model.set_output_sampling_rate(48000);
   

@@ -2,7 +2,7 @@
  * \file OpAmp.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "OpAmp.h"
 
 namespace ATK
@@ -25,7 +25,7 @@ namespace ATK
   }
   
   template<typename DataType_>
-  void OpAmp<DataType_>::update_model(ModellerFilter<DataType>* modeller)
+  void OpAmp<DataType_>::update_model(DynamicModellerFilter<DataType>* modeller)
   {
     Parent::update_model(modeller);
     assert(std::get<0>(pins[2]) == PinType::Dynamic);

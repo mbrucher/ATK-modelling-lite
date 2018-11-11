@@ -2,7 +2,7 @@
  * \file Coil.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "Coil.h"
 
 namespace ATK

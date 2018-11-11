@@ -38,7 +38,7 @@ namespace ATK
      * Used to indicate if the modeller needs to update its set of equations with those provided by this component
      * @param modeller the modeller to update
      */
-    void update_model(ModellerFilter<DataType>* modeller) override;
+    void update_model(DynamicModellerFilter<DataType>* modeller) override;
 
     /**
      * Add a new equation to the modeller

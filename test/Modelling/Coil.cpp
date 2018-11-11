@@ -10,7 +10,7 @@
 #include <ATK/Core/InPointerFilter.h>
 #include <ATK/Core/OutPointerFilter.h>
 
-#include <ATK/Modelling/ModellerFilter.h>
+#include <ATK/Modelling/DynamicModellerFilter.h>
 #include <ATK/Modelling/Coil.h>
 #include <ATK/Modelling/Resistor.h>
 
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( Coil_RC )
   ATK::InPointerFilter<double> generator(data.data(), 1, PROCESSSIZE, false);
   generator.set_output_sampling_rate(48000);
   
-  ATK::ModellerFilter<double> model(1, 1, 1);
+  ATK::DynamicModellerFilter<double> model(1, 1, 1);
   model.add_component(std::make_unique<ATK::Resistor<double>>(R), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   model.add_component(std::make_unique<ATK::Coil<double>>(L), {{std::make_tuple(ATK::PinType::Input, 0), std::make_tuple(ATK::PinType::Dynamic, 0)}});
 

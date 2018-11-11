@@ -2,7 +2,7 @@
  * \file Resistor.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "Resistor.h"
 
 namespace ATK

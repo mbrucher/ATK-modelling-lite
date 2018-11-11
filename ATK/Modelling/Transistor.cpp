@@ -2,7 +2,7 @@
  * \file Transistor.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "Transistor.h"
 
 namespace ATK

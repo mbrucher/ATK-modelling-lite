@@ -11,7 +11,7 @@
 #include <ATK/Core/InPointerFilter.h>
 #include <ATK/Core/OutPointerFilter.h>
 
-#include <ATK/Modelling/ModellerFilter.h>
+#include <ATK/Modelling/DynamicModellerFilter.h>
 #include <ATK/Modelling/Capacitor.h>
 #include <ATK/Modelling/Resistor.h>
 #include <ATK/Modelling/Transistor.h>
@@ -30,7 +30,7 @@ static constexpr gsl::index SAMPLING_RATE = 48000;
 
 BOOST_AUTO_TEST_CASE( Transistor_PushPull )
 {
-  ATK::ModellerFilter<double> model(1, 3, 0);
+  ATK::DynamicModellerFilter<double> model(1, 3, 0);
   
   model.add_component(std::make_unique<ATK::NPN<double>>(), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Static, 1), std::make_tuple(ATK::PinType::Dynamic, 0)}});
   model.add_component(std::make_unique<ATK::PNP<double>>(), {{std::make_tuple(ATK::PinType::Static, 0), std::make_tuple(ATK::PinType::Static, 2), std::make_tuple(ATK::PinType::Dynamic, 0)}});
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( Transistor_PushPull )
 
 BOOST_AUTO_TEST_CASE( Transistor_NPN )
 {
-  ATK::ModellerFilter<double> model(3, 2, 0);
+  ATK::DynamicModellerFilter<double> model(3, 2, 0);
   
   model.add_component(std::make_unique<ATK::NPN<double>>(), {{std::make_tuple(ATK::PinType::Dynamic, 0), std::make_tuple(ATK::PinType::Dynamic, 1), std::make_tuple(ATK::PinType::Dynamic, 2)}});
   
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( Transistor_NPN )
 
 BOOST_AUTO_TEST_CASE( Transistor_PNP )
 {
-  ATK::ModellerFilter<double> model(3, 2, 0);
+  ATK::DynamicModellerFilter<double> model(3, 2, 0);
   
   model.add_component(std::make_unique<ATK::PNP<double>>(), {{std::make_tuple(ATK::PinType::Dynamic, 0), std::make_tuple(ATK::PinType::Dynamic, 1), std::make_tuple(ATK::PinType::Dynamic, 2)}});
   

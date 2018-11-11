@@ -2,7 +2,7 @@
  * \file Capacitor.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "Capacitor.h"
 
 namespace ATK

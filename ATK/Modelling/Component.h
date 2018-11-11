@@ -18,7 +18,7 @@
 namespace ATK
 {
   template<typename DataType_>
-  class ModellerFilter;
+  class DynamicModellerFilter;
   
   /// Base class for all components
   template<typename DataType_>
@@ -35,7 +35,7 @@ namespace ATK
     DataType dt;
     
     /// The current modeller where the component is located
-    ModellerFilter<DataType>* modeller;
+    DynamicModellerFilter<DataType>* modeller;
 
   public:
     /// Virtual destructor
@@ -61,7 +61,7 @@ namespace ATK
      * Used to indicate if the modeller needs to update its set of equations with those provided by this component
      * @param modeller the modeller to update
      */
-    virtual void update_model(ModellerFilter<DataType>* modeller);
+    virtual void update_model(DynamicModellerFilter<DataType>* modeller);
     
     /**
      * Update the component for its steady state condition

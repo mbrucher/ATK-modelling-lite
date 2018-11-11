@@ -1,6 +1,6 @@
 /**
  * \file SPICEFilter.h
- * Contains the SPICE parser for ATK Modeler
+ * Contains the SPICE parser for ATK Modeller
  */
 
 #ifndef ATK_MODELLING_SPICE_SPICEFILTER

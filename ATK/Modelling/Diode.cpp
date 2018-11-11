@@ -2,7 +2,7 @@
  * \file Diode.cpp
  */
 
-#include "ModellerFilter.h"
+#include "DynamicModellerFilter.h"
 #include "Diode.h"
 
 namespace ATK
