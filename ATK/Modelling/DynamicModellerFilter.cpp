@@ -18,7 +18,7 @@ namespace ATK
 {
   template<typename DataType_>
   DynamicModellerFilter<DataType_>::DynamicModellerFilter(gsl::index nb_dynamic_pins, gsl::index nb_static_pins, gsl::index nb_input_pins)
-  : ModellerFilter<DataType_>(nb_input_pins, nb_dynamic_pins)
+  : ModellerFilter<DataType_>(nb_dynamic_pins, nb_input_pins)
   , nb_dynamic_pins(nb_dynamic_pins)
   , nb_static_pins(nb_static_pins)
   , nb_input_pins(nb_input_pins)
