@@ -245,24 +245,56 @@ namespace ATK
   template<typename DataType_>
   gsl::index DynamicModellerFilter<DataType_>::get_number_parameters() const
   {
-    return 0;
+    return std::accumulate(begin(components), end(components), 0, [](gsl::index i, const auto& component)
+                           {
+                             return i + component->get_number_parameters();
+                           }
+                           );
+  }
+  
+  template<typename Components, typename Function>
+  auto scan_components(const Components& components, gsl::index identifier, Function fun)
+  {
+    gsl::index ind = 0;
+    
+    for(const auto& component: components)
+    {
+      if(component->get_number_parameters() == 0)
+      {
+        continue;
+      }
+      if(ind + component->get_number_parameters() >= identifier)
+      {
+        ind += component->get_number_parameters();
+        continue;
+      }
+      return fun(component, identifier - ind);
+    }
+    throw RuntimeError("No such parameter");
   }
   
   template<typename DataType_>
   std::string DynamicModellerFilter<DataType_>::get_parameter_name(gsl::index identifier) const
   {
-    throw RuntimeError("No such parameter");
+    return scan_components(components, identifier, [&](const auto& component, gsl::index i){
+      return component->get_parameter_name(i);
+    });
   }
   
   template<typename DataType_>
   DataType_ DynamicModellerFilter<DataType_>::get_parameter(gsl::index identifier) const
   {
-    throw RuntimeError("No such parameter");
+    return scan_components(components, identifier, [&](const auto& component, gsl::index i){
+      return component->get_parameter(i);
+    });
   }
   
   template<typename DataType_>
   void DynamicModellerFilter<DataType_>::set_parameter(gsl::index identifier, DataType_ value)
   {
+    return scan_components(components, identifier, [&](const auto& component, gsl::index i){
+      component->set_parameter(i, value);
+    });
     throw RuntimeError("No such parameter");
   }
 
