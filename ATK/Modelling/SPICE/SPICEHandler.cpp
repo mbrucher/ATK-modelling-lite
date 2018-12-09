@@ -2,6 +2,7 @@
  * \file SPICEHandler.cpp
  */
 
+#include <iostream>
 #include <memory>
 
 #if ENABLE_LOG
@@ -60,6 +61,21 @@ namespace ATK
       filter->add_component(std::move(std::get<0>(component)), std::move(std::get<1>(component)));
     }
     
+    std::vector<std::string> dynamic_pin_names(handler.dynamic_pins.size());
+    for(const auto& name: handler.dynamic_pins)
+    {
+      auto it = handler.pins.find(name);
+      dynamic_pin_names[std::get<1>(it->second)] = name;
+    }
+    filter->set_dynamic_pin_names(std::move(dynamic_pin_names));
+    std::vector<std::string> static_pin_names(handler.static_pins.size());
+    for(const auto& name: handler.static_pins)
+    {
+      auto it = handler.pins.find(name);
+      static_pin_names[std::get<1>(it->second)] = name;
+    }
+    filter->set_static_pin_names(std::move(static_pin_names));
+
     return std::unique_ptr<ModellerFilter<DataType>>(std::move(filter));
   }
   

@@ -55,6 +55,10 @@ namespace ATK
     bool initialized = false;
     
     const Eigen::Matrix<DataType, Eigen::Dynamic, 1>& get_states(PinType type) const;
+
+    std::vector<std::string> dynamic_pins_names;
+    std::vector<std::string> static_pins_names;
+
   public:
     /**
      * The main ModellerFilter constructor
@@ -94,6 +98,16 @@ namespace ATK
      */
     void set_static_state(Eigen::Matrix<DataType, Eigen::Dynamic, 1> static_state);
     
+    void set_dynamic_pin_names(std::vector<std::string> dynamic_pins_names)
+    {
+      this->dynamic_pins_names = std::move(dynamic_pins_names);
+    }
+    
+    void set_static_pin_names(std::vector<std::string> static_pins_names)
+    {
+      this->static_pins_names = std::move(static_pins_names);
+    }
+
     Eigen::Matrix<DataType, Eigen::Dynamic, 1> get_static_state() const override
     {
       return static_state;
@@ -132,6 +146,30 @@ namespace ATK
     {
       return components.size();
     }
+
+    /// Returns the name of a dynamic pin, usefull to set output
+    std::string get_dynamic_pin_name(gsl::index identifier) const override
+    {
+      return dynamic_pins_names[identifier];
+    }
+    
+    /// Returns the name of a static pin, usefull to set input
+    std::string get_static_pin_name(gsl::index identifier) const override
+    {
+      return static_pins_names[identifier];
+    }
+    
+    /// Get number of parameters
+    gsl::index get_number_parameters() const override;
+    
+    /// Get the name of a parameter
+    std::string get_parameter_name(gsl::index identifier) const override;
+    
+    /// Get the value of a parameter
+    DataType_ get_parameter(gsl::index identifier) const override;
+    
+    /// Set the value of a parameter
+    void set_parameter(gsl::index identifier, DataType_ value) override;
 
     /**
      * Sets up the internal state of the ModellerFilter

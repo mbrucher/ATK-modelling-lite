@@ -10,6 +10,8 @@
 #include "Component.h"
 #include "DynamicModellerFilter.h"
 
+#include <ATK/Core/Utilities.h>
+
 constexpr gsl::index MAX_ITERATION = 200;
 constexpr double EPS = 1e-8;
 constexpr gsl::index INIT_WARMUP = 10;
@@ -239,6 +241,30 @@ namespace ATK
       }
     }
   }
+
+  template<typename DataType_>
+  gsl::index DynamicModellerFilter<DataType_>::get_number_parameters() const
+  {
+    return 0;
+  }
   
+  template<typename DataType_>
+  std::string DynamicModellerFilter<DataType_>::get_parameter_name(gsl::index identifier) const
+  {
+    throw RuntimeError("No such parameter");
+  }
+  
+  template<typename DataType_>
+  DataType_ DynamicModellerFilter<DataType_>::get_parameter(gsl::index identifier) const
+  {
+    throw RuntimeError("No such parameter");
+  }
+  
+  template<typename DataType_>
+  void DynamicModellerFilter<DataType_>::set_parameter(gsl::index identifier, DataType_ value)
+  {
+    throw RuntimeError("No such parameter");
+  }
+
   template class DynamicModellerFilter<double>;
 }

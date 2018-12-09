@@ -104,6 +104,17 @@ namespace ATK
      * @param steady_state is a flag to indcate steady state computation (used for some components)
      */
     virtual void add_equation(gsl::index eq_index, gsl::index eq_number, Eigen::Matrix<DataType, Eigen::Dynamic, 1>& eqs, Eigen::Matrix<DataType, Eigen::Dynamic, Eigen::Dynamic>& jacobian, bool steady_state) const;
+    
+    virtual gsl::index get_number_parameters() const;
+    
+    /// Get the name of a parameter
+    virtual std::string get_parameter_name(gsl::index identifier) const;
+    
+    /// Get the value of a parameter
+    virtual DataType_ get_parameter(gsl::index identifier) const;
+    
+    /// Set the value of a parameter
+    virtual void set_parameter(gsl::index identifier, DataType_ value);
   };
 }
 

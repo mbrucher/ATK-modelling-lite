@@ -49,6 +49,24 @@ namespace ATK
 
     /// Returns the number of components
     virtual gsl::index get_nb_components() const = 0;
+
+    /// Returns the name of a dynamic pin, usefull to set output
+    virtual std::string get_dynamic_pin_name(gsl::index identifier) const = 0;
+
+    /// Returns the name of a static pin, usefull to set input
+    virtual std::string get_static_pin_name(gsl::index identifier) const = 0;
+
+    /// Get number of parameters
+    virtual gsl::index get_number_parameters() const = 0;
+    
+    /// Get the name of a parameter
+    virtual std::string get_parameter_name(gsl::index identifier) const = 0;
+
+    /// Get the value of a parameter
+    virtual DataType_ get_parameter(gsl::index identifier) const = 0;
+
+    /// Set the value of a parameter
+    virtual void set_parameter(gsl::index identifier, DataType_ value) = 0;
   };
 }
 
