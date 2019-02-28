@@ -40,6 +40,7 @@ class Modeler(object):
                 'I': self.input_state,
                 }
         self.initialized = False
+        self.compute_numerical_jacobian = True
         
     def add_component(self, component, pins):
         """
@@ -75,19 +76,19 @@ class Modeler(object):
 
         self.initialized = True
         
-    def compute_current(self, pin, steady_state):
+    def compute_current(self, pin, state, steady_state):
         """
         Compute Kirschhoff law for the non static pin
         Compute also the jacobian for all the connected pins
         :param pin: tuple indicating which pin we compute the current for
         :param steady_state: if set to True (default), computes for a steady state
         """
-        eq = sum([component.get_current(i, self.state, steady_state) for (component, i) in pin])
+        eq = sum([component.get_current(i, state, steady_state) for (component, i) in pin])
         jac = [0] * len(self.dynamic_state)
         for (component, j) in pin:
             for (i, component_pin) in enumerate(component.pins):
                 if component_pin[0] == "D":
-                    jac[component_pin[1]] += component.get_gradient(j, i, self.state, steady_state)
+                    jac[component_pin[1]] += component.get_gradient(j, i, state, steady_state)
         return eq, jac
     
     def solve(self, steady_state):
@@ -108,15 +109,35 @@ class Modeler(object):
         jacobian = []
         for i, pin in enumerate(self.dynamic_pins):
             if self.dynamic_pins_equation[i] is None:
-                eq, jac = self.compute_current(pin, steady_state)
+                eq, jac = self.compute_current(pin, self.state, steady_state)
             else:
                 component, eq_number = self.dynamic_pins_equation[i]
                 eq, jac = component.add_equation(self.state, steady_state, eq_number)
             eqs.append(eq)
             jacobian.append(jac)
-                
+
         eqs = np.array(eqs)
         jacobian = np.array(jacobian)
+        
+        if self.compute_numerical_jacobian:
+            self.numerical_jacobian = []
+            for j in range(len(self.dynamic_pins)):
+                dynamic_state = np.array(self.dynamic_state)
+                dynamic_state[j] += 0.0001
+                state = {
+                    'D': dynamic_state,
+                    'S': self.static_state,
+                    'I': self.input_state,
+                    }
+                neqs = []
+                for i, pin in enumerate(self.dynamic_pins):
+                    if self.dynamic_pins_equation[i] is None:
+                        eq, _ = self.compute_current(pin, state, steady_state)
+                    else:
+                        component, eq_number = self.dynamic_pins_equation[i]
+                        eq, _ = component.add_equation(state, steady_state, eq_number)
+                    neqs.append(eq)
+                self.numerical_jacobian.append((np.array(neqs) - eqs) / 0.0001)
 
         if np.all(np.abs(eqs) < EPS):
             return True
