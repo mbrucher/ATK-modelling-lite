@@ -8,6 +8,8 @@ import numpy as np
 
 EPS = 1.e-8
 MAX_ITER = 200 # should probabl have one for steady state and one for non steady state
+NUMERICAL_JACOBIAN_DX = 1.e-6
+
 
 def retrieve_voltage(state, pin):
     """
@@ -123,7 +125,7 @@ class Modeler(object):
             self.numerical_jacobian = []
             for j in range(len(self.dynamic_pins)):
                 dynamic_state = np.array(self.dynamic_state)
-                dynamic_state[j] += 0.0001
+                dynamic_state[j] += NUMERICAL_JACOBIAN_DX
                 state = {
                     'D': dynamic_state,
                     'S': self.static_state,
@@ -137,7 +139,7 @@ class Modeler(object):
                         component, eq_number = self.dynamic_pins_equation[i]
                         eq, _ = component.add_equation(state, steady_state, eq_number)
                     neqs.append(eq)
-                self.numerical_jacobian.append((np.array(neqs) - eqs) / 0.0001)
+                self.numerical_jacobian.append((np.array(neqs) - eqs) / NUMERICAL_JACOBIAN_DX)
 
         if np.all(np.abs(eqs) < EPS):
             return True
