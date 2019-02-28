@@ -27,5 +27,5 @@ C1	2	0	1mF"""
     model.input_state[:] = (1,)
 
     for i in range(1000):
-        model(None)
+        model(1)
         assert_almost_equal(model.dynamic_state[0], 1 - math.exp(-i * dt / (R * C)), 1e-4)
