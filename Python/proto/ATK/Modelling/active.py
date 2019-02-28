@@ -33,58 +33,58 @@ class TransistorNPN(object):
     def update_state(self, state):
         pass
 
-    def ib(self, state):
-        return self.Is * ((self.expVbe - 1) / self.Bf + (self.expVbc - 1) / self.Br)
+    def ib(self, expVbe, expVbc):
+        return self.Is * ((expVbe - 1) / self.Bf + (expVbc - 1) / self.Br)
 
-    def ib_vbe(self, state):
-        return self.Is * self.expVbe / self.Vt / self.Bf
+    def ib_vbe(self, expVbe, expVbc):
+        return self.Is * expVbe / self.Vt / self.Bf
 
-    def ib_vbc(self, state):
-        return self.Is * self.expVbc / self.Vt / self.Br
+    def ib_vbc(self, expVbe, expVbc):
+        return self.Is * expVbc / self.Vt / self.Br
 
-    def ic(self, state):
-        return self.Is * ((self.expVbe - self.expVbc) - (self.expVbc - 1) / self.Br)
+    def ic(self, expVbe, expVbc):
+        return self.Is * ((expVbe - expVbc) - (expVbc - 1) / self.Br)
 
-    def ic_vbe(self, state):
-        return self.Is * self.expVbe / self.Vt
+    def ic_vbe(self, expVbe, expVbc):
+        return self.Is * expVbe / self.Vt
 
-    def ic_vbc(self, state):
-        return self.Is * (-self.expVbc - self.expVbc / self.Br) / self.Vt
+    def ic_vbc(self, expVbe, expVbc):
+        return self.Is * (-expVbc - expVbc / self.Br) / self.Vt
 
     def get_current(self, pin_index, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(Vbe / self.Vt)
-        self.expVbc = math.exp(Vbc / self.Vt)
+        expVbe = math.exp(Vbe / self.Vt)
+        expVbc = math.exp(Vbc / self.Vt)
         if pin_index == 0:
-            return -self.ib(state)
+            return -self.ib(expVbe, expVbc)
         elif pin_index == 1:
-            return -self.ic(state)
-        return self.ib(state) + self.ic(state)
+            return -self.ic(expVbe, expVbc)
+        return self.ib(expVbe, expVbc) + self.ic(expVbe, expVbc)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(Vbe / self.Vt)
-        self.expVbc = math.exp(Vbc / self.Vt)
+        expVbe = math.exp(Vbe / self.Vt)
+        expVbc = math.exp(Vbc / self.Vt)
         if pin_index_ref == 0 and pin_index == 0:
-            return -(self.ib_vbc(state) + self.ib_vbe(state))
+            return -(self.ib_vbc(expVbe, expVbc) + self.ib_vbe(expVbe, expVbc))
         elif pin_index_ref == 0 and pin_index == 1:
-            return self.ib_vbc(state)
+            return self.ib_vbc(expVbe, expVbc)
         elif pin_index_ref == 0 and pin_index == 2:
-            return self.ib_vbe(state)
+            return self.ib_vbe(expVbe, expVbc)
         elif pin_index_ref == 1 and pin_index == 0:
-            return -(self.ic_vbc(state) + self.ic_vbe(state))
+            return -(self.ic_vbc(expVbe, expVbc) + self.ic_vbe(expVbe, expVbc))
         elif pin_index_ref == 1 and pin_index == 1:
-            return self.ic_vbc(state)
+            return self.ic_vbc(expVbe, expVbc)
         elif pin_index_ref == 1 and pin_index == 2:
-            return self.ic_vbe(state)
+            return self.ic_vbe(expVbe, expVbc)
         elif pin_index_ref == 2 and pin_index == 0:
-            return (self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
+            return (self.ib_vbe(expVbe, expVbc) + self.ib_vbc(expVbe, expVbc) + self.ic_vbe(expVbe, expVbc) + self.ic_vbc(expVbe, expVbc))
         elif pin_index_ref == 2 and pin_index == 1:
-            return -(self.ib_vbc(state) + self.ic_vbc(state))
+            return -(self.ib_vbc(expVbe, expVbc) + self.ic_vbc(expVbe, expVbc))
         elif pin_index_ref == 2 and pin_index == 2:
-            return -(self.ib_vbe(state) + self.ic_vbe(state))
+            return -(self.ib_vbe(expVbe, expVbc) + self.ic_vbe(expVbe, expVbc))
 
 
 class TransistorPNP(object):
@@ -111,58 +111,58 @@ class TransistorPNP(object):
     def update_state(self, state):
         pass
 
-    def ib(self, state):
-        return self.Is * ((self.expVbe - 1) / self.Bf + (self.expVbc - 1) / self.Br)
+    def ib(self, expVbe, expVbc):
+        return self.Is * ((expVbe - 1) / self.Bf + (expVbc - 1) / self.Br)
 
-    def ib_vbe(self, state):
-        return self.Is * self.expVbe / self.Vt / self.Bf
+    def ib_vbe(self, expVbe, expVbc):
+        return self.Is * expVbe / self.Vt / self.Bf
 
-    def ib_vbc(self, state):
-        return self.Is * self.expVbc / self.Vt / self.Br
+    def ib_vbc(self, expVbe, expVbc):
+        return self.Is * expVbc / self.Vt / self.Br
 
-    def ic(self, state):
-        return self.Is * ((self.expVbe - self.expVbc) - (self.expVbc - 1) / self.Br)
+    def ic(self, expVbe, expVbc):
+        return self.Is * ((expVbe - expVbc) - (expVbc - 1) / self.Br)
 
-    def ic_vbe(self, state):
-        return self.Is * self.expVbe / self.Vt
+    def ic_vbe(self, expVbe, expVbc):
+        return self.Is * expVbe / self.Vt
 
-    def ic_vbc(self, state):
-        return self.Is * (-self.expVbc - self.expVbc / self.Br) / self.Vt
+    def ic_vbc(self, expVbe, expVbc):
+        return self.Is * (-expVbc - expVbc / self.Br) / self.Vt
 
     def get_current(self, pin_index, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(-Vbe / self.Vt)
-        self.expVbc = math.exp(-Vbc / self.Vt)
+        expVbe = math.exp(-Vbe / self.Vt)
+        expVbc = math.exp(-Vbc / self.Vt)
         if pin_index == 0:
-            return self.ib(state)
+            return self.ib(expVbe, expVbc)
         elif pin_index == 1:
-            return self.ic(state)
-        return -self.ib(state) - self.ic(state)
+            return self.ic(expVbe, expVbc)
+        return -self.ib(expVbe, expVbc) - self.ic(expVbe, expVbc)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
         Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(-Vbe / self.Vt)
-        self.expVbc = math.exp(-Vbc / self.Vt)
+        expVbe = math.exp(-Vbe / self.Vt)
+        expVbc = math.exp(-Vbc / self.Vt)
         if pin_index_ref == 0 and pin_index == 0:
-            return -(self.ib_vbc(state) + self.ib_vbe(state))
+            return -(self.ib_vbc(expVbe, expVbc) + self.ib_vbe(expVbe, expVbc))
         elif pin_index_ref == 0 and pin_index == 1:
-            return self.ib_vbc(state)
+            return self.ib_vbc(expVbe, expVbc)
         elif pin_index_ref == 0 and pin_index == 2:
-            return self.ib_vbe(state)
+            return self.ib_vbe(expVbe, expVbc)
         elif pin_index_ref == 1 and pin_index == 0:
-            return -(self.ic_vbc(state) + self.ic_vbe(state))
+            return -(self.ic_vbc(expVbe, expVbc) + self.ic_vbe(expVbe, expVbc))
         elif pin_index_ref == 1 and pin_index == 1:
-            return self.ic_vbc(state)
+            return self.ic_vbc(expVbe, expVbc)
         elif pin_index_ref == 1 and pin_index == 2:
-            return self.ic_vbe(state)
+            return self.ic_vbe(expVbe, expVbc)
         elif pin_index_ref == 2 and pin_index == 0:
-            return (self.ib_vbe(state) + self.ib_vbc(state) + self.ic_vbe(state) + self.ic_vbc(state))
+            return (self.ib_vbe(expVbe, expVbc) + self.ib_vbc(expVbe, expVbc) + self.ic_vbe(expVbe, expVbc) + self.ic_vbc(expVbe, expVbc))
         elif pin_index_ref == 2 and pin_index == 1:
-            return -(self.ib_vbc(state) + self.ic_vbc(state))
+            return -(self.ib_vbc(expVbe, expVbc) + self.ic_vbc(expVbe, expVbc))
         elif pin_index_ref == 2 and pin_index == 2:
-            return -(self.ib_vbe(state) + self.ic_vbe(state))
+            return -(self.ib_vbe(expVbe, expVbc) + self.ic_vbe(expVbe, expVbc))
 
 class OpAmp(object):
     """

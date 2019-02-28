@@ -42,7 +42,7 @@ class Modeler(object):
                 'I': self.input_state,
                 }
         self.initialized = False
-        self.compute_numerical_jacobian = True
+        self.compute_numerical_jacobian = False
         
     def add_component(self, component, pins):
         """
