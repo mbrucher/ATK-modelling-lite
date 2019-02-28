@@ -104,8 +104,6 @@ class Modeler(object):
         Do one iteration
         :param steady_state: if set to True (default), computes for a steady state
         """
-        for component in self.components:
-            component.precompute(self.state, steady_state)
         eqs = []
         jacobian = []
         for i, pin in enumerate(self.dynamic_pins):

@@ -36,9 +36,6 @@ class Resistor(object):
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.G
 
-    def precompute(self, state, steady_state):
-        pass
-
 
 class Capacitor(object):
     """
@@ -75,9 +72,6 @@ class Capacitor(object):
             return 0
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.c2t
 
-    def precompute(self, state, steady_state):
-        pass
-
 
 class Coil(object):
     """
@@ -107,18 +101,16 @@ class Coil(object):
         self.veq = 2 * self.l2t * self.i - self.veq
 
     def get_current(self, pin_index, state, steady_state):
+        if steady_state:
+            self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) * 1000000
+        else:
+            self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]) + self.veq) * self.invl2t
         return self.i  * (1 if 0 == pin_index else -1)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         if steady_state:
             return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * 1000000
         return (1 if 1 == pin_index else -1) * (1 if 0 == pin_index_ref else -1) * self.invl2t
-
-    def precompute(self, state, steady_state):
-        if steady_state:
-            self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0])) * 1000000
-        else:
-            self.i = (retrieve_voltage(state, self.pins[1]) - retrieve_voltage(state, self.pins[0]) + self.veq) * self.invl2t
 
 
 class Diode(object):
@@ -145,13 +137,12 @@ class Diode(object):
         pass
 
     def get_current(self, pin_index, state, steady_state):
-        return self.Is * (self.one_diode - 1) * (1 if 1 == pin_index else -1)
+        one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is * (one_diode - 1) * (1 if 1 == pin_index else -1)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
-        return self.Is / (self.n * self.Vt) * self.one_diode * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
-
-    def precompute(self, state, steady_state):
-        self.one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is / (self.n * self.Vt) * one_diode * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
 
 
 class AntiParallelDiode(object):
@@ -178,10 +169,9 @@ class AntiParallelDiode(object):
         pass
 
     def get_current(self, pin_index, state, steady_state):
-        return self.Is * (self.one_diode - 1 / self.one_diode) * (1 if 1 == pin_index else -1)
+        one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is * (one_diode - 1 / one_diode) * (1 if 1 == pin_index else -1)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
-        return self.Is / (self.n * self.Vt) * (self.one_diode + 1/ self.one_diode ) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)
-
-    def precompute(self, state, steady_state):
-        self.one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        one_diode = math.exp((retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])) / (self.n * self.Vt))
+        return self.Is / (self.n * self.Vt) * (one_diode + 1/ one_diode ) * (1 if 0 == pin_index else -1) * (1 if 1 == pin_index_ref else -1)

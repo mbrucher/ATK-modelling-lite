@@ -52,6 +52,10 @@ class TransistorNPN(object):
         return self.Is * (-self.expVbc - self.expVbc / self.Br) / self.Vt
 
     def get_current(self, pin_index, state, steady_state):
+        Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
+        Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
+        self.expVbe = math.exp(Vbe / self.Vt)
+        self.expVbc = math.exp(Vbc / self.Vt)
         if pin_index == 0:
             return -self.ib(state)
         elif pin_index == 1:
@@ -59,6 +63,10 @@ class TransistorNPN(object):
         return self.ib(state) + self.ic(state)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
+        Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
+        self.expVbe = math.exp(Vbe / self.Vt)
+        self.expVbc = math.exp(Vbc / self.Vt)
         if pin_index_ref == 0 and pin_index == 0:
             return -(self.ib_vbc(state) + self.ib_vbe(state))
         elif pin_index_ref == 0 and pin_index == 1:
@@ -77,12 +85,6 @@ class TransistorNPN(object):
             return -(self.ib_vbc(state) + self.ic_vbc(state))
         elif pin_index_ref == 2 and pin_index == 2:
             return -(self.ib_vbe(state) + self.ic_vbe(state))
-
-    def precompute(self, state, steady_state):
-        Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
-        Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(Vbe / self.Vt)
-        self.expVbc = math.exp(Vbc / self.Vt)
 
 
 class TransistorPNP(object):
@@ -128,6 +130,10 @@ class TransistorPNP(object):
         return self.Is * (-self.expVbc - self.expVbc / self.Br) / self.Vt
 
     def get_current(self, pin_index, state, steady_state):
+        Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
+        Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
+        self.expVbe = math.exp(-Vbe / self.Vt)
+        self.expVbc = math.exp(-Vbc / self.Vt)
         if pin_index == 0:
             return self.ib(state)
         elif pin_index == 1:
@@ -135,6 +141,10 @@ class TransistorPNP(object):
         return -self.ib(state) - self.ic(state)
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
+        Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
+        Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
+        self.expVbe = math.exp(-Vbe / self.Vt)
+        self.expVbc = math.exp(-Vbc / self.Vt)
         if pin_index_ref == 0 and pin_index == 0:
             return -(self.ib_vbc(state) + self.ib_vbe(state))
         elif pin_index_ref == 0 and pin_index == 1:
@@ -153,12 +163,6 @@ class TransistorPNP(object):
             return -(self.ib_vbc(state) + self.ic_vbc(state))
         elif pin_index_ref == 2 and pin_index == 2:
             return -(self.ib_vbe(state) + self.ic_vbe(state))
-
-    def precompute(self, state, steady_state):
-        Vbe = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[2])
-        Vbc = retrieve_voltage(state, self.pins[0]) - retrieve_voltage(state, self.pins[1])
-        self.expVbe = math.exp(-Vbe / self.Vt)
-        self.expVbc = math.exp(-Vbc / self.Vt)
 
 class OpAmp(object):
     """
@@ -196,9 +200,6 @@ class OpAmp(object):
         if self.pins[1][0] == "D":
             jac[self.pins[1][1]] = -1
         return eq, jac
-
-    def precompute(self, state, steady_state):
-        pass
 
 class VoltageGain(object):
     """
@@ -241,9 +242,6 @@ class VoltageGain(object):
             jac[self.pins[3][1]] = 1
         return eq, jac
 
-    def precompute(self, state, steady_state):
-        pass
-
 class Current(object):
     """
     Class that implements a perfect current generator between two pins
@@ -270,6 +268,3 @@ class Current(object):
 
     def get_gradient(self, pin_index_ref, pin_index, state, steady_state):
         return 0
-
-    def precompute(self, state, steady_state):
-        pass
