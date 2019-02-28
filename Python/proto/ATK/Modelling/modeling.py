@@ -151,7 +151,7 @@ class Modeler(object):
 
         max_delta = np.max(np.abs(delta))
         if(max_delta > MAX_DELTA):
-            delta /= max_delta / MAX_DELTA
+            delta *= MAX_DELTA / max_delta
             
         self.dynamic_state -= delta
                 
