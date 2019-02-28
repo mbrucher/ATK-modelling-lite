@@ -9,6 +9,7 @@ import numpy as np
 EPS = 1.e-8
 MAX_ITER = 200 # should probabl have one for steady state and one for non steady state
 NUMERICAL_JACOBIAN_DX = 1.e-6
+MAX_DELTA = 0.1
 
 
 def retrieve_voltage(state, pin):
@@ -149,8 +150,8 @@ class Modeler(object):
             return True
 
         max_delta = np.max(np.abs(delta))
-        if(max_delta > 1):
-            delta /= max_delta
+        if(max_delta > MAX_DELTA):
+            delta /= max_delta / MAX_DELTA
             
         self.dynamic_state -= delta
                 

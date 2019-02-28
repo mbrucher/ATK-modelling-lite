@@ -15,6 +15,7 @@
 constexpr gsl::index MAX_ITERATION = 200;
 constexpr double EPS = 1e-8;
 constexpr gsl::index INIT_WARMUP = 10;
+constexpr double MAX_DELTA = 1e-1;
 
 namespace ATK
 {
@@ -208,9 +209,9 @@ namespace ATK
     }
     
     auto max_delta = delta.array().abs().maxCoeff();
-    if(max_delta > 1)
+    if(max_delta > MAX_DELTA)
     {
-      delta /= max_delta;
+      delta *= MAX_DELTA / max_delta;
     }
     
     dynamic_state -= delta;
@@ -249,7 +250,7 @@ namespace ATK
                            {
                              return i + component->get_number_parameters();
                            }
-                           );
+           );
   }
   
   template<typename Components, typename Function>
